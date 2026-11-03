@@ -22,10 +22,10 @@ M5Stack PaperDIY（ESP32-S3、4.7 型 e-paper）を、BLE キーボードで操�
 
 ### ビルド済みのファームを書く
 
-リポジトリの Releases にある `paperdiy-term-merged.bin` を 0x0 番地に書き込みます。PaperDIY を USB-C で PC につなぎ、
+`prebuilt/paperdiy-term-merged.bin` を 0x0 番地に書き込みます。PaperDIY を USB-C で PC につなぎ、この `firmware/` フォルダで
 
 ```bash
-python -m esptool --chip esp32s3 -b 460800 write_flash 0x0 paperdiy-term-merged.bin
+python -m esptool --chip esp32s3 -b 460800 write_flash 0x0 prebuilt/paperdiy-term-merged.bin
 ```
 
 ブラウザの [ESP Tool](https://espressif.github.io/esptool-js/) でも同じファイルを 0x0 に書けます。書き込みモードに入らないときは、電源ボタンを長押ししてダウンロードモードにします。
