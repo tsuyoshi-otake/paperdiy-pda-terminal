@@ -8,6 +8,21 @@ Un Kyu Lee さんの [phone-enclosure](https://github.com/unkyulee/phone-enclosu
 
 ## 印刷するファイル（A1 mini 向け）
 
+### 3MF（おすすめ）
+
+`3mf/` の 4 ファイルは、部品を印刷する向きにそろえて、180 × 180 mm のプレートに並べてあります。Bambu Studio で開けば、そのままスライスできます（Bambu Studio 以外で作ったファイルなので、開くときに「ジオメトリのみ読み込む」旨の確認が出ることがあります）。色はレンダリングに合わせてプレートごとに分けました。
+
+| ファイル | 中身 | 色（レンダリング） | 注意 |
+| --- | --- | --- | --- |
+| `3mf/plate1_lid.3mf` | 蓋 A・B | 紺 | 天面が下。ヒンジ部にサポートが必要 |
+| `3mf/plate2_tray.3mf` | トレイ A・B | クリーム | 底面が下 |
+| `3mf/plate3_panel_strap.3mf` | 画面パネル A・B、ストラップ | クリーム | サポート不要 |
+| `3mf/plate4_knobs_rods.3mf` | ヒンジのノブ 2 個（元プロジェクトの部品）、押し棒 3 本 | 赤 | ノブは高さ 40 mm で立てて印刷。倒れそうならブリムを付ける |
+
+3MF は `python3 src/export_3mf.py`（`src/build.py` のあと）で作り直せます。
+
+### STL
+
 | ファイル | 数 | 印刷の向き |
 | --- | --- | --- |
 | `out/split/lid_A_left.stl`、`lid_B_main.stl` | 各 1 | 天面を下に。ヒンジ部は元データと同じくサポートあり |
@@ -17,7 +32,7 @@ Un Kyu Lee さんの [phone-enclosure](https://github.com/unkyulee/phone-enclosu
 | `out/key_pushrod_x2.stl` | **2** | 平らな面を下に |
 | `out/power_pushrod.stl` | 1 | 平らな面を下に |
 
-`out/` 直下の `display_lid_usbc.stl`、`display_panel_paperdiy.stl`、`keyboard_tray.stl` は分割前の確認用です（200 mm 前後あり、A1 mini には載りません）。ノブ、ラベルなどは元プロジェクトの STL をそのまま使います。
+`out/` 直下の `display_lid_usbc.stl`、`display_panel_paperdiy.stl`、`keyboard_tray.stl` は分割前の確認用です（200 mm 前後あり、A1 mini には載りません）。ノブは元プロジェクトの `Knob.stl` を 2 個印刷します（3MF には入れてあります）。
 
 ## 部品の配置
 

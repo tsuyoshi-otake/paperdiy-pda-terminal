@@ -91,6 +91,12 @@ One original Palma corner rib in the lid flares to y = −30.2 near the ceiling,
   walls. Use CA or epoxy.
 * **Panel** at x = −72: same dovetail keys. Each piece keeps two of the original corner screws.
 
+## Print-ready 3MF (A1 mini)
+`3mf/plate1_lid.3mf` (lid A+B, needs supports at the hinge knuckle), `plate2_tray.3mf` (tray A+B),
+`plate3_panel_strap.3mf` (panel A+B, strap) and `plate4_knobs_rods.3mf` (2x original hinge knob standing on its cap end,
+3 push-rods): every part already in print orientation and laid out on a 180 x 180 mm plate, grouped by colour.
+Regenerate with `python3 src/export_3mf.py` after `src/build.py`.
+
 ## Print orientation (suggested)
 * Lid pieces: **top face down** (the original's ceiling is flat at z = 30). The hinge knuckle needs supports, as in the original.
 * Panel pieces: **screen face down** (z = 15 on the bed). Lip, posts, cradles and bay frame grow upward with no supports.
