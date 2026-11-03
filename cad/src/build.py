@@ -4,7 +4,7 @@
 Run:  python3 ~/cad/src/build.py          (needs: trimesh manifold3d numpy shapely rtree pillow)
 Booleans are done with manifold3d on the ORIGINAL phone-enclosure meshes (read-only, never modified).
 """
-import os, sys, json
+import os, sys, json, hashlib
 import numpy as np
 import trimesh
 import manifold3d as m3
@@ -38,7 +38,15 @@ def to_t(man):
 
 
 def load(name):
-    return trimesh.load(os.path.join(ORIG_DIR, name))
+    path = os.path.join(ORIG_DIR, name)
+    if not os.path.exists(path):
+        sys.exit(f"missing {path}\n  run tools/fetch_original.sh (or set PHONE_ENCLOSURE_STL to the original STL folder)")
+    with open(path, "rb") as f:
+        digest = hashlib.sha256(f.read()).hexdigest()
+    if digest != ORIG_SHA256.get(name) and os.environ.get("PHONE_ENCLOSURE_ANY_VERSION") != "1":
+        sys.exit(f"{path}: sha256 {digest[:12]}... is not the pinned original ({ORIG_COMMIT[:7]}).\n"
+                 f"  run tools/fetch_original.sh, or set PHONE_ENCLOSURE_ANY_VERSION=1 to build from it anyway")
+    return trimesh.load(path)
 
 
 def box(x0, x1, y0, y1, z0, z1):
@@ -207,10 +215,10 @@ def build_panel():
     w = ROD_HOLE / 2 + MIN_WALL
     for x in KEY_X:
         P = P + box(x - w, x + w, -41.6, -39.6, z1 - 0.01, KEY_Z + 0.8)
-        P = P - box(x - ROD_HOLE / 2, x + ROD_HOLE / 2, -42, -39, KEY_Z - ROD_D / 2 - 0.2, 40)
+        P = P - box(x - ROD_HOLE / 2, x + ROD_HOLE / 2, -42, -39, KEY_Z - ROD_FLAT - 0.1, 40)
     for x in (-92.0, -80.0):
         P = P + box(x - 1.5, x + 1.5, PWR_Y - w, PWR_Y + w, z1 - 0.01, PWR_Z + 0.8)
-        P = P - box(x - 2, x + 2, PWR_Y - ROD_HOLE / 2, PWR_Y + ROD_HOLE / 2, PWR_Z - ROD_D / 2 - 0.2, 40)
+        P = P - box(x - 2, x + 2, PWR_Y - ROD_HOLE / 2, PWR_Y + ROD_HOLE / 2, PWR_Z - ROD_FLAT - 0.1, 40)
     # relief under the USB-C plug overmold (panel stays 2.0 thick)
     P = P - box(-90.0, X_USB - PD_USB_PROTRUDE - 0.35, USB_Y - 7.5, USB_Y + 7.5, z1 - 1.0, z1 + 0.1)
     # battery bay: pocket + frame (+ wire notch toward the PaperDIY)
@@ -233,8 +241,8 @@ def build_strap():
     return s
 
 
-def dflat(rod, zc):        # flat underside 1.2 below axis: prints flat, cannot rotate in the U-cradle
-    return rod ^ box(-BIG, BIG, -BIG, BIG, zc - 1.2, BIG)
+def dflat(rod, zc):        # flat underside ROD_FLAT below the axis: prints flat, rests on the U-cradle floor
+    return rod ^ box(-BIG, BIG, -BIG, BIG, zc - ROD_FLAT, BIG)
 
 
 def build_key_rod(x):
@@ -373,7 +381,10 @@ def write_assembly_json():
     data = dict(Y_BACK=Y_BACK, Z_PART=Z_PART, HINGE_X=HINGE_X, HINGE_LEN=HINGE_LEN, HINGE_WIDTH=HINGE_WIDTH,
                 HINGE_LEAF_T=HINGE_LEAF_T, HINGE_BARREL_D=HINGE_BARREL_D, HINGE_CLR=HINGE_CLR,
                 HINGE_COVER=bool(HINGE_COVER and HINGE_MOUNT == "face"), COVER_T=COVER_T, COVER_RIM=COVER_RIM,
-                COVER_R0=COVER_R0, HINGE_MOUNT=HINGE_MOUNT, LABEL_POCKET=list(LID_LABEL_POCKET))
+                COVER_R0=COVER_R0, HINGE_MOUNT=HINGE_MOUNT, LABEL_POCKET=list(LID_LABEL_POCKET),
+                USB_PM_Y=USB_PM_Y, USB_PM_Z=USB_PM_Z,
+                BATT=dict(cx=BATT_CX, cy=BATT_CY, z0=PANEL_Z_BACK - BATT_POCKET, L=BATT_L, W=BATT_W, T=BATT_T),
+                STRAP=dict(x=STRAP_X, w=STRAP_W, y=STRAP_POST_Y, top=STRAP_TOP))
     with open(os.path.join(OUT_DIR, "assembly.json"), "w") as f:
         json.dump(data, f, indent=1)
 
@@ -398,7 +409,54 @@ def open_lid(part, deg):
     return part.translate([0, -Y_BACK, -Z_PART]).rotate([-deg, 0, 0]).translate([0, Y_BACK, Z_PART])
 
 
-def build_lid(with_pads):
+def kb_port_bay():
+    """Recess in the back face around the keyboard charge port, back to the original 3 mm wall (lid and tray)."""
+    if not KB_PORT_BAY:
+        return []
+    x0, x1 = KB_PORT_BAY_X
+    z0, z1 = KB_PORT_BAY_Z
+    return [prism_y(rrect((x0 + x1) / 2, (z0 + z1) / 2, x1 - x0, z1 - z0, KB_PORT_BAY_R), BACK_OLD_Y, Y_BACK + 1.0)]
+
+
+def kb_plug_envelope():
+    p = KB_PLUG
+    return box(p["x"] - p["w"] / 2, p["x"] + p["w"] / 2, p["y0"], p["y0"] + p["len"], p["z"] - p["h"] / 2, p["z"] + p["h"] / 2)
+
+
+def usb_pm_opening_w(spacing):
+    if spacing <= 0:
+        return USB_PM_W
+    return min(USB_PM_W, spacing - USB_PM_SCREW_D - 2 * USB_PM_WEB)
+
+
+def usb_pm_cuts(spacing):
+    """Opening + two ear-screw holes for a panel-mount USB-C on the left end wall (spacing 0 = opening only)."""
+    w = usb_pm_opening_w(spacing)
+    cuts = [prism_x(rrect(USB_PM_Y, USB_PM_Z, w, USB_PM_H, USB_PM_R), -102, -96.5)]
+    if spacing > 0:
+        for dy in (-spacing / 2, spacing / 2):
+            cuts.append(cyl_x(USB_PM_SCREW_D / 2, -102, -96.5, USB_PM_Y + dy, USB_PM_Z))
+    # square the inner wall/ceiling fillet where the ears sit, so ears up to the full 9 mm cavity height seat flat
+    half = (spacing / 2 if spacing > 0 else USB_PM_BODY["w"] / 2) + USB_PM_EAR["beyond_hole"] + 0.5
+    cuts.append(box(-98.0, -94.0, USB_PM_Y - half, USB_PM_Y + half, USB_PM_Z, LID_CEILING_Z))
+    return cuts
+
+
+def usb_pm_envelope(spacing):
+    """Screw-ear female USB-C end seated against the inside of the left wall (rough, for the fit check)."""
+    e, b = USB_PM_EAR, USB_PM_BODY
+    half = (spacing / 2 + e["beyond_hole"]) if spacing > 0 else b["w"] / 2
+    ears = box(-98.0, -98.0 + e["t"], USB_PM_Y - half, USB_PM_Y + half, USB_PM_Z - e["h"] / 2, USB_PM_Z + e["h"] / 2)
+    body = box(-98.0 + e["t"], -98.0 + e["t"] + b["len"], USB_PM_Y - b["w"] / 2, USB_PM_Y + b["w"] / 2,
+               USB_PM_Z - b["h"] / 2, USB_PM_Z + b["h"] / 2)
+    return ears + body
+
+
+def usb_variant_name(spacing):
+    return "lid_A_left_usb_noscrew" if spacing <= 0 else f"lid_A_left_usb{spacing:g}mm"
+
+
+def build_lid(with_pads, usb_spacing=None):
     tl = load("Display.stl")
     L = to_m(tl)
     # restore the front wall + ceiling edge where the Palma side-button slot was (profile copied from x=-3)
@@ -427,9 +485,9 @@ def build_lid(with_pads):
             L = L + box(SPLIT_X_LID - p["half_len"], SPLIT_X_LID + p["half_len"], y0, y1, p["z0"], LID_CEILING_Z + 0.05)
     cuts = []
     # panel-mount USB-C on the left end wall
-    cuts.append(prism_x(rrect(USB_PM_Y, USB_PM_Z, USB_PM_W, USB_PM_H, USB_PM_R), -102, -96.5))
-    for dy in (-USB_PM_SCREW_SPACING / 2, USB_PM_SCREW_SPACING / 2):
-        cuts.append(cyl_x(USB_PM_SCREW_D / 2, -102, -96.5, USB_PM_Y + dy, USB_PM_Z))
+    cuts += usb_pm_cuts(USB_PM_SCREW_SPACING if usb_spacing is None else usb_spacing)
+    # keyboard charge-port bay (upper part, in the lid's back wall)
+    cuts += kb_port_bay()
     # push-rod bores
     cuts.append(cyl_x(ROD_HOLE / 2, -102, -96.5, PWR_Y, PWR_Z))
     for x in KEY_X:
@@ -462,7 +520,7 @@ def build_tray():
     # square the bottom-back chamfer under each tray leaf so the whole leaf sits in a pocket
     for c in (hinge_centres() if HINGE_MOUNT == "face" else ()):
         T = T + box(c - HINGE_LEN / 2 - HINGE_CLR, c + HINGE_LEN / 2 + HINGE_CLR, LID_INNER_Y + 0.5, Y_BACK, 0.0, 3.2)
-    T = T - union(hinge_pocket_cuts() + hinge_pilots(False))
+    T = T - union(hinge_pocket_cuts() + hinge_pilots(False) + kb_port_bay())
     if not KB_CUTS_ENABLED:
         return T
     sx = -1 if KB_PORT_WALL == "left" else 1
@@ -470,6 +528,28 @@ def build_tray():
     T = T - prism_x(rrect(KB_PORT_Y, KB_PORT_Z, KB_PORT_W, KB_PORT_H, 1.0), xa, xb)
     T = T - prism_x(rrect(KB_SW_Y, KB_SW_BOTTOM_Z + 10, KB_SW_W, 20, 1.0), xa, xb)
     return T
+
+
+# ------------------------------------------------------------------ test coupons
+def build_coupons(lid, tray, panel, ta, tb):
+    """Small test prints cut from the real parts (same print orientation as the part they come from), to check the
+    fits on your printer before the long prints: hinge seat + screws, dovetail key, panel corner screw, push-rod bore.
+    Returns {name: (manifold, source part)}."""
+    hx = HINGE_X
+    hinge_box = box(hx - 13.5, hx + 13.5, 36.0, Y_BACK + 1.0, -1.0, 31.0)
+    X = SPLIT_X_TRAY
+    dt_box = box(X - 12.0, X + 14.0, -9.0, 9.0, -1.0, 3.5)
+    cx, cy = max(LID_CORNER_HOLES)                        # back-right panel screw (92.8, 38.78)
+    kx = KEY_X[0]
+    return {
+        "coupon_hinge_tray": (tray ^ hinge_box, "tray"),
+        "coupon_hinge_lid": (lid ^ hinge_box, "lid"),
+        "coupon_dovetail_A": (ta ^ dt_box, "tray"),
+        "coupon_dovetail_B": (tb ^ dt_box, "tray"),
+        "coupon_corner_lid": (lid ^ box(cx - 7.0, 102.0, cy - 7.0, Y_BACK + 1.0, 14.0, 31.0), "lid"),
+        "coupon_corner_panel": (panel ^ box(cx - 7.0, 99.0, cy - 7.0, 44.0, 14.0, 19.5), "panel"),
+        "coupon_keywall_lid": (lid ^ box(kx - 8.0, kx + 8.0, -48.0, -33.0, 12.0, 31.0), "lid"),
+    }
 
 
 # ------------------------------------------------------------------ verification models
@@ -537,6 +617,31 @@ def main():
         assert max(tm.extents) <= MAX_PIECE, (k, tm.extents)
         out[k] = tm
 
+    log("== lid A variants for other USB-C panel-mount hole spacings (only lid A changes)")
+    usb_variants = {}
+    for s in USB_PM_VARIANTS:
+        name = usb_variant_name(s)
+        if s == USB_PM_SCREW_SPACING:
+            va, vb = la, lb
+        else:
+            va, vb = split_dovetail(build_lid(False, usb_spacing=s), SPLIT_X_LID, DOVETAIL_Y, LID_CEILING_Z, LID_CEILING_Z + 3.0)
+            dv = abs(vb.volume() - lb.volume())
+            assert dv < 0.01, (name, "lid B must not depend on the USB-C variant", dv)
+        tm = export(va, f"{SPLIT_DIR}/usb_variants/{name}.stl")
+        assert max(tm.extents) <= MAX_PIECE
+        usb_variants[s] = va
+        w = usb_pm_opening_w(s)
+        log(f"    {name}: opening {w:.1f} x {USB_PM_H:.1f} mm" + (f", M3 holes {s:g} mm apart" if s > 0 else ", no screw holes (glue)"))
+
+    log("== test coupons (cut from the real parts; print these first, ~1 h)")
+    coupons = build_coupons(lid, tray, panel, ta, tb)
+    coupon_src = {}
+    for k, (v, src) in coupons.items():
+        export(v, f"{OUT_DIR}/coupons/{k}.stl")
+        coupon_src[k] = src
+    with open(os.path.join(OUT_DIR, "coupons", "orientation.json"), "w") as f:
+        json.dump(coupon_src, f, indent=1)
+
     log("== interference checks (assembled, closed lid)")
     pd, bat = paperdiy_envelope(), battery_envelope()
     interference(pd, panel, "PaperDIY envelope vs panel")
@@ -583,6 +688,29 @@ def main():
     # gaps that should be small but positive
     for i, x in enumerate(KEY_X):
         log(f"  key {i}: rod tip y={KEY_TIP_Y-ROD_GAP:.2f}, actuator tip y={KEY_TIP_Y:.2f}")
+
+    p = KB_PLUG
+    log(f"== keyboard charge port (straight plug, overmold {p['w']:g} x {p['h']:g} mm, centred at x={p['x']:g} z={p['z']:g})")
+    plug = kb_plug_envelope()
+    interference(plug, tray, "charge plug vs tray")
+    interference(plug, lid, "charge plug vs lid (closed)")
+    plug_limit = None
+    for deg in range(0, 181):
+        if (open_lid(lidset, deg) ^ plug).volume() > 0.05:
+            plug_limit = deg - 1
+            break
+    log(f"  with that plug in, the lid opens to {plug_limit} deg; beyond that its back face meets the plug"
+        if plug_limit is not None else "  the plug never meets the lid")
+
+    log("== USB-C panel-mount fit per lid-A variant (rough screw-ear envelope: ears 4 mm past the holes, 8 tall, 3 thick)")
+    for s, va in usb_variants.items():
+        env = usb_pm_envelope(s)
+        full = lid if s == USB_PM_SCREW_SPACING else (va + lb)
+        worst = max(interference(env, full, f"{usb_variant_name(s)}: connector vs lid", tol=1.0),
+                    interference(env, prod, f"{usb_variant_name(s)}: connector vs power push-rod", tol=0.05),
+                    interference(env, panel, f"{usb_variant_name(s)}: connector vs panel", tol=0.05))
+        if worst > 1.0:
+            log(f"    <-- {usb_variant_name(s)}: check the ear size of your cable")
 
     log("== renders")
     C = dict(lid=(55, 75, 150), panel=(225, 215, 185), tray=(230, 220, 190), red=(210, 60, 50), grey=(120, 120, 125),

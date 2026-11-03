@@ -2,7 +2,7 @@
 
 M5Stack PaperDIY（ESP32-S3、4.7 型 e-paper）を、BLE キーボードで操作する SSH ターミナルにするファームウェアです。PaperDIY PDA Terminal 構想の試作ファームとして作りました。
 
-> **実機では未検証です。** ESP-IDF 5.5 でのビルドと、ターミナル部分のホスト上テスト（vim / less / top / nano / bash / tmux の出力を参照実装 pyte と比較）までは確認済みです。
+> **実機では未検証です。** ESP-IDF v5.5.6 でのビルド（同じソースから同じバイナリができる再現可能ビルド）と、ターミナル部分のホスト上テスト（vim / less / top / nano / bash / tmux の出力を参照実装 pyte と比較、AddressSanitizer 付き）までは確認済みです。
 
 ## できること
 
@@ -16,13 +16,13 @@ M5Stack PaperDIY（ESP32-S3、4.7 型 e-paper）を、BLE キーボードで操�
 
 - M5Stack PaperDIY（Assembly Kit / Complete Kit）
 - BLE（Bluetooth Low Energy）の HID に対応したキーボード。ESP32-S3 は Bluetooth Classic に対応しないため、Classic 専用のキーボードはつながりません
-- ESP-IDF 5.5（ビルドする場合）
+- ESP-IDF **v5.5.6**（ビルドする場合。別のバージョンでもビルドはできますが、`prebuilt/` と同じバイナリにはなりません）
 
 ## 書き込み
 
 ### ビルド済みのファームを書く
 
-`prebuilt/paperdiy-term-merged.bin` を 0x0 番地に書き込みます。PaperDIY を USB-C で PC につなぎ、この `firmware/` フォルダで
+`prebuilt/paperdiy-term-merged.bin` を 0x0 番地に書き込みます（中身とビルド条件は [`prebuilt/BUILDINFO.md`](prebuilt/BUILDINFO.md)、ファイルが壊れていないかは `sha256sum -c prebuilt/SHA256SUMS` で確かめられます）。PaperDIY を USB-C で PC につなぎ、この `firmware/` フォルダで
 
 ```bash
 python -m esptool --chip esp32s3 -b 460800 write_flash 0x0 prebuilt/paperdiy-term-merged.bin
@@ -33,12 +33,25 @@ python -m esptool --chip esp32s3 -b 460800 write_flash 0x0 prebuilt/paperdiy-ter
 ### ソースからビルドする
 
 ```bash
+git clone --depth 1 --branch v5.5.6 --recursive --shallow-submodules https://github.com/espressif/esp-idf ~/esp/esp-idf-v5.5.6
+~/esp/esp-idf-v5.5.6/install.sh esp32s3      # 初回だけ
+. ~/esp/esp-idf-v5.5.6/export.sh
+
 cd firmware
 ./fetch_deps.sh            # M5GFX / M5Unified / libssh2 を固定リビジョンで取得
-. $IDF_PATH/export.sh      # ESP-IDF 5.5
-idf.py set-target esp32s3
-idf.py build flash monitor
+idf.py build flash monitor # ターゲット（esp32s3）は sdkconfig.defaults で決まっています
 ```
+
+**再現可能ビルド**：`sdkconfig.defaults` の `CONFIG_APP_REPRODUCIBLE_BUILD=y` で、日時やビルドしたフォルダのパスがバイナリに入らないようにしてあり、バージョンも `version.txt`（0.2.0）で固定しています。ESP-IDF v5.5.6 なら、どこでビルドしても `prebuilt/` と同じバイナリになります。リポジトリのルートで
+
+```bash
+make firmware          # 上の export.sh を読み込んだシェルで。ビルドして prebuilt/ と 1 バイトずつ比べる
+make firmware-docker   # Docker があれば espressif/idf:v5.5.6 のコンテナで同じことをする
+```
+
+### ホスト上のテスト
+
+ターミナルエミュレータ（`main/term/vt.cpp`）は PC 上でテストできます。g++ と Python（`pip install -r test/host/requirements.txt`）があれば、リポジトリのルートで `make test` です。決めた手順のエスケープシーケンス（折り返し、全角、罫線、スクロール領域、代替画面、リサイズ、応答）を期待値と比べるテストと、vim / less / top / nano / bash / tmux の実際の出力（`test/host/fixtures/`）を pyte と比べるテストが、AddressSanitizer と UBSan 付きで走ります。
 
 ## 使い方
 
@@ -109,12 +122,14 @@ ssh-keygen -p -m PEM -f 既存のRSAかECDSA鍵           # 既存鍵を PEM に
 | `main/storage/*` | NVS の設定、microSD |
 | `main/ui/app.*` | メニュー画面とターミナルモード |
 | `components/libssh2` | libssh2 を mbedTLS で ESP-IDF 向けにビルドする設定 |
+| `test/host/` | ターミナルエミュレータのホスト上テスト（`make test`） |
+| `prebuilt/` | ビルド済みのバイナリ、SHA-256、ビルド条件 |
 
 ## 使っているもの
 
 - [M5GFX](https://github.com/m5stack/M5GFX)、[M5Unified](https://github.com/m5stack/M5Unified)（MIT）
 - [libssh2](https://github.com/libssh2/libssh2) 1.11.1（BSD-3-Clause）
-- [ESP-IDF](https://github.com/espressif/esp-idf) 5.5（Apache-2.0）。esp_hid の HID ホストを利用
+- [ESP-IDF](https://github.com/espressif/esp-idf) v5.5.6（Apache-2.0）。esp_hid の HID ホストを利用
 - 日本語フォント：M5GFX 同梱の efont
 
 このファームウェア自体のライセンスは未設定です。公開するときに決めてください。

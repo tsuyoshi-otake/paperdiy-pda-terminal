@@ -12,6 +12,15 @@ HOME = os.path.expanduser("~")
 CAD_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # this cad/ folder
 # Original phone-enclosure STLs (read-only). Override with PHONE_ENCLOSURE_STL=/path/to/phone-enclosure/STL
 ORIG_DIR = os.environ.get("PHONE_ENCLOSURE_STL", os.path.join(HOME, "phone-enclosure", "STL"))
+# The build is pinned to this exact version of the original (tools/fetch_original.sh checks it out). load() refuses
+# files with other hashes unless PHONE_ENCLOSURE_ANY_VERSION=1 is set.
+ORIG_REPO = "https://github.com/unkyulee/phone-enclosure"
+ORIG_COMMIT = "a21bfd68f2ea34cf692f1949acb148828ce725f7"
+ORIG_SHA256 = {
+    "Display.stl": "2188adead638975e6771400a9e7e2d71514c39e89124e272f8b621aac154d6a9",
+    "Display Panel.stl": "4eb2cd96efcbd444e6a30ada45c0da93fa6e0db02f44e29c41e5a021859a13cd",
+    "Keyboard.stl": "fb50e86de54be06af042fb841576a606359eda2263e10f1100b8d4b1eafd8daf",
+}
 OUT_DIR = os.path.join(CAD_DIR, "out")
 SPLIT_DIR = os.path.join(OUT_DIR, "split")
 RENDER_DIR = os.path.join(CAD_DIR, "renders")
@@ -83,6 +92,8 @@ ROD_GAP = 0.3                 # rest gap rod tip -> actuator
 ROD_COLLAR_D = 5.5
 ROD_COLLAR_T = 1.2
 ROD_PROUD = 1.0               # rod end proud of the outer wall
+ROD_FLAT = 0.9                # flat underside this far below the axis: 2.4 mm wide on the bed (was 1.2 -> 1.8 mm,
+                              # which the slicer flags as low bed adhesion); the cradles are raised to match
 
 # battery bay (integrated in panel; lid gets a ceiling relief)
 BATT_L = 50.0                 # [A] cell length (along y)   default 50x34x10 "~2000 mAh"
@@ -94,14 +105,32 @@ BATT_CX = 76.9                # bay centre x (between PaperDIY end and right wal
 BATT_CY = -4.5                # shifted -y so the ceiling relief stays clear of the 1.5 mm-thin label recess
 MIN_WALL = 1.6
 
-# panel-mount USB-C on the left end wall (nearest the PaperDIY USB-C)
-USB_PM_W = 13.0               # [A] opening width  (along y)
+# panel-mount USB-C on the left end wall (nearest the PaperDIY USB-C). The wall is in lid piece A (x < -72),
+# so only that small piece depends on the cable: plate 1 carries the default spacing and 3mf/usb_variants/ holds
+# lid A for other common spacings (pick the one that matches your cable; no rebuild needed).
+USB_PM_W = 13.0               # [A] opening width  (along y); narrowed for close screw spacings (see USB_PM_WEB)
 USB_PM_H = 7.0                # [A] opening height (along z)
 USB_PM_R = 1.0
-USB_PM_Y = 2.0                # [A] offset from the PaperDIY port (y=-24) so the cable can loop
+USB_PM_Y = 1.0                # [A] offset from the PaperDIY port (y=-24) so the cable can loop; 30 mm ears clear the power rod
 USB_PM_Z = 22.5
-USB_PM_SCREW_SPACING = 28.0   # [A] typical screw-ear panel-mount USB-C extension -> MEASURE
+USB_PM_SCREW_SPACING = 28.0   # [A] default in plate 1 -> MEASURE your cable (centre to centre of the two ear holes)
 USB_PM_SCREW_D = 3.4          # [A] M3 clearance (use 2.4 for M2 ears)
+USB_PM_WEB = 1.2              # minimum wall left between the opening and a screw hole
+USB_PM_VARIANTS = (0.0, 16.0, 18.0, 20.0, 22.0, 25.0, 28.0, 30.0)   # lid-A variants (0 = opening only, for glue-in)
+# rough envelope of a screw-ear female end behind the wall, for the fit check of each variant
+USB_PM_EAR = dict(beyond_hole=4.0, h=8.0, t=3.0)      # ears reach 4 mm past each hole centre, 8 tall, 3 thick
+USB_PM_BODY = dict(w=13.0, h=7.0, len=25.0)           # housing behind the ears
+
+# keyboard charge port at the back: the original tray opening (x 73..89, open from z ~6.0 up to the lid at 12.8)
+# was a 3 mm deep hole in the 3 mm back wall. Thickening the back wall to 9.5 mm made it a 9.5 mm tunnel, so a
+# bay is cut from the outside back to the original wall face (y = 46.5): the plug sees the same 3 mm wall as in the
+# original design. The bay crosses the parting line, so lid and tray both get their part of it.
+KB_PORT_BAY = True
+KB_PORT_BAY_X = (70.5, 91.5)  # 2.5 mm wider than the opening on each side (overmold + fingers)
+KB_PORT_BAY_Z = (4.0, 15.5)   # floor 1 mm above the bottom chamfer, 2.65 mm up into the lid wall
+KB_PORT_BAY_R = 1.5
+# a typical straight USB-C plug overmold, for the fit / lid-opening check (centred on the original opening)
+KB_PLUG = dict(x=81.0, z=9.4, w=12.0, h=6.5, y0=44.0, len=28.0)
 
 # keyboard tray: charge port + power-switch notch (positions unknown -> placeholders)
 # Off by default: the original tray (designed for the same CACOE keyboard) already has openings in the

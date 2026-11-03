@@ -1,0 +1,3 @@
+# reference terminal emulator for compare_pyte.py
+pyte==0.8.2
+wcwidth==0.9.4

@@ -1,0 +1,96 @@
+[?1049h[22;0;0t[>4;2m[?1h=[?2004h[?1004h[1;24r[?12h[?12l[22;2t[22;1t[27m[23m[29m[m[H[2J[?25l[24;1H"sample.txt" [noeol] 60L, 2999B[2;1H▽[6n[2;1H  [3;1HPzz\[0%m[6n[3;1H           [1;1H[>c]10;?]11;?[1;1H000 日本語の行 line 0
+001 日本語の行 line 1 x[2;24H[K[3;1H002 日本語の行 line 2 xx[3;25H[K[4;1H003 日本語の行 line 3 xxx
+004 日本語の行 line 4 xxxx
+005 日本語の行 line 5 xxxxx
+006 日本語の行 line 6 xxxxxx
+007 日本語の行 line 7 xxxxxxx
+008 日本語の行 line 8 xxxxxxxx
+009 日本語の行 line 9 xxxxxxxxx
+010 日本語の行 line 10 xxxxxxxxxx
+011 日本語の行 line 11 xxxxxxxxxxx
+012 日本語の行 line 12 xxxxxxxxxxxx
+013 日本語の行 line 13 xxxxxxxxxxxxx
+014 日本語の行 line 14 xxxxxxxxxxxxxx
+015 日本語の行 line 15 xxxxxxxxxxxxxxx
+016 日本語の行 line 16 xxxxxxxxxxxxxxxx
+017 日本語の行 line 17 xxxxxxxxxxxxxxxxx
+018 日本語の行 line 18 xxxxxxxxxxxxxxxxxx
+019 日本語の行 line 19 xxxxxxxxxxxxxxxxxxx
+020 日本語の行 line 20 xxxxxxxxxxxxxxxxxxxx
+021 日本語の行 line 21 xxxxxxxxxxxxxxxxxxxxx
+022 日本語の行 line 22 xxxxxxxxxxxxxxxxxxxxxx[1;1H[?25h[?4m
+
+
+
+
+[?25l[24;1H[K[24;1H:set number[1;1H[33m  1 [m000 日本語の行 line 0
+[33m  2 [m001 日本語の行 line 1 x
+[33m  3 [m002 日本語の行 line 2 xx
+[33m  4 [m003 日本語の行 line 3 xxx
+[33m  5 [m004 日本語の行 line 4 xxxx
+[33m  6 [m005 日本語の行 line 5 xxxxx
+[33m  7 [m006 日本語の行 line 6 xxxxxx
+[33m  8 [m007 日本語の行 line 7 xxxxxxx
+[33m  9 [m008 日本語の行 line 8 xxxxxxxx
+[33m 10 [m009 日本語の行 line 9 xxxxxxxxx
+[33m 11 [m010 日本語の行 line 10 xxxxxxxxxx
+[33m 12 [m011 日本語の行 line 11 [7Cxxxx
+[33m 13 [m012 日本語の行 line 12 [8Cxxxx
+[33m 14 [m013 日本語の行 line 13 [9Cxxxx
+[33m 15 [m014 日本語の行 line 14 [10Cxxxx
+[33m 16 [m015 日本語の行 line 15 [11Cxxxx
+[33m 17 [m016 日本語の行 line 16 [12Cxxxx
+[33m 18 [m017 日本語の行 line 17 [13Cxxxx
+[33m 19 [m018 日本語の行 line 18 [14Cxxxx
+[33m 20 [m019 日本語の行 line 19 [15Cxxxx
+[33m 21 [m020 日本語の行 line 20 [16Cxxxx
+[33m 22 [m021 日本語の行 line 21 [17Cxxxx
+[33m 23 [m022 日本語の行 line 22 [18Cxxxx[6;5H[?25h[?25l[27m[23m[29m[m[H[2J[1;1H[33m 22 [m021 日本語の行 line 21 xxxxxxxxxxxxxxxxxxxxx
+[33m 23 [m022 日本語の行 line 22 xxxxxxxxxxxxxxxxxxxxxx
+[33m 24 [m023 日本語の行 line 23 xxxxxxxxxxxxxxxxxxxxxxx
+[33m 25 [m024 日本語の行 line 24 xxxxxxxxxxxxxxxxxxxxxxxx
+[33m 26 [m025 日本語の行 line 25 xxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 27 [m026 日本語の行 line 26 xxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 28 [m027 日本語の行 line 27 xxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 29 [m028 日本語の行 line 28 xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 30 [m029 日本語の行 line 29 xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 31 [m030 日本語の行 line 30 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 32 [m031 日本語の行 line 31 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 33 [m032 日本語の行 line 32 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 34 [m033 日本語の行 line 33 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 35 [m034 日本語の行 line 34 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 36 [m035 日本語の行 line 35 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 37 [m036 日本語の行 line 36 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 38 [m037 日本語の行 line 37 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 39 [m038 日本語の行 line 38 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 40 [m039 日本語の行 line 39 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 41 [m040 日本語の行 line 40 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 42 [m041 日本語の行 line 41 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 43 [m042 日本語の行 line 42 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 44 [m043 日本語の行 line 43 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx[1;5H[?25h[?25l[1;23r[1;1H[16M[1;24r[8;1H[33m 45 [m044 日本語の行 line 44 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 46 [m045 日本語の行 line 45 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 47 [m046 日本語の行 line 46 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 48 [m047 日本語の行 line 47 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 49 [m048 日本語の行 line 48 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 50 [m049 日本語の行 line 49 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 51 [m050 日本語の行 line 50
+[33m 52 [m051 日本語の行 line 51 x
+[33m 53 [m052 日本語の行 line 52 xx
+[33m 54 [m053 日本語の行 line 53 xxx
+[33m 55 [m054 日本語の行 line 54 xxxx
+[33m 56 [m055 日本語の行 line 55 xxxxx
+[33m 57 [m056 日本語の行 line 56 xxxxxx
+[33m 58 [m057 日本語の行 line 57 xxxxxxx
+[33m 59 [m058 日本語の行 line 58 xxxxxxxx
+[33m 60 [m059 日本語の行 line 59 xxxxxxxxx[23;5H[?25h[22;5H[21;5H[20;5H[?25l057[18C7[7Cx[21;7H8[18C8[8Cx[22;7H9[18C9[9Cx
+[1m[34m~                                                                               [20;5H[?25h[?25l[m[21;7H6[18C6[21;34H[K[22;7H8[18C8[22;36H[K[23;1H[33m 60 [m059 日本語の行 line 59 xxxxxxxxx[23;37H[K[21;5H[?25h[?25l
+
+
+1 line less; before #2  0 seconds ago[21;7H8[18C8[7Cxx[22;7H9[18C9[9Cx
+[1m[34m~                                                                               [20;5H[?25h[?25l[m[24;1H[K[24;1H/line 30[31msearch hit BOTTOM, continuing at TOP[1;23r[m[1;1H[7L[1;24r[1;1H[33m 31 [m030 日本語の行 line 30 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 32 [m031 日本語の行 line 31 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 33 [m032 日本語の行 line 32 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 34 [m033 日本語の行 line 33 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 35 [m034 日本語の行 line 34 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 36 [m035 日本語の行 line 35 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+[33m 37 [m036 日本語の行 line 36 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx[24;1H[K[24;1H[31msearch hit BOTTOM, continuing at TOP[1;20H[?25h[?25l[m[24;1H[1m-- INSERT --[m[24;13H[K[24;1H[K[1;28H[1;20Hhello 漢字line 30 [20Cxxxxxxxxxx[24;1H[1m-- INSERT --[1;30H[?25h[?25l[m[24;1H[K[1;28H[?25h[?25l[24;1H:q![?2004l[>4;m[23;2t[23;1t[24;1H[K[24;1H[?1004l[?2004l[?1l>[?1049l[23;0;0t[?25h[>4;m

@@ -1,5 +1,6 @@
 // Renders docs/images/render_*.png from the STLs in cad/out (three.js in headless Chromium).
-//   cd docs/render && npm install && npx playwright install chromium && node render.js
+//   cd docs/render && npm ci && npx playwright install chromium && npm run render
+//   node render.js exploded      # just one view (open, closed, back, exploded, hinge)
 const http = require('http');
 const fs = require('fs');
 const os = require('os');
@@ -30,8 +31,11 @@ const types = { '.html': 'text/html', '.js': 'text/javascript', '.stl': 'applica
   const port = server.address().port;
 
   const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-  for (const view of ['open', 'closed', 'back']) {
-    const page = await browser.newPage({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1.5 });
+  const sizes = { open: [1600, 1000], closed: [1600, 1000], back: [1600, 1000], exploded: [1500, 1500], hinge: [1600, 1000] };
+  const views = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(sizes);
+  for (const view of views) {
+    const [w, h] = sizes[view];
+    const page = await browser.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1.5 });
     page.on('pageerror', e => console.error(view, e.message));
     await page.goto(`http://127.0.0.1:${port}/index.html?view=${view}`);
     await page.waitForFunction(() => document.title === 'ready', null, { timeout: 180000 });

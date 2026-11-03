@@ -1,0 +1,36 @@
+=== basic (cursor 0,7)
+|wo*ld
+|
+|
+|line5
+|[7mi[0m[7mn[0m[7mv[0m ok
+|日本語テスト abc
+|┌──┐ box
+|
+replies: \e[8;1R\e[?1;2c
+=== wrap (cursor 0,3)
+|ABCDE
+|012345678
+|あい
+|
+=== scroll region IL (cursor 0,0)
+|L1
+|
+|L2
+|L3
+|L5
+|
+=== alt (cursor 4,0)
+|alt!
+|
+|
+|
+=== back (cursor 5,1)
+|main1
+|main2
+|
+|
+=== resized (cursor 0,2)
+|R4
+|R5
+|

@@ -1,0 +1,75 @@
+[?2004hbash-5.2# ls -la / | head -30
+[?2004ltotal 92
+drwxr-xr-x 23 root root  4096 Nov  3 10:31 .
+drwxr-xr-x 23 root root  4096 Nov  3 10:31 ..
+lrwxrwxrwx  1 root root     7 Apr 22  2024 bin -> usr/bin
+drwxr-xr-x  2 root root  4096 Apr  8  2024 bin.usr-is-merged
+drwxr-xr-x  2 root root  4096 Apr 22  2024 boot
+-rw-r--r--  1 root root    83 Nov  3 10:31 container_info.json
+drwxr-xr-x  6 root root  2280 Nov  3 10:31 dev
+drwxr-xr-x 88 root root  4096 Nov  3 10:10 etc
+drwxr-xr-x  4 root root  4096 Oct 30 20:19 home
+lrwxrwxrwx  1 root root     7 Apr 22  2024 lib -> usr/lib
+drwxr-xr-x  2 root root  4096 Nov 14  2024 lib.usr-is-merged
+lrwxrwxrwx  1 root root     9 Apr 22  2024 lib64 -> usr/lib64
+drwx------  2 root root 12288 Oct 30 21:03 lost+found
+drwxr-xr-x  2 root root  4096 Oct 24 14:05 media
+drwxr-xr-x  6 root root  4096 Nov  3 10:10 mnt
+drwxr-xr-x  4 root root  4096 Oct 30 20:19 nix
+drwxr-xr-x  2 root root  4096 Nov  3 10:10 old_root
+drwxr-xr-x 23 root root  4096 Nov  3 10:10 opt
+dr-xr-xr-x 82 root root     0 Nov  3 08:12 proc
+drwx------ 21 root root  4096 Nov  3 10:47 root
+drwxr-xr-x 13 root root  4096 Nov  3 10:10 run
+lrwxrwxrwx  1 root root     8 Apr 22  2024 sbin -> usr/sbin
+drwxr-xr-x  2 root root  4096 Apr  8  2024 sbin.usr-is-merged
+drwxr-xr-x  2 root root  4096 Oct 24 14:05 srv
+dr-xr-xr-x 12 root root     0 Nov  3 08:12 sys
+drwxrwxrwt 11 root root  4096 Nov  3 10:46 tmp
+drwxr-xr-x 12 root root  4096 Oct 24 14:05 usr
+drwxr-xr-x 11 root root  4096 Oct 24 14:12 var
+[?2004hbash-5.2# printf '\e[1mbold\e[0m \e[44mbluebg\e[0m \e[4munder\e[0m\n'
+[?2004l[1mbold[0m [44mbluebg[0m [4munder[0m
+[?2004hbash-5.2# seq 1 40
+[?2004l1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+[?2004hbash-5.2# exit
+[?2004lexit

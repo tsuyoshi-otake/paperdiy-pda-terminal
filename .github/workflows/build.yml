@@ -1,0 +1,59 @@
+# Rebuilds the CAD outputs and the firmware from source and checks that they match what is committed.
+name: build
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  cad:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r cad/requirements.txt
+      - name: rebuild STLs and 3MF plates, compare with cad/out/MANIFEST.json
+        run: make verify
+      - name: printability report (PrusaSlicer)
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends prusa-slicer
+          make report
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cad-outputs
+          path: |
+            cad/out
+            cad/3mf
+
+  host-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r firmware/test/host/requirements.txt
+      - run: make test
+
+  firmware:
+    runs-on: ubuntu-24.04
+    container: espressif/idf:v5.5.6
+    steps:
+      - uses: actions/checkout@v4
+      - name: build and compare with prebuilt/
+        shell: bash
+        run: |
+          git config --global --add safe.directory '*'
+          . "$IDF_PATH/export.sh"
+          cd firmware
+          ./fetch_deps.sh
+          idf.py build
+          idf.py merge-bin -o paperdiy-term-merged.bin
+          sha256sum build/paperdiy-term-merged.bin prebuilt/paperdiy-term-merged.bin
+          cmp build/paperdiy-term-merged.bin prebuilt/paperdiy-term-merged.bin
+      - uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: firmware/build/paperdiy-term-merged.bin

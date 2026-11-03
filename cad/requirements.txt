@@ -1,0 +1,12 @@
+# Python packages for the CAD scripts (src/build.py, src/export_3mf.py, tools/*.py), pinned to the versions the
+# committed outputs were made with (Python 3.13, x86-64 Linux). out/MANIFEST.json records those outputs;
+# `make verify` rebuilds and compares against it.
+numpy==2.5.3
+trimesh==5.2.0
+manifold3d==3.5.4
+shapely==2.2.0
+rtree==1.4.1
+scipy==1.18.1
+networkx==3.7
+lxml==6.1.3
+pillow==12.3.0

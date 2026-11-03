@@ -210,12 +210,13 @@ function legendMat(lab, kw, kd) {
 const [lidG, panelG, strapG, keyRodG, pwrRodG, trayG] = await Promise.all(
   ['display_lid_usbc', 'display_panel_paperdiy', 'paperdiy_strap', 'key_pushrod_x2', 'power_pushrod',
    'keyboard_tray'].map(n => loadSTL(`models/${n}.stl`)));
+const P = {};          // named parts, for the exploded view
 
 // fixed half: tray + keyboard
-scene.add(mesh(trayG, M.cream));
-scene.add(keyboard());
+P.tray = mesh(trayG, M.cream); scene.add(P.tray);
+P.kb = keyboard(); scene.add(P.kb);
 
-// moving half: lid parts, rotated about the hinge axis (x axis through y = 54, z = 7.5)
+// moving half: lid parts, rotated about the hinge axis (x axis through y = Y_BACK, z = Z_PART)
 // hinge and cover positions come from cad/out/assembly.json (written by cad/src/build.py)
 const A = await (await fetch('models/assembly.json')).json();
 const HINGE_Y = A.Y_BACK, HINGE_Z = A.Z_PART, HINGE_X = A.HINGE_X, H_LEN = A.HINGE_LEN, H_W = A.HINGE_WIDTH,
@@ -227,42 +228,54 @@ lid.position.set(0, -HINGE_Y, -HINGE_Z);
 pivot.add(lid);
 scene.add(pivot);
 
-lid.add(mesh(lidG, M.lid));
-lid.add(mesh(panelG, M.cream));
-lid.add(mesh(strapG, M.cream));
+P.lid = mesh(lidG, M.lid); lid.add(P.lid);
+P.panel = mesh(panelG, M.cream); lid.add(P.panel);
+P.strap = mesh(strapG, M.cream); lid.add(P.strap);
 // push-rods (key rods: the STL holds one rod at the first key; the second sits 12 mm along x)
-const rod1 = mesh(keyRodG, M.red); lid.add(rod1);
-const rod2 = mesh(keyRodG, M.red); rod2.position.x = -12.0; lid.add(rod2);
-lid.add(mesh(pwrRodG, M.red));
+P.keyRods = new THREE.Group(); lid.add(P.keyRods);
+const rod1 = mesh(keyRodG, M.red); P.keyRods.add(rod1);
+const rod2 = mesh(keyRodG, M.red); rod2.position.x = -12.0; P.keyRods.add(rod2);
+P.pwrRod = mesh(pwrRodG, M.red); lid.add(P.pwrRod);
 // plain plate in the lid-top label recess (x 21.7..78, y 21.34..32.5, floor z 28.5); the original
 // label carries the original author's branding, so it is not shown here
-const plate = mesh(new RoundedBoxGeometry(56.0, 11.0, 1.9, 2, 0.6), M.red);
-plate.position.set((21.7 + 78.0) / 2, (21.34 + 32.5) / 2, 28.5 + 0.95);
-lid.add(plate);
+P.plate = mesh(new RoundedBoxGeometry(56.0, 11.0, 1.9, 2, 0.6), M.red);
+P.plate.position.set((21.7 + 78.0) / 2, (21.34 + 32.5) / 2, 28.5 + 0.95);
+lid.add(P.plate);
 
 // hinge barrels (black POM) and the cover plates over the leaves; lid covers follow the lid
 const pom = pla('#1b1b1d', 0.45);
+P.hinges = new THREE.Group(); scene.add(P.hinges);
+P.lidCovers = new THREE.Group(); lid.add(P.lidCovers);
+P.trayCovers = new THREE.Group(); scene.add(P.trayCovers);
 for (const cx of [-HINGE_X, HINGE_X]) {
   const barrel = mesh(new THREE.CylinderGeometry(H_BD / 2, H_BD / 2, H_LEN, 40), pom);
   barrel.rotation.z = Math.PI / 2;
   barrel.position.set(cx, HINGE_Y, HINGE_Z);
-  scene.add(barrel);
+  P.hinges.add(barrel);
+  if (VIEW === 'hinge') {         // show the leaves (they are under the covers otherwise)
+    for (const s of [-1, 1]) {
+      const leaf = box(H_LEN, A.HINGE_LEAF_T, H_W / 2 - H_BD / 2, pla('#26262a', 0.4), cx,
+                       HINGE_Y - A.HINGE_LEAF_T / 2, HINGE_Z + s * (H_BD / 2 + (H_W / 2 - H_BD / 2) / 2));
+      P.hinges.add(leaf);
+    }
+  }
   const w = H_LEN + 2 * (H_CLR + COVER_RIM), end = H_W / 2 + H_CLR + COVER_RIM;
   const lz0 = HINGE_Z + COVER_R0, lz1 = Math.min(HINGE_Z + end, 26.8);
   const tz0 = Math.max(0.3, HINGE_Z - end), tz1 = HINGE_Z - COVER_R0;
   const lidCover = mesh(new RoundedBoxGeometry(w, COVER_T, lz1 - lz0, 2, 0.4), M.lid);
   lidCover.position.set(cx, HINGE_Y + COVER_T / 2, (lz0 + lz1) / 2);
-  lid.add(lidCover);
+  P.lidCovers.add(lidCover);
   const trayCover = mesh(new RoundedBoxGeometry(w, COVER_T, tz1 - tz0, 2, 0.4), M.cream);
   trayCover.position.set(cx, HINGE_Y + COVER_T / 2, (tz0 + tz1) / 2);
-  scene.add(trayCover);
+  P.trayCovers.add(trayCover);
 }
 
 // PaperDIY itself (simplified envelope from the drawing): e-paper module, PCB at the USB end, ESP32-S3 module
 const X_TOP = 55.8, X_USB = -59.5;
-lid.add(box(X_TOP - X_USB, 62.5, 1.3, pla('#8d9096', 0.45), (X_TOP + X_USB) / 2, 0, 18.0 + 0.65));
-lid.add(box(67.9, 64.2, 1.6, pla('#1e1f22', 0.5), X_USB + 67.9 / 2, 0, 19.4 + 0.8));
-lid.add(box(18.0, 25.5, 3.1, pla('#b9bcc2', 0.3), -23.2, 31.25 - 25.5 / 2, 21.0 + 1.55));
+P.paperdiy = new THREE.Group(); lid.add(P.paperdiy);
+P.paperdiy.add(box(X_TOP - X_USB, 62.5, 1.3, pla('#8d9096', 0.45), (X_TOP + X_USB) / 2, 0, 18.0 + 0.65));
+P.paperdiy.add(box(67.9, 64.2, 1.6, pla('#1e1f22', 0.5), X_USB + 67.9 / 2, 0, 19.4 + 0.8));
+P.paperdiy.add(box(18.0, 25.5, 3.1, pla('#b9bcc2', 0.3), -23.2, 31.25 - 25.5 / 2, 21.0 + 1.55));
 
 // e-paper behind the panel window: window 105.0 x 59.72 centred at x = +1.9, glass face at z = 18
 const scr = new THREE.Mesh(new THREE.PlaneGeometry(105.0, 59.06),
@@ -273,14 +286,97 @@ scr.material.emissiveIntensity = 0.18;
 scr.position.set(1.9, 0, 17.9);
 scr.rotation.x = Math.PI;      // face -z (the viewer when open); text up = -y = top of the open lid
 scr.receiveShadow = true;
-lid.add(scr);
+P.paperdiy.add(scr);
 
-// panel-mount USB-C receptacle in the left wall (opening 13 x 7 at y = +2, z = 22.5)
-const usb = box(2.4, 12.6, 6.6, M.dark, -100.0, 2.0, 22.5); lid.add(usb);
-const usbSlot = box(0.6, 8.9, 3.2, pla('#3a3a3c', 0.3), -101.05, 2.0, 22.5); lid.add(usbSlot);
+// battery (pouch cell) in its bay next to the PaperDIY
+const B = A.BATT;
+P.battery = box(B.W, B.L, B.T, pla('#b7b9bd', 0.35), B.cx, B.cy, B.z0 + B.T / 2); lid.add(P.battery);
+
+// panel-mount USB-C receptacle in the left wall (opening 13 x 7)
+P.usb = new THREE.Group(); lid.add(P.usb);
+P.usb.add(box(2.4, 12.6, 6.6, M.dark, -100.0, A.USB_PM_Y, A.USB_PM_Z));
+P.usb.add(box(0.6, 8.9, 3.2, pla('#3a3a3c', 0.3), -101.05, A.USB_PM_Y, A.USB_PM_Z));
+if (VIEW === 'exploded') {       // ears + body behind the wall, the part you buy
+  P.usb.add(box(3.0, 36.0, 8.0, M.dark, -96.5, A.USB_PM_Y, A.USB_PM_Z));
+  P.usb.add(box(22.0, 12.0, 7.0, M.dark, -84.0, A.USB_PM_Y, A.USB_PM_Z));
+}
+
+// ---------------------------------------------------------------- figures for the assembly guide (numbered callouts)
+// numbers match the parts list in cad/ASSEMBLY_ja.md; offsets in mm (closed assembly frame);
+// each entry: [part or null, offset applied to the part, anchor point (closed frame, before the offset), number, label]
+const FIGURES = {
+  exploded: [
+    ['plate',    [0, 0, 186],   [70, 30, 30],     2,  '天面プレート'],
+    ['lid',      [0, 0, 150],   [-96, -40, 30],   1,  '蓋 A + B'],
+    ['usb',      [-34, 0, 150], [-106, 1, 26],    8,  'USB-C 延長'],
+    ['keyRods',  [0, -34, 150], [-29, -44, 22],   7,  '押し棒（3 本）'],
+    ['pwrRod',   [-34, 0, 150], null,             0,  ''],
+    ['strap',    [0, 0, 112],   [-22.6, -38, 26], 3,  'ストラップ'],
+    ['paperdiy', [0, 0, 90],    [-50, -31, 20],   4,  'PaperDIY'],
+    ['battery',  [0, 0, 90],    [94, -28, 27],    5,  '電池'],
+    ['panel',    [0, 0, 66],    [-97, -42, 18],   6,  '画面パネル A + B'],
+    ['kb',       [0, 0, 30],    [-97, -43, 12],   11, 'キーボード'],
+    ['tray',     [0, 0, 0],     [-100, -46, 6],   12, 'トレイ A + B'],
+  ],
+  hinge: [
+    ['hinges',     [0, 0, 0],  [56, 53, 20],    9,  'トルクヒンジ'],
+    ['lidCovers',  [0, 30, 0], [44, 54, 24],    10, 'カバー（蓋側）'],
+    ['trayCovers', [0, 30, 0], [44, 54, 3],     10, 'カバー（トレイ側）'],
+    [null,         [0, 0, 0],  [81, 50, 6],     0,  'キーボードの充電口'],
+  ],
+};
+const HIDE = { exploded: ['hinges', 'lidCovers', 'trayCovers'], hinge: [] };
+
+function drawCallouts(list) {
+  const cv = document.createElement('canvas');
+  const dpr = window.devicePixelRatio;
+  cv.width = W * dpr; cv.height = H * dpr;
+  Object.assign(cv.style, { position: 'absolute', left: '0', top: '0', width: W + 'px', height: H + 'px' });
+  document.body.appendChild(cv);
+  const g = cv.getContext('2d');
+  g.scale(dpr, dpr);
+  const pts = list.filter(e => e[2]).map(([name, off, a, num, label]) => {
+    const v = new THREE.Vector3(a[0] + off[0], a[1] + off[1], a[2] + off[2]).project(camera);
+    return { x: (v.x + 1) / 2 * W, y: (1 - v.y) / 2 * H, num, label };
+  });
+  const R = 15, GAPY = 40, FONT = '20px "Noto Sans CJK JP", sans-serif';
+  const sides = { left: pts.filter(p => p.x < W * 0.5), right: pts.filter(p => p.x >= W * 0.5) };
+  for (const [side, col] of Object.entries(sides)) {
+    col.sort((a, b) => a.y - b.y);
+    let last = -1e9;
+    for (const p of col) { p.ly = Math.max(p.y, last + GAPY); last = p.ly; }
+    for (const p of col) {
+      const L = side === 'left';
+      const bx = L ? 40 : W - 40;                       // badge centre
+      g.font = FONT;
+      const tw = g.measureText(p.label).width;
+      const tx = L ? bx + (p.num ? R + 8 : -R) : bx - (p.num ? R + 8 : -R);   // text start (left) / end (right)
+      const lx = L ? tx + tw + 8 : tx - tw - 8;          // leader starts after the text
+      g.strokeStyle = '#55555a'; g.lineWidth = 1.4;
+      g.beginPath(); g.moveTo(lx, p.ly); g.lineTo(p.x, p.y); g.stroke();
+      g.fillStyle = '#55555a'; g.beginPath(); g.arc(p.x, p.y, 3.2, 0, 2 * Math.PI); g.fill();
+      if (p.num) {
+        g.fillStyle = '#ffffff'; g.strokeStyle = '#2c3b6b'; g.lineWidth = 2.2;
+        g.beginPath(); g.arc(bx, p.ly, R, 0, 2 * Math.PI); g.fill(); g.stroke();
+        g.fillStyle = '#2c3b6b'; g.font = 'bold 17px "Noto Sans CJK JP", sans-serif';
+        g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(p.num), bx, p.ly + 1);
+      }
+      g.fillStyle = '#26262a'; g.font = FONT; g.textBaseline = 'middle';
+      g.textAlign = L ? 'left' : 'right';
+      g.fillText(p.label, tx, p.ly + 1);
+    }
+  }
+}
 
 // ---------------------------------------------------------------- views
-if (VIEW === 'open') {
+if (FIGURES[VIEW]) {
+  pivot.rotation.x = 0;
+  for (const [name, off] of FIGURES[VIEW]) if (name) P[name].position.add(new THREE.Vector3(...off));
+  for (const name of HIDE[VIEW]) P[name].visible = false;
+  ground.visible = false;
+  if (VIEW === 'exploded') { camera.position.set(-345, -560, 420); camera.lookAt(-16, 6, 92); }
+  else { camera.position.set(-170, 330, 175); camera.lookAt(40, 40, 10); camera.fov = 22; }
+} else if (VIEW === 'open') {
   pivot.rotation.x = THREE.MathUtils.degToRad(-112);
   camera.position.set(-215, -330, 235);
   camera.lookAt(-4, 18, 40);
@@ -299,6 +395,7 @@ if (VIEW === 'open') {
 }
 camera.updateProjectionMatrix();
 renderer.render(scene, camera);
+if (FIGURES[VIEW]) drawCallouts(FIGURES[VIEW]);
 document.title = 'ready';
 </script>
 </body>

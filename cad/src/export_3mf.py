@@ -4,9 +4,11 @@ Every part is turned into its print orientation (see README "Print orientation")
 plate, so the files can be opened in Bambu Studio / OrcaSlicer / PrusaSlicer and sliced directly.
 Parts are grouped by colour as in the README renders: plate 1 = lid (navy), plates 2-3 = cream (the three
 small push-rods ride along on plate 3; print them in another colour separately if you like).
+Plate 0 holds the test coupons (print it first), 3mf/usb_variants/ holds lid A for other USB-C cables.
 
     python3 src/export_3mf.py          # after src/build.py; reads out/, writes 3mf/
 """
+import json
 import os
 import sys
 import zipfile
@@ -16,7 +18,7 @@ import numpy as np
 import trimesh
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from params import CAD_DIR, OUT_DIR, SPLIT_DIR  # noqa: E402
+from params import CAD_DIR, OUT_DIR, SPLIT_DIR, USB_PM_SCREW_SPACING, USB_PM_VARIANTS  # noqa: E402
 
 BED = 180.0
 MARGIN = 3.0     # keep parts this far from the bed edge
@@ -26,6 +28,8 @@ OUT_3MF = os.path.join(CAD_DIR, "3mf")
 FLIP_X = trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0])      # top face down
 ROT_Z90 = trimesh.transformations.rotation_matrix(np.pi / 2, [0, 0, 1])  # turn on the bed
 LAY_FLAT_Y = trimesh.transformations.rotation_matrix(-np.pi / 2, [1, 0, 0])  # hinge cover plates: visible face on the bed
+# print orientation of everything cut from the three big parts
+ORIENT = {"lid": (FLIP_X,), "tray": (), "panel": ()}
 
 
 def part(path, *rots):
@@ -43,6 +47,14 @@ def S(name):
 
 def O(name):
     return os.path.join(OUT_DIR, f"{name}.stl")
+
+
+def C(name):
+    return os.path.join(OUT_DIR, "coupons", f"{name}.stl")
+
+
+def usb_name(s):
+    return "lid_A_left_usb_noscrew" if s <= 0 else f"lid_A_left_usb{s:g}mm"
 
 
 def rows_layout(rows):
@@ -67,39 +79,24 @@ def rows_layout(rows):
     return placed
 
 
-def write_3mf(path, placed, title):
-    objs, items = [], []
-    for i, (name, m, (cx, cy)) in enumerate(placed, start=1):
-        v = "".join(f'<vertex x="{a:.4f}" y="{b:.4f}" z="{c:.4f}"/>' for a, b, c in m.vertices)
-        t = "".join(f'<triangle v1="{a}" v2="{b}" v3="{c}"/>' for a, b, c in m.faces)
-        objs.append(f'<object id="{i}" name="{escape(name)}" type="model"><mesh><vertices>{v}</vertices>'
-                    f'<triangles>{t}</triangles></mesh></object>')
-        items.append(f'<item objectid="{i}" transform="1 0 0 0 1 0 0 0 1 {cx:.4f} {cy:.4f} 0"/>')
-    model = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-             '<model unit="millimeter" xml:lang="en-US" '
-             'xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">'
-             f'<metadata name="Title">{escape(title)}</metadata>'
-             '<metadata name="Designer">PaperDIY PDA Terminal (derivative of unkyulee/phone-enclosure)</metadata>'
-             '<metadata name="LicenseTerms">CC BY-NC 4.0</metadata>'
-             f'<resources>{"".join(objs)}</resources><build>{"".join(items)}</build></model>')
-    content_types = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-                     '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
-                     '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
-                     '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>'
-                     '</Types>')
-    rels = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
-            '<Relationship Target="/3D/3dmodel.model" Id="rel0" '
-            'Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/></Relationships>')
-    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
-        z.writestr("[Content_Types].xml", content_types)
-        z.writestr("_rels/.rels", rels)
-        z.writestr("3D/3dmodel.model", model)
+def plates():
+    """{file name: (title, rows)} with every part already in its print orientation."""
+    with open(os.path.join(OUT_DIR, "coupons", "orientation.json")) as f:
+        csrc = json.load(f)
 
+    def coupon(n):
+        return (n, part(C(n), *ORIENT[csrc[n]]))
 
-def main():
-    os.makedirs(OUT_3MF, exist_ok=True)
-    plates = {
+    p = {
+        # test coupons: hinge seat, dovetail key, panel corner screw, push-rod bore, plus a rod and two covers
+        "plate0_test_coupons.3mf": ("Test coupons (print first)", [
+            [coupon("coupon_hinge_tray"), coupon("coupon_hinge_lid"), coupon("coupon_corner_lid")],
+            [coupon("coupon_dovetail_A"), coupon("coupon_dovetail_B"), coupon("coupon_corner_panel"),
+             coupon("coupon_keywall_lid")],
+            [("key_pushrod", part(O("key_pushrod_x2"), ROT_Z90)),
+             ("hinge_cover_lid", part(O("hinge_cover_lid_x2"), LAY_FLAT_Y)),
+             ("hinge_cover_tray", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y))],
+        ]),
         # navy: lid pieces, ceiling (top face) on the bed; no supports needed
         "plate1_lid.3mf": ("Lid (A + B)", [
             [("lid_A_left", part(S("lid_A_left"), FLIP_X, ROT_Z90)),
@@ -126,7 +123,51 @@ def main():
             [("panel_B_main", part(S("panel_B_main")))],
         ]),
     }
-    for fname, (title, rows) in plates.items():
+    # lid A for other USB-C panel-mount cables (only the small left lid piece depends on the cable)
+    for s in USB_PM_VARIANTS:
+        n = usb_name(s)
+        p[f"usb_variants/{n}.3mf"] = (f"Lid A for a USB-C panel mount with {s:g} mm hole spacing" if s > 0
+                                      else "Lid A, USB-C opening only (glue the connector in)",
+                                      [[(n, part(os.path.join(SPLIT_DIR, "usb_variants", f"{n}.stl"), FLIP_X, ROT_Z90))]])
+    return p
+
+
+def write_3mf(path, placed, title):
+    objs, items = [], []
+    for i, (name, m, (cx, cy)) in enumerate(placed, start=1):
+        v = "".join(f'<vertex x="{a:.4f}" y="{b:.4f}" z="{c:.4f}"/>' for a, b, c in m.vertices)
+        t = "".join(f'<triangle v1="{a}" v2="{b}" v3="{c}"/>' for a, b, c in m.faces)
+        objs.append(f'<object id="{i}" name="{escape(name)}" type="model"><mesh><vertices>{v}</vertices>'
+                    f'<triangles>{t}</triangles></mesh></object>')
+        items.append(f'<item objectid="{i}" transform="1 0 0 0 1 0 0 0 1 {cx:.4f} {cy:.4f} 0"/>')
+    model = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+             '<model unit="millimeter" xml:lang="en-US" '
+             'xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">'
+             f'<metadata name="Title">{escape(title)}</metadata>'
+             '<metadata name="Designer">PaperDIY PDA Terminal (derivative of unkyulee/phone-enclosure)</metadata>'
+             '<metadata name="LicenseTerms">CC BY-NC 4.0</metadata>'
+             f'<resources>{"".join(objs)}</resources><build>{"".join(items)}</build></model>')
+    content_types = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                     '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+                     '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+                     '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>'
+                     '</Types>')
+    rels = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            '<Relationship Target="/3D/3dmodel.model" Id="rel0" '
+            'Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/></Relationships>')
+    # fixed timestamps so the same geometry always gives the same file (reproducible checksums)
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+        for arc, data in (("[Content_Types].xml", content_types), ("_rels/.rels", rels), ("3D/3dmodel.model", model)):
+            info = zipfile.ZipInfo(arc, date_time=(2020, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o644 << 16
+            z.writestr(info, data)
+
+
+def main():
+    os.makedirs(os.path.join(OUT_3MF, "usb_variants"), exist_ok=True)
+    for fname, (title, rows) in plates().items():
         placed = rows_layout(rows)
         path = os.path.join(OUT_3MF, fname)
         write_3mf(path, placed, title)
@@ -140,8 +181,9 @@ def main():
         print(f"{fname}: {len(geoms)} parts, extent x {lo[0]:.1f}..{hi[0]:.1f} y {lo[1]:.1f}..{hi[1]:.1f} "
               f"z {lo[2]:.1f}..{hi[2]:.1f} -> {'OK' if ok else 'CHECK'}")
         for name, m, _ in placed:
-            print(f"    {name:16s} {m.extents[0]:6.1f} x {m.extents[1]:6.1f} x {m.extents[2]:5.1f} mm")
+            print(f"    {name:24s} {m.extents[0]:6.1f} x {m.extents[1]:6.1f} x {m.extents[2]:5.1f} mm")
         assert ok, fname
+    assert USB_PM_SCREW_SPACING in USB_PM_VARIANTS
 
 
 if __name__ == "__main__":

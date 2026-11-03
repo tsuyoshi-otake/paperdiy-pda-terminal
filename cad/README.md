@@ -4,23 +4,46 @@ A Boox-Palma-free version of Un Kyu Lee's "PDA Terminal": the lid holds an **M5S
 behind a new bezel panel, plus a 1S LiPo, and gets a panel-mount USB-C. The original knob-and-pin hinge is replaced by
 **two free-stop torque hinges (Sugatsune HG-MF08) recessed flush into the back face, under printed cover plates**, so only
 the hinge barrels show. The keyboard tray (CACOE mini BT keyboard) keeps the
-original openings by default; optional charge-port / switch cut-outs can be enabled once measured. Every part is also split
-for a **Bambu Lab A1 mini (180 mm bed)** and joined with glued dovetail keys; nothing needs supports. All case fasteners are
-**M2×8 countersunk tapping screws into printed pilot holes** (14), plus one M2×4 machine screw into the PaperDIY standoff:
-no heat-set inserts, dowels or socket screws. Bill of materials, print settings and assembly order (Japanese):
-[ASSEMBLY_ja.md](ASSEMBLY_ja.md).
+original openings; a bay in the thickened back wall keeps the charge port as reachable as in the original. Every part is
+also split for a **Bambu Lab A1 mini (180 mm bed)** and joined with glued dovetail keys; nothing needs supports. All case
+fasteners are **M2×8 countersunk tapping screws into printed pilot holes** (14), plus one M2×4 machine screw into the
+PaperDIY standoff: no heat-set inserts, dowels or socket screws. Only the small lid piece A depends on the USB-C cable you
+buy, and it comes pre-built for eight hole spacings. A **test-coupon plate** checks the fits on your printer in ~30 min
+before the long prints. Bill of materials, print settings and assembly order (Japanese): [ASSEMBLY_ja.md](ASSEMBLY_ja.md);
+parts list as CSV: [bom.csv](bom.csv).
 
 ## Run
 
+From the repository root (or the same commands by hand from this folder):
 ```
-pip install trimesh manifold3d numpy shapely rtree pillow scipy
-git clone https://github.com/unkyulee/phone-enclosure ~/phone-enclosure   # original STLs (read-only input)
-python3 src/build.py     # run from this cad/ folder, ~10 s; writes out/, out/split/, renders/
+make setup     # pip install -r cad/requirements.txt (pinned versions) + the host-test packages
+make verify    # fetch the pinned original, build every STL + 3MF, compare with out/MANIFEST.json
+make report    # optional, needs prusa-slicer: print time / filament / stability warnings -> out/print_report.md
+```
+By hand:
+```
+pip install -r requirements.txt
+tools/fetch_original.sh                  # clones unkyulee/phone-enclosure at the pinned commit to ~/phone-enclosure, checks hashes
+python3 src/build.py                     # ~10 s; writes out/, out/split/, out/coupons/, renders/
+python3 src/export_3mf.py                # 3mf/ print plates
+python3 tools/manifest.py --check        # same outputs as committed?
+python3 tools/print_report.py            # optional (prusa-slicer)
 ```
 Set `PHONE_ENCLOSURE_STL=/path/to/phone-enclosure/STL` if the original repo is cloned elsewhere.
 `src/params.py` holds every parameter; `src/build.py` does the mesh booleans (manifold3d) on the original STLs,
-checks each export by re-loading the written STL (watertight, one body), runs assembly interference checks and renders
-PNGs with `src/render.py` (software z-buffer, no GPU). The full log is written to `out/build_log.txt`.
+checks each export by re-loading the written STL (watertight, one body), runs assembly interference and motion checks,
+writes the test coupons and the lid-A variants, and renders PNGs with `src/render.py` (software z-buffer, no GPU). The full
+log is written to `out/build_log.txt`.
+
+### Reproducibility
+* **Input pinned:** `ORIG_COMMIT` and `ORIG_SHA256` in `src/params.py`; `load()` refuses STLs with other hashes
+  (override: `PHONE_ENCLOSURE_ANY_VERSION=1`). `tools/fetch_original.sh` checks out that commit.
+* **Tools pinned:** `requirements.txt` (Python 3.13). The README images use `docs/render/package-lock.json`.
+* **Deterministic:** two builds give byte-identical STL / 3MF files (also with one CPU); the 3MF zips carry fixed timestamps.
+* **Recorded:** `out/MANIFEST.json` holds the SHA-256, volume, bounding box and triangle count of every output.
+  `tools/manifest.py --check` accepts byte differences only when the geometry matches to 0.01 mm / 0.01 %.
+* **CI:** `.github/workflows/build.yml` runs `make verify`, the slicer report, the firmware build (compared byte for byte
+  with `firmware/prebuilt/`) and the host tests.
 
 ## Outputs (bounding boxes in the original assembly frame, mm)
 
@@ -30,13 +53,18 @@ PNGs with `src/render.py` (software z-buffer, no GPU). The full log is written t
 | `out/display_lid_usbc.stl` | 202.0 × 99.5 × 22.0 | lid, unsplit |
 | `out/keyboard_tray.stl` | 202.0 × 99.5 × 12.8 | tray, unsplit |
 | `out/paperdiy_strap.stl` | 8.0 × 78.4 × 2.5 | clamps the PaperDIY via its M2 standoff |
-| `out/key_pushrod_x2.stl` | 5.5 × 15.9 × 4.0 | print **2** (KEY1/KEY2) |
-| `out/power_pushrod.stl` | 41.5 × 5.5 × 4.0 | power button |
+| `out/key_pushrod_x2.stl` | 5.5 × 15.9 × 3.7 | print **2** (KEY1/KEY2) |
+| `out/power_pushrod.stl` | 41.5 × 5.5 × 3.6 | power button |
 | `out/top_plate_blank.stl` | 56.0 × 10.9 × 1.5 | optional plate for the lid-top recess (accent colour) |
 | `out/hinge_cover_lid_x2.stl` / `hinge_cover_tray_x2.stl` | 23.5 × 1.0 × 10.3 / 23.5 × 1.0 × 8.9 | print 2 each (lid / tray colour) |
 | `out/split/lid_A_left.stl` / `lid_B_main.stl` | 35.0 × 99.5 × 22.0 / 173.0 × 99.5 × 22.0 | |
 | `out/split/tray_A_left.stl` / `tray_B_main.stl` | 35.0 × 99.5 × 12.8 / 173.0 × 99.5 × 12.8 | |
 | `out/split/panel_A_left.stl` / `panel_B_main.stl` | 31.6 × 86.2 × 7.1 / 169.6 × 86.2 × 11.5 | the panel (195.2 mm) does not fit 180 mm in any orientation either |
+| `out/split/usb_variants/lid_A_left_usb{16,18,20,22,25,28,30}mm.stl`, `…_usb_noscrew.stl` | 35.0 × 99.5 × 22.0 | lid A for other USB-C hole spacings (28 mm = the default `lid_A_left`) |
+| `out/coupons/coupon_*.stl` | ≤ 27 × 21 × 18 | test prints cut from the real parts (see "Test coupons") |
+| `out/assembly.json` | | positions for the README renderer |
+| `out/print_report.md` | | slicer estimates, wall thickness, tipping check (`tools/print_report.py`) |
+| `out/MANIFEST.json` | | fingerprints of all of the above (`tools/manifest.py`) |
 
 All printed parts ≤ 173 mm (limit 175). Every STL above was re-loaded after writing: watertight, consistent winding, a single body.
 
@@ -59,16 +87,23 @@ All printed parts ≤ 173 mm (limit 175). Every STL above was re-loaded after wr
   to the actuator. These are **side-actuated** switches on the board edges, so rods (not front holes) are the only way to reach them.
 * **Battery** (integrated, see below) sits at **+x**, at the far end from the antenna. The antenna is on the hinge-side long
   edge, 70–88 mm from the non-USB end, so it is about 70 mm from the cell.
-* **USB-C panel mount** goes on the **left end wall** (the wall nearest the PaperDIY port). It is offset to y = +2
+* **USB-C panel mount** goes on the **left end wall** (the wall nearest the PaperDIY port). It is offset to y = +1
   (the port is at y = −24) so the extension cable can loop. A 15 × 1 mm relief in the panel back clears the plug overmold.
+  The wall is in **lid piece A**, so the build also writes lid A for hole spacings 16 / 18 / 20 / 22 / 25 / 28 / 30 mm and
+  without screw holes (`3mf/usb_variants/`): measure your cable and print the matching lid A, nothing else changes
+  (`build.py` asserts that lid B is identical for every variant). The opening narrows for close spacings so 1.2 mm of wall
+  stays between it and each hole (16 mm: 10.2 wide, 18 mm: 12.2). Behind the wall the inner wall/ceiling fillet is squared
+  over the ear span, so ears up to the full 9 mm cavity height seat flat. Each variant is checked against a rough connector
+  envelope (ears 4 mm past each hole, 8 mm tall, 3 mm thick, 13 × 7 × 25 body): 0 mm³ with the lid, panel and power rod.
+  Published example: SparkFun CAB-15455 (18 mm, M3, flange 26.4 × 8, drawing ACCA-2517).
 
 ### Hinge: two torque hinges flush in the back face
 The original hinge (a knuckle on an axis at y = 54, z = 7.5 inside a 14 mm barrel strip behind the case, two printed threaded
 knob-pins, M3×40 cores, O-rings, friction set by how tight the knobs are) is replaced:
 * **Hinges:** 2 × **Sugatsune HG-MF08-BL** (free-stop, 0.0784 N·m ±25 % each, POM, 20 × 25 × 2.0, holes Ø2.4 with Ø4.2
-  countersink, hole pitch 10 along / 16 across the axis — Sugatsune's spec table). Estimated lid torque (lid + PaperDIY +
-  2000 mAh cell ≈ 225 g, centre of mass ≈ 50 mm from the axis) is ≈ 0.11 N·m with the lid horizontal and 0.02–0.07 N·m at
-  normal viewing angles, so the pair holds the lid anywhere and still opens easily. HG-MF15 (0.147 N·m) is 30 mm long with
+  countersink, hole pitch 10 along / 16 across the axis — Sugatsune's spec table). Estimated lid torque (lid side ≈ 200 g
+  from the sliced masses plus PaperDIY, 2000 mAh cell and cable, centre of mass ≈ 49 mm from the axis) is ≈ 0.1 N·m with
+  the lid horizontal and 0.02–0.07 N·m at normal viewing angles, so the pair holds the lid anywhere and still opens easily. HG-MF15 (0.147 N·m) is 30 mm long with
   M3 holes: it needs `HINGE_LEN = 30`, `HINGE_HOLE_PITCH_X = 20`.
 * **Axis** on the outer back edge, on the parting line: y = 53.0, z = 12.85. The barrel strip, knuckle, ears and trough are
   removed (`BACK_ZONE_X` = ±62 is cut back and rebuilt from the plain back-wall profile): the case is 99.5 mm deep
@@ -94,6 +129,16 @@ knob-pins, M3×40 cores, O-rings, friction set by how tight the knobs are) is re
 * `HINGE_MOUNT = "parting"` is an alternative: the leaves lie folded in the parting plane inside 14.5 mm back walls
   (case 8 mm deeper). Closed, only the barrels show, but open, the leaves and screw heads are visible under the screen.
 
+### Keyboard charge port: bay in the back wall
+The original tray has an opening in its 3 mm back wall at x 72.9–89.1, open from the lip at z ≈ 6.0 up to the lid
+(z 12.78), probably for the CACOE charge port. Thickening the back wall to 9.5 mm turned it into a 9.5 mm tunnel that a
+plug overmold would have to fit through. A **bay** (x 70.5–91.5, z 4.0–15.5, r 1.5) is now cut from the outside back to
+the original wall face (y = 46.5), in the tray and 2.65 mm up into the lid wall, so the plug meets the same 3 mm wall as in
+the original: any straight plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits. `build.py` checks a
+12 × 6.5 mm overmold (0 mm³ against tray and closed lid) and sweeps the lid: **with that plug in, the lid opens to 90°**;
+beyond that the lid's back face swings down behind the tray into the plug. Charge with the lid closed or up to 90°.
+Both bay faces print without overhang (open at the top in each part's print orientation).
+
 ### Battery: integrated into the panel (no separate `battery_carrier.stl`)
 The bay frame (1.6 mm walls, 0.5 mm clearance, wire notch toward the PaperDIY) is printed on the panel back. It prints
 face-down with no supports, needs no fasteners, and is held in place when the panel is screwed to the lid.
@@ -111,18 +156,20 @@ One original Palma corner rib in the lid flares to y = −30.2 near the ceiling,
    posts, push-rod cradles, battery bay, USB-plug relief. Outline and the 4 corner screw holes are untouched (original mesh kept).
 2. **Display (lid):** front-wall Palma side-button slot (incl. ceiling-edge notch) and right-wall Palma USB opening **closed**,
    rebuilt by extruding the adjacent original wall profile. A ray scan found **0 deviations** from the original outer surface
-   (flat wall at y = −46.5 / x = +101, same top chamfer). Added: panel-mount USB-C opening + 2 screw holes and the power-rod
-   bore (left wall), 2 key-rod bores (front wall), battery ceiling relief. **Hinge knuckle removed**, back wall rebuilt and
+   (flat wall at y = −46.5 / x = +101, same top chamfer). Added: panel-mount USB-C opening + 2 screw holes (inner fillet
+   squared behind them) and the power-rod bore (left wall), 2 key-rod bores (front wall), battery ceiling relief, the upper
+   2.65 mm of the keyboard charge-port bay. **Hinge knuckle removed**, back wall rebuilt and
    thickened to 9.5 mm, two hinge mortises with barrel slot and pilot holes (see "Hinge"). **Camera window filled**
    (flat top). The 4 corner insert holes are refilled and re-drilled as Ø1.8 pilots for M2×8 tapping screws.
    Label recess, vents and corner bosses otherwise unchanged.
 3. **Keyboard (tray):** **hinge ears and trough removed**, back wall rebuilt and thickened to 9.5 mm, two hinge mortises
-   with barrel slot and pilot holes, bottom chamfer squared under the leaves. Keyboard cut-outs unchanged by default
+   with barrel slot and pilot holes, bottom chamfer squared under the leaves, charge-port bay back to the original wall
+   face. Keyboard cut-outs otherwise unchanged by default
    (`KB_CUTS_ENABLED = False`). The original right-wall (y 26.3–36.7) and
    rear-wall (x 72.9–89.1) openings are kept; they are probably the CACOE port/switch cut-outs of the original design (not
    verified). If the real keyboard's port/switch are elsewhere, set `KB_CUTS_ENABLED = True`, measure `KB_*` and rebuild.
-4. New parts: strap, 3 push-rods, 4 hinge covers, optional top plate. Split versions of lid / tray / panel. The original
-   knobs and label are not used.
+4. New parts: strap, 3 push-rods, 4 hinge covers, optional top plate, test coupons. Split versions of lid / tray / panel,
+   lid-A variants for other USB-C cables. The original knobs and label are not used.
 
 ## Splitting for the A1 mini
 * **Lid** at x = −72: clear of the hinges (|x| 42–62). Joined like the tray and panel: **3 glued dovetail keys** through
@@ -136,19 +183,45 @@ One original Palma corner rib in the lid flares to y = −30.2 near the ceiling,
 * **Panel** at x = −72: same dovetail keys. Each piece keeps two of the original corner screws.
 
 ## Print-ready 3MF (A1 mini)
-`3mf/plate1_lid.3mf` (lid A+B, 2 lid hinge covers), `plate2_tray.3mf` (tray A+B, 2 tray hinge covers) and
-`plate3_panel_parts.3mf` (panel A+B, strap, 3 push-rods, optional top plate): every part already in print orientation and laid out on a 180 x 180 mm plate, grouped by colour.
-No supports are needed.
-Regenerate with `python3 src/export_3mf.py` after `src/build.py`.
+`3mf/plate0_test_coupons.3mf` (print first), `plate1_lid.3mf` (lid A+B, 2 lid hinge covers), `plate2_tray.3mf` (tray A+B,
+2 tray hinge covers) and `plate3_panel_parts.3mf` (panel A+B, strap, 3 push-rods, optional top plate): every part already
+in print orientation and laid out on a 180 x 180 mm plate, grouped by colour. `3mf/usb_variants/` holds lid A alone for
+the other USB-C hole spacings. No supports are needed. Regenerate with `python3 src/export_3mf.py` after `src/build.py`.
+
+Estimates from `tools/print_report.py` (PrusaSlicer 2.7 CLI with an approximation of Bambu Studio's A1 mini 0.20 mm
+Standard + PLA profile, 3 walls, 15 % gyroid; Bambu Studio's own numbers will differ somewhat):
+
+| Plate | Time | PLA |
+|---|---|---|
+| 0 test coupons | 0 h 29 min | 13 g |
+| 1 lid | 2 h 15 min | 85 g |
+| 2 tray | 1 h 37 min | 64 g |
+| 3 panel, strap, rods, top plate | 1 h 00 min | 34 g |
+| 1–3 together | 4 h 50 min | 183 g |
+
+The slicer's own stability check reports nothing for plates 1 and 2. On plate 3 it flags the thin push-rods for low bed
+adhesion (keep Bambu Studio's brim type on Auto, its default, or give them a brim); on plate 0 also the panel-corner coupon,
+whose 5 mm counterbore is bridged 1.5 mm above the bed, as in the real panel.
+
+### Test coupons (`plate0_test_coupons.3mf`, ~30 min)
+Cut from the real parts and printed in the same orientation, so they show how your printer handles each fit:
+* `coupon_hinge_tray` + `coupon_hinge_lid`: a hinge seat from tray and lid (mortise, barrel slot, 4 pilot holes). Put a real
+  HG-MF08 in: the leaves must sit flush, the barrel must turn freely, M2×8 screws must bite without splitting.
+* `coupon_dovetail_A` + `_B`: one dovetail key (0.2 mm per side). It should slide in by hand without play.
+* `coupon_corner_lid` + `coupon_corner_panel`: a panel corner screw (counterbore, Ø1.8 pilot in the lid boss).
+* `coupon_keywall_lid` + a key push-rod: the rod must slide freely in the bore printed upside down in the lid wall.
+* One lid cover and one tray cover: they must lie flat on the leaves.
+If something is tight or loose, change `DOVETAIL["clr"]`, `HINGE_CLR`, `HINGE_BARREL_D`, `SCREW_PILOT_D` or `ROD_HOLE` and rebuild.
 
 ## Print orientation (suggested)
 * Lid pieces: **top face down** (the ceiling is flat at z = 30). No supports (the knuckle that needed them is gone).
 * Panel pieces: **screen face down** (z = 15 on the bed). Lip, posts, cradles and bay frame grow upward with no supports.
 * Tray pieces: **floor down** (as modelled).
-* Strap: **top face down** (countersinks open toward the bed, pad up). Push-rods: **flat (D) side down**.
+* Strap: **top face down** (countersinks open toward the bed, pad up). Push-rods: **flat (D) side down**; the flat sits
+  0.9 mm below the axis (2.4 mm wide on the bed) and the panel cradles are raised to match.
 * Hinge covers and top plate: **visible face down**, like the lid, so they match its texture.
 * Suggested process (Bambu Studio): 0.20 mm Standard, PLA, textured PEI, **3 wall loops** (material around the screw
-  pilots), 15 % gyroid, no supports, no brim.
+  pilots), 15 % gyroid, no supports, brim type Auto (default).
 
 ## Hardware
 * **14× M2×8 countersunk tapping screws** (plastic type): 4 panel corners, 2 strap ends, 8 hinges.
@@ -178,12 +251,12 @@ Regenerate with `python3 src/export_3mf.py` after `src/build.py`.
 ## Assumptions / placeholders — **measure on the real part**
 * **Hinge barrel / axis:** the barrel diameter and the exact axis height above the leaf seat are not published. The slot takes
   a barrel up to ~Ø6.2 and an axis up to 0.8 mm inside the face; check the first print with the real hinge.
-* **TODO keyboard:** first fit the CACOE in the unmodified tray and check that the original openings reach its charge port
+* **TODO keyboard:** first fit the CACOE in the tray and check that the original openings reach its charge port
   and switch. Only if they don't: `KB_CUTS_ENABLED = True` and measure `KB_PORT_*` / `KB_SW_*` (placeholders: 10 × 5 opening
-  at y = +10, z = 6.5 and an 8 mm notch down to z = 5.5 at y = −15, left short wall).
-* **USB-C panel mount:** 13 × 7 opening, 2 × Ø3.4 holes, **28 mm spacing**, at y = +2, z = 22.5. The spacing is a guess for
-  common screw-ear extensions: measure yours (M2 ears → set `USB_PM_SCREW_D = 2.4`). The plug overmold at the PaperDIY end
-  must be ≤ ~6.4 mm thick (or use a right-angle plug).
+  at y = +10, z = 6.5 and an 8 mm notch down to z = 5.5 at y = −15, left short wall). Its weight decides the tipping angle.
+* **USB-C panel mount:** 13 × 7 opening, 2 × Ø3.4 holes at y = +1, z = 22.5; **28 mm spacing in plate 1**, other spacings
+  as lid-A variants. Measure your cable (M2 ears → set `USB_PM_SCREW_D = 2.4` and rebuild). The plug overmold at the
+  PaperDIY end must be ≤ ~6.4 mm thick (or use a right-angle plug).
 * **Power button identity** is inferred: it is the lone switch on the USB short edge. The two long-edge switches are KEY1/KEY2,
   but which is which is not determined.
 * Actuator heights (depth 2.95 / 3.27) come from the drawing's side view (± ~0.3). Rod gaps of 0.3 mm absorb this.
@@ -193,12 +266,27 @@ Regenerate with `python3 src/export_3mf.py` after `src/build.py`.
 * Fits: 0.3 mm lip, 0.4 mm on rod bores, 0.2 mm/side on dovetails, 0.25 mm/side on the hinge mortises, Ø1.8 screw pilots.
   Tune for your printer.
 
+## Does it tip over when open?
+`tools/print_report.py` adds the sliced part masses, the PaperDIY (26.4 g, M5Stack spec), a 38 g cell and a 10 g cable
+(both assumed) and finds the lid side at **≈ 199 g** with its centre of mass 49 mm in front of the hinge axis when closed;
+the printed base is ≈ 68 g. The device rests on the back edge of the tray (y = 51.0). Opened past 90° the lid's centre of
+mass moves behind that edge, so the keyboard has to supply the counterweight:
+
+| Opening | 100° | 110° | 120° | 130° | 140° | 152° (lid touches the table) |
+|---|---|---|---|---|---|---|
+| Keyboard needed | 26 g | 56 g | 84 g | 107 g | 127 g | 143 g |
+
+**Weigh the CACOE keyboard.** At 143 g or more it never tips; lighter keyboards are fine up to the angle in the table.
+
 ## Verification actually performed
 STL re-load watertight / single body / bbox ≤ 175 mm for every part. Zero-volume interference (closed assembly) between
 lid, panel, strap, rods, a PaperDIY envelope built from the drawing (glass, PCB + USB-end ears, module, standoff, USB-C,
-actuators) and the battery box; hinge envelopes vs lid / tray; lid + panel rotated 0–180° about the hinge axis vs the tray.
-Ray scan of the restored lid walls against the original. Renders inspected visually.
-**Not done:** no slicer run, no physical test fit, no FEA of the strap or seams.
+actuators) and the battery box; hinge envelopes vs lid / tray; lid + panel (+ covers) rotated 0–180° about the hinge axis vs
+the tray (+ covers); a 12 × 6.5 mm charge plug vs tray and lid, closed and opening; a USB-C connector envelope vs lid,
+panel and power rod for every lid-A variant. Ray scan of the restored lid walls against the original. **PrusaSlicer**
+slice of every plate (time, filament, its stability check), wall thickness by ray casting, tipping estimate. Two builds
+byte-identical. Renders inspected visually.
+**Not done:** no physical print or test fit, no FEA of the strap or seams; the slicer profile only approximates the A1 mini.
 
 ## Licence & attribution
 Derived from **"The PDA Terminal" / phone-enclosure by Un Kyu Lee** — https://github.com/unkyulee/phone-enclosure —
@@ -274,13 +362,20 @@ published drawing and structure files.
 | `BATT_CX` | `76.9` | design choice | bay centre x (between PaperDIY end and right wall) |
 | `BATT_CY` | `-4.5` | design choice | shifted -y so the ceiling relief stays clear of the 1.5 mm-thin label recess |
 | `MIN_WALL` | `1.6` | design choice |  |
-| `USB_PM_W` | `13.0` | ASSUMED | [A] opening width  (along y) |
+| `USB_PM_W` | `13.0` | ASSUMED | [A] opening width  (along y); narrowed for close screw spacings |
 | `USB_PM_H` | `7.0` | ASSUMED | [A] opening height (along z) |
 | `USB_PM_R` | `1.0` | design choice |  |
-| `USB_PM_Y` | `2.0` | ASSUMED | [A] offset from the PaperDIY port (y=-24) so the cable can loop |
+| `USB_PM_Y` | `1.0` | ASSUMED | [A] offset from the PaperDIY port (y=-24) so the cable can loop; 30 mm ears clear the power rod |
 | `USB_PM_Z` | `22.5` | design choice |  |
-| `USB_PM_SCREW_SPACING` | `28.0` | ASSUMED | [A] typical screw-ear panel-mount USB-C extension -> MEASURE |
+| `USB_PM_SCREW_SPACING` | `28.0` | ASSUMED | [A] default in plate 1 -> MEASURE |
 | `USB_PM_SCREW_D` | `3.4` | ASSUMED | [A] M3 clearance (use 2.4 for M2 ears) |
+| `USB_PM_WEB` | `1.2` | design choice | minimum wall between the opening and a screw hole |
+| `USB_PM_VARIANTS` | `(0, 16, 18, 20, 22, 25, 28, 30)` | design choice | lid-A variants (0 = opening only) |
+| `USB_PM_EAR` / `USB_PM_BODY` | `4 past hole, 8 tall, 3 thick` / `13 × 7 × 25` | ASSUMED | connector envelope for the fit check |
+| `KB_PORT_BAY` / `_X` / `_Z` / `_R` | `True` / `(70.5, 91.5)` / `(4.0, 15.5)` / `1.5` | design choice | charge-port bay back to the original wall face |
+| `KB_PLUG` | `12 × 6.5 overmold at x 81, z 9.4` | ASSUMED | straight USB-C plug for the fit / opening check |
+| `ROD_FLAT` | `0.9` | design choice | push-rod flat below the axis (2.4 mm on the bed) |
+| `ORIG_REPO` / `ORIG_COMMIT` / `ORIG_SHA256` | `a21bfd6…` | pinned | original phone-enclosure version the build accepts |
 | `KB_PORT_WALL` | `"left"` | ASSUMED | [A] TODO measure: left short wall (x=-101) |
 | `KB_PORT_Y` | `10.0` | ASSUMED | [A] TODO |
 | `KB_PORT_Z` | `6.5` | ASSUMED | [A] TODO centre height (floor top is z=3) |
