@@ -2,6 +2,12 @@
 
 M5Stack PaperDIY（4.7 型 e-paper、ESP32-S3）を画面に、CACOE キーボードを BLE でつないだ、PDA 風クラムシェルの SSH 端末です。Un Kyu Lee さんの [phone-enclosure](https://github.com/unkyulee/phone-enclosure)（Boox Palma 2 + CACOE キーボード）を元にしています。
 
+![完成予想（開いたところ）](docs/images/render_open.png)
+
+<p align="center"><img src="docs/images/render_closed.png" width="62%" alt="完成予想（閉じたところ）"></p>
+
+完成予想のレンダリングです。筐体は `cad/out` の STL を組み立てた状態で描いています。キーボードは CACOE の代わりの簡易モデル、画面の表示と天面の赤いプレートはイメージです。描き直すときは `docs/render/` で `npm install` と `npm run render` を実行します。
+
 > **試作段階です。** ファームはビルドとホスト上のテストまで、筐体はデータ上のチェックまで済んでいます。実機での動作確認、印刷、仮組みはまだです。
 
 | フォルダ | 内容 |
