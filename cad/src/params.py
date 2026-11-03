@@ -127,3 +127,29 @@ DOVETAIL_Y = (-25.0, 0.0, 25.0)
 DOWEL_D = 3.3                 # for 3 mm dowel pins (3x10)
 LID_PAD = dict(half_len=6.0, depth=12.0, z0=19.3, dowel_off=3.0, dowel_z=22.6, ins_off=8.0, ins_z=24.6,
                ins_depth=5.0, cb_d=4.2, cb_depth=2.5)
+
+# ---------------------------------------------------------------- hinge: 2 torque hinges flush in the back face
+# The original knob/pin hinge (knuckle on an axis at y=54, z=7.5, red knobs, M3x40, O-rings) is replaced by two
+# off-the-shelf free-stop torque hinges recessed into the back faces of lid and tray. The hinge axis moves to the
+# outer back edge on the parting line, the knuckle/ears/trough strip behind the case is removed, and the back walls
+# are thickened outward so the hinge screws have material.
+HINGE_MODEL = "Sugatsune HG-MF08-BL x2 (free-stop, 0.0784 N*m +-25% each, POM)"
+# [M] Sugatsune spec table (global.sugatsune.com, 21651_t): HG-MF08 L 20, W 25, t 2, W2 16, H2 10, holes 2.4 / csk 4.2
+HINGE_LEN = 20.0              # [M] L: length along the axis
+HINGE_WIDTH = 25.0            # [M] W: both leaves + barrel, open flat
+HINGE_LEAF_T = 2.0            # [M] t
+HINGE_BARREL_D = 5.5          # [A] not in the table -> MEASURE (the channel below takes up to ~6.2)
+HINGE_HOLE_PITCH_X = 10.0     # [M] H2: hole pitch along the axis
+HINGE_HOLE_OFF = 8.0          # [M] W2 16 / 2: hole centres from the axis
+HINGE_SCREW = "M2 countersunk tapping screws: lid M2x8, tray M2x5 (holes 2.4 with 4.2 countersink)"
+HINGE_X = 52.0                # hinge centres at x = +-52: clear of the lid/tray split (x=-72) and the tray rear opening (x>=72.9)
+HINGE_CLR = 0.25              # mortise clearance per side
+HINGE_PILOT_HOLES = True      # print pilot holes at the catalogue hole positions
+HINGE_PILOT_D = 1.8           # for M2 tapping screws in PLA
+BACK_OLD_Y = 46.5             # [M] original outer back face of lid and tray
+BACK_EXTRA = 3.5              # back walls thickened outward 3.0 -> 6.5 mm
+Y_BACK = BACK_OLD_Y + BACK_EXTRA   # new outer back face = hinge axis plane
+Z_PART = 12.85                # [M] parting line at the back (lid underside 12.78..12.89, tray top 12.83..12.89)
+BACK_ZONE_X = 62.0            # |x| <= this: knuckle / ears / trough removed and the back wall rebuilt from its profile
+CORNER_C = (95.0, 40.5)       # [M] centre of the outer back-corner arcs (r = 6.0) in plan view
+LID_HINGE_BOSS = dict(w=18.0, depth=4.0, z0=18.5, z1=LID_CEILING_Z + 0.05)  # one screw boss per hinge, inside the lid

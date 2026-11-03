@@ -120,7 +120,7 @@ function screenTexture() {
     '- [x] PaperDIY にファームを書き込む',
     '- [x] CACOE キーボードを BLE でつなぐ',
     '- [ ] 筐体を A1 mini で印刷する',
-    '- [ ] ヒンジ用の M3x40 を買う',
+    '- [ ] トルクヒンジ HG-MF08 を 2 個買う',
     'pi@raspberrypi:~ $ df -h /',
     'Filesystem      Size  Used Avail Use% Mounted on',
     '/dev/mmcblk0p2   29G  6.1G   22G  23% /',
@@ -207,18 +207,17 @@ function legendMat(lab, kw, kd) {
 }
 
 // ---------------------------------------------------------------- assemble
-const [lidG, panelG, strapG, keyRodG, pwrRodG, trayG, knobG] = await Promise.all(
+const [lidG, panelG, strapG, keyRodG, pwrRodG, trayG] = await Promise.all(
   ['display_lid_usbc', 'display_panel_paperdiy', 'paperdiy_strap', 'key_pushrod_x2', 'power_pushrod',
-   'keyboard_tray', 'knob'].map(n => loadSTL(`models/${n}.stl`)));
+   'keyboard_tray'].map(n => loadSTL(`models/${n}.stl`)));
 
-// fixed half: tray + keyboard + hinge knobs
+// fixed half: tray + keyboard
 scene.add(mesh(trayG, M.cream));
 scene.add(keyboard());
-const knobR = mesh(knobG, M.red); scene.add(knobR);
-const knobL = mesh(knobG, M.red); knobL.scale.x = -1; scene.add(knobL);
 
 // moving half: lid parts, rotated about the hinge axis (x axis through y = 54, z = 7.5)
-const HINGE_Y = 54.0, HINGE_Z = 7.5;
+// torque hinges (Sugatsune HG-MF, 30 x 25 x 2.0) flush in the back face; axis on the outer back edge
+const HINGE_Y = 50.0, HINGE_Z = 12.85, HINGE_X = 52.0, H_LEN = 30.0, H_W = 25.0, H_T = 2.0, H_BD = 5.5;
 const pivot = new THREE.Group();
 pivot.position.set(0, HINGE_Y, HINGE_Z);
 const lid = new THREE.Group();
@@ -238,6 +237,30 @@ lid.add(mesh(pwrRodG, M.red));
 const plate = mesh(new RoundedBoxGeometry(56.0, 11.0, 1.9, 2, 0.6), M.red);
 plate.position.set((21.7 + 78.0) / 2, (21.34 + 32.5) / 2, 28.5 + 0.95);
 lid.add(plate);
+
+// hinge leaves (black POM) and barrels; the lid leaf follows the lid
+const pom = pla('#1b1b1d', 0.45);
+for (const cx of [-HINGE_X, HINGE_X]) {
+  const leafH = H_W / 2 - H_BD / 2;
+  const trayLeaf = mesh(new RoundedBoxGeometry(H_LEN, H_T, leafH, 2, 0.6), pom);
+  trayLeaf.position.set(cx, HINGE_Y - H_T / 2, HINGE_Z - H_BD / 2 - leafH / 2);
+  scene.add(trayLeaf);
+  const lidLeaf = mesh(new RoundedBoxGeometry(H_LEN, H_T, leafH, 2, 0.6), pom);
+  lidLeaf.position.set(cx, HINGE_Y - H_T / 2, HINGE_Z + H_BD / 2 + leafH / 2);
+  lid.add(lidLeaf);
+  const barrel = mesh(new THREE.CylinderGeometry(H_BD / 2, H_BD / 2, H_LEN, 40), pom);
+  barrel.rotation.z = Math.PI / 2;
+  barrel.position.set(cx, HINGE_Y, HINGE_Z);
+  scene.add(barrel);
+  for (const [z, grp] of [[HINGE_Z - 8.2, scene], [HINGE_Z + 8.2, lid]]) {      // countersunk screw heads
+    for (const dx of [-10.5, 10.5]) {
+      const head = mesh(new THREE.CylinderGeometry(2.8, 2.8, 0.3, 24), pla('#8a8d93', 0.35));
+      head.rotation.x = Math.PI / 2;
+      head.position.set(cx + dx, HINGE_Y + 0.05, z);
+      grp.add(head);
+    }
+  }
+}
 
 // PaperDIY itself (simplified envelope from the drawing): e-paper module, PCB at the USB end, ESP32-S3 module
 const X_TOP = 55.8, X_USB = -59.5;
@@ -269,6 +292,10 @@ if (VIEW === 'open') {
   pivot.rotation.x = 0;
   camera.position.set(-300, -250, 230);
   camera.lookAt(-2, 8, 12);
+} else if (VIEW === 'back') {
+  pivot.rotation.x = 0;
+  camera.position.set(-230, 330, 170);
+  camera.lookAt(0, 30, 10);
 } else if (VIEW === 'side') {
   pivot.rotation.x = THREE.MathUtils.degToRad(-112);
   camera.position.set(-420, -40, 120);

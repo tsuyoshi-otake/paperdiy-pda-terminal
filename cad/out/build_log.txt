@@ -11,13 +11,13 @@
   out/paperdiy_strap.stl: bbox 8.0 x 78.4 x 2.5 mm, watertight=True, winding_ok=True, bodies=1, vol=1230 mm3
   out/key_pushrod_x2.stl: bbox 5.5 x 15.9 x 4.0 mm, watertight=True, winding_ok=True, bodies=1, vol=120 mm3
   out/power_pushrod.stl: bbox 41.5 x 5.5 x 4.0 mm, watertight=True, winding_ok=True, bodies=1, vol=291 mm3
-  out/display_lid_usbc.stl: bbox 202.0 x 107.6 x 29.6 mm, watertight=True, winding_ok=True, bodies=1, vol=101957 mm3
-  out/keyboard_tray.stl: bbox 202.0 x 108.0 x 15.0 mm, watertight=True, winding_ok=True, bodies=1, vol=69006 mm3
+  out/display_lid_usbc.stl: bbox 202.0 x 96.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=94479 mm3
+  out/keyboard_tray.stl: bbox 202.0 x 96.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=72842 mm3
 == split pieces for A1 mini (limit 175 mm)
-  out/split/lid_A_left.stl: bbox 29.0 x 93.0 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=16927 mm3
-  out/split/lid_B_main.stl: bbox 173.0 x 107.6 x 29.6 mm, watertight=True, winding_ok=True, bodies=1, vol=86404 mm3
-  out/split/tray_A_left.stl: bbox 35.0 x 93.0 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=10895 mm3
-  out/split/tray_B_main.stl: bbox 173.0 x 108.0 x 15.0 mm, watertight=True, winding_ok=True, bodies=1, vol=58070 mm3
+  out/split/lid_A_left.stl: bbox 29.0 x 96.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=18651 mm3
+  out/split/lid_B_main.stl: bbox 173.0 x 96.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=77203 mm3
+  out/split/tray_A_left.stl: bbox 35.0 x 96.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=12160 mm3
+  out/split/tray_B_main.stl: bbox 173.0 x 96.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=60640 mm3
   out/split/panel_A_left.stl: bbox 31.6 x 86.2 x 7.1 mm, watertight=True, winding_ok=True, bodies=1, vol=6766 mm3
   out/split/panel_B_main.stl: bbox 169.6 x 86.2 x 11.5 mm, watertight=True, winding_ok=True, bodies=1, vol=25532 mm3
 == interference checks (assembled, closed lid)
@@ -41,6 +41,12 @@
   interference panel A vs B (dovetail): 0.000 mm3 OK
   interference tray A vs B (dovetail): 0.000 mm3 OK
   interference lid A vs B: 0.000 mm3 OK
+  interference hinge (tray leaf + barrel) vs tray: 0.000 mm3 OK
+  interference hinge (lid leaf) vs lid: 0.000 mm3 OK
+  interference hinge barrel vs lid: 0.000 mm3 OK
+== hinge motion (lid + panel rotated about the new axis; tray fixed)
+  no collision with the tray from 0 to 180 deg
+  on a table the lid's top-back edge reaches the table at about 150 deg (opening limit)
   key 0: rod tip y=-31.60, actuator tip y=-31.30
   key 1: rod tip y=-31.60, actuator tip y=-31.30
 == renders

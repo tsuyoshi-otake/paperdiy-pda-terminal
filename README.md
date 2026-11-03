@@ -4,9 +4,9 @@ M5Stack PaperDIY（4.7 型 e-paper、ESP32-S3）を画面に、CACOE キーボ�
 
 ![完成予想（開いたところ）](docs/images/render_open.png)
 
-<p align="center"><img src="docs/images/render_closed.png" width="62%" alt="完成予想（閉じたところ）"></p>
+<p align="center"><img src="docs/images/render_closed.png" width="49%" alt="完成予想（閉じたところ）"> <img src="docs/images/render_back.png" width="49%" alt="完成予想（背面のヒンジ）"></p>
 
-完成予想のレンダリングです。筐体は `cad/out` の STL を組み立てた状態で描いています。キーボードは CACOE の代わりの簡易モデル、画面の表示と天面の赤いプレートはイメージです。描き直すときは `docs/render/` で `npm install` と `npm run render` を実行します。
+完成予想のレンダリングです。筐体は `cad/out` の STL を組み立てた状態で描いています。ヒンジは背面に埋め込んだ市販のトルクヒンジ（スガツネ HG-MF08 × 2）で、好きな角度で止まります。キーボードは CACOE の代わりの簡易モデル、画面の表示と天面の赤いプレートはイメージです。描き直すときは `docs/render/` で `npm install` と `npm run render` を実行します。
 
 > **試作段階です。** ファームはビルドとホスト上のテストまで、筐体はデータ上のチェックまで済んでいます。実機での動作確認、印刷、仮組みはまだです。
 

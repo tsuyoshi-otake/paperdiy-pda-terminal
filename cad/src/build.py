@@ -247,6 +247,101 @@ def build_power_rod():
 
 
 # ------------------------------------------------------------------ LID
+# ------------------------------------------------------------------ HINGE REWORK (lid + tray)
+def poly_cs(pts):
+    """CrossSection from a (u, v) polygon, either winding."""
+    pts = np.asarray(pts, float)
+    area = 0.5 * np.sum(pts[:, 0] * np.roll(pts[:, 1], -1) - np.roll(pts[:, 0], -1) * pts[:, 1])
+    if area < 0:
+        pts = pts[::-1]
+    return CS([pts.tolist()])
+
+
+# back-wall profiles in (y, z), read from the original meshes at x = +-65 (outside the old hinge)
+LID_BACK_PROFILE = [(40.0, 27.0), (42.26, 27.0), (43.5, 25.76), (43.5, 12.78), (44.68, 12.84), (45.5, 12.89),
+                    (46.5, 13.94), (46.5, 27.0), (43.5, 30.0), (40.0, 30.0)]
+TRAY_BACK_PROFILE = [(40.0, 0.0), (43.5, 0.0), (46.5, 3.0), (46.5, 11.94), (45.5, 12.89), (44.5, 12.83),
+                     (43.5, 11.78), (43.5, 3.0), (40.0, 3.0)]
+
+
+def rebuild_back(part, profile, z0, z1):
+    """Remove the old hinge (knuckle / ears / trough) behind the back wall and rebuild a plain wall."""
+    X = BACK_ZONE_X
+    return (part - box(-X, X, LID_INNER_Y - 0.05, 70.0, z0, z1)) + prism_x(poly_cs(profile), -X, X)
+
+
+def warp_back(part, lower_rim=0.0):
+    """Thicken the back wall outward by BACK_EXTRA: move the outer half of the wall (and the top / bottom
+    chamfers and the rounded back corners) back, leave the inner pocket untouched."""
+    tm = to_t(part)
+    v = tm.vertices.copy()
+    ax, y, z = np.abs(v[:, 0]), v[:, 1], v[:, 2]
+    cx, cy = CORNER_C
+    zc = (z < 2.95) | (z > 27.05)                      # top chamfer of the lid / bottom chamfer of the tray
+    r = np.hypot(ax - cx, y - cy)
+    straight = (y > 45.0) | ((y > 43.0) & zc)
+    corner = (y > cy) & ((r > 4.5) | (zc & (r >= 2.9)))
+    move = np.where(ax <= cx, straight, corner)
+    v[move, 1] += BACK_EXTRA
+    if lower_rim:          # tray only: the warped lid / tray parting surfaces differ by <= 0.05 mm; keep a gap
+        v[z > 12.3, 2] -= lower_rim
+    return to_m(trimesh.Trimesh(v, tm.faces, process=False))
+
+
+def hinge_centres():
+    return (-HINGE_X, HINGE_X)
+
+
+def hinge_pocket_cuts():
+    """Mortise for both leaves (flush with the back face) + channel for the barrel, centred on the axis."""
+    cuts = []
+    rc = HINGE_BARREL_D / 2 + 0.35
+    for c in hinge_centres():
+        x0, x1 = c - HINGE_LEN / 2 - HINGE_CLR, c + HINGE_LEN / 2 + HINGE_CLR
+        cuts.append(box(x0, x1, Y_BACK - HINGE_LEAF_T - 0.05, Y_BACK + 1.0,
+                        Z_PART - HINGE_WIDTH / 2 - HINGE_CLR, Z_PART + HINGE_WIDTH / 2 + HINGE_CLR))
+        for yc in (Y_BACK, Y_BACK - 0.8):          # slot: tolerates the axis sitting up to 0.8 mm inside the face
+            cuts.append(cyl_x(rc, x0, x1, yc, Z_PART))
+        cuts.append(box(x0, x1, Y_BACK - 0.8, Y_BACK, Z_PART - rc, Z_PART + rc))
+    return cuts
+
+
+def hinge_pilots(lid):
+    """Pilot holes at the catalogue hole positions, from the leaf seat inward (depths keep 1 mm to the pocket)."""
+    if not HINGE_PILOT_HOLES:
+        return []
+    out, seat = [], Y_BACK - HINGE_LEAF_T
+    for c in hinge_centres():
+        for dx in (-HINGE_HOLE_PITCH_X / 2, HINGE_HOLE_PITCH_X / 2):
+            if lid:   # wall 4.5 + boss 4.0 behind the leaf: M2x8 reaches ~6 mm in
+                out.append(cyl_y(HINGE_PILOT_D / 2, seat - 7.5, seat + 0.1, c + dx, Z_PART + HINGE_HOLE_OFF))
+            else:     # wall 4.5 behind the leaf (keyboard pocket beyond): M2x5 reaches ~3 mm in
+                out.append(cyl_y(HINGE_PILOT_D / 2, seat - 3.5, seat + 0.1, c + dx, Z_PART - HINGE_HOLE_OFF))
+    return out
+
+
+def lid_hinge_bosses():
+    b = LID_HINGE_BOSS
+    return [box(c - b["w"] / 2, c + b["w"] / 2, LID_INNER_Y - b["depth"], LID_INNER_Y + 0.1, b["z0"], b["z1"])
+            for c in hinge_centres()]
+
+
+def hinge_envelope(open_deg=0.0):
+    """Simplified hinges (2 leaves + barrel each) for checks and renders; the lid leaf follows the lid."""
+    fixed, moving = [], []
+    for c in hinge_centres():
+        x0, x1 = c - HINGE_LEN / 2, c + HINGE_LEN / 2
+        fixed.append(box(x0, x1, Y_BACK - HINGE_LEAF_T, Y_BACK, Z_PART - HINGE_WIDTH / 2, Z_PART - HINGE_BARREL_D / 2))
+        moving.append(box(x0, x1, Y_BACK - HINGE_LEAF_T, Y_BACK, Z_PART + HINGE_BARREL_D / 2, Z_PART + HINGE_WIDTH / 2))
+        fixed.append(cyl_x(HINGE_BARREL_D / 2, x0, x1, Y_BACK, Z_PART))
+    return union(fixed), open_lid(union(moving), open_deg)
+
+
+def open_lid(part, deg):
+    """Rotate a lid-side part about the hinge axis; positive = opening."""
+    return part.translate([0, -Y_BACK, -Z_PART]).rotate([-deg, 0, 0]).translate([0, Y_BACK, Z_PART])
+
+
 def build_lid(with_pads):
     tl = load("Display.stl")
     L = to_m(tl)
@@ -258,6 +353,9 @@ def build_lid(with_pads):
     ya, yb = LID_RIGHT_OPEN_Y[0] - 2.0, LID_RIGHT_OPEN_Y[1] + 2.0
     prof = section_cs(tl, "y", 10.0, (95.0, 102.0, 17.5, 31.0))
     L = (L - box(95.0, 102.0, ya, yb, 17.5, 31.0)) + prism_y(prof, ya, yb)
+    # hinge rework: remove the knuckle, rebuild + thicken the back wall, screw bosses for the hinge leaves
+    L = warp_back(rebuild_back(L, LID_BACK_PROFILE, -1.0, 31.0))
+    L = L + union(lid_hinge_bosses())
     if with_pads:
         p = LID_PAD
         for sy in (-1, 1):
@@ -277,6 +375,7 @@ def build_lid(with_pads):
     if BATT_RELIEF > 0:
         cuts.append(prism_z(rrect((BI_X0 + BI_X1) / 2, (BI_Y0 + BI_Y1) / 2, BI_X1 - BI_X0, BI_Y1 - BI_Y0, 1.0),
                             LID_CEILING_Z - 0.1, LID_CEILING_Z + BATT_RELIEF))
+    cuts += hinge_pocket_cuts() + hinge_pilots(True)
     if with_pads:
         p, X = LID_PAD, SPLIT_X_LID
         for sy in (-1, 1):
@@ -292,6 +391,12 @@ def build_lid(with_pads):
 # ------------------------------------------------------------------ TRAY
 def build_tray():
     T = to_m(load("Keyboard.stl"))
+    # hinge rework: remove ears + trough, rebuild + thicken the back wall
+    T = warp_back(rebuild_back(T, TRAY_BACK_PROFILE, -1.0, 20.0), lower_rim=0.08)
+    # square the bottom-back chamfer under each tray leaf so the whole leaf sits in a pocket
+    for c in hinge_centres():
+        T = T + box(c - HINGE_LEN / 2 - HINGE_CLR, c + HINGE_LEN / 2 + HINGE_CLR, LID_INNER_Y + 0.5, Y_BACK, 0.0, 3.2)
+    T = T - union(hinge_pocket_cuts() + hinge_pilots(False))
     if not KB_CUTS_ENABLED:
         return T
     sx = -1 if KB_PORT_WALL == "left" else 1
@@ -372,6 +477,26 @@ def main():
     interference(prod, lid, "power rod vs lid"); interference(prod, panel, "power rod vs panel"); interference(prod, pd, "power rod vs PaperDIY")
     interference(panel, lid, "panel vs lid", tol=1.0)
     interference(pa, pb, "panel A vs B (dovetail)"); interference(ta, tb, "tray A vs B (dovetail)"); interference(la, lb, "lid A vs B")
+    h_fixed, h_moving = hinge_envelope(0.0)
+    interference(h_fixed, tray, "hinge (tray leaf + barrel) vs tray"); interference(h_moving, lid, "hinge (lid leaf) vs lid")
+    interference(h_fixed, lid, "hinge barrel vs lid", tol=1.0)
+    log("== hinge motion (lid + panel rotated about the new axis; tray fixed)")
+    lidset = lid + panel
+    max_open, hits = None, []
+    for deg in range(0, 181, 5):
+        moved = open_lid(lidset, deg)
+        v = (moved ^ tray).volume()
+        if v > 0.5:
+            hits.append((deg, v))
+        if max_open is None and to_t(moved).bounds[0][2] < 0:
+            max_open = deg
+    if hits:
+        for deg, v in hits:
+            log(f"  {deg:3d} deg: collides with the tray ({v:.1f} mm3)  <-- CHECK")
+    else:
+        log("  no collision with the tray from 0 to 180 deg")
+    log(f"  on a table the lid's top-back edge reaches the table at about {max_open} deg (opening limit)"
+        if max_open else "  the lid never reaches the table")
     # gaps that should be small but positive
     for i, x in enumerate(KEY_X):
         log(f"  key {i}: rod tip y={KEY_TIP_Y-ROD_GAP:.2f}, actuator tip y={KEY_TIP_Y:.2f}")

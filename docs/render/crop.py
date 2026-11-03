@@ -5,7 +5,7 @@ from PIL import Image, ImageChops
 HERE = os.path.dirname(os.path.abspath(__file__))
 IMG = os.path.join(HERE, "..", "images")
 BG = (243, 241, 236)
-for view, width in (("open", 1600), ("closed", 1200)):
+for view, width in (("open", 1600), ("closed", 1200), ("back", 1200)):
     raw = Image.open(os.path.join(IMG, f"render_{view}_raw.png")).convert("RGB")
     diff = ImageChops.difference(raw, Image.new("RGB", raw.size, BG)).convert("L").point(lambda v: 255 if v > 6 else 0)
     x0, y0, x1, y1 = diff.getbbox()

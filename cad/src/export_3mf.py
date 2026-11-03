@@ -2,8 +2,8 @@
 
 Every part is turned into its print orientation (see README "Print orientation") and laid out on the
 plate, so the files can be opened in Bambu Studio / OrcaSlicer / PrusaSlicer and sliced directly.
-Parts are grouped by colour as in the README renders: plate 1 = lid (navy), plates 2-3 = cream,
-plate 4 = hinge knobs and push-rods (red). The knob is the original phone-enclosure part (2 needed).
+Parts are grouped by colour as in the README renders: plate 1 = lid (navy), plates 2-3 = cream (the three
+small push-rods ride along on plate 3; print them in another colour separately if you like).
 
     python3 src/export_3mf.py          # after src/build.py; reads out/, writes 3mf/
 """
@@ -16,7 +16,7 @@ import numpy as np
 import trimesh
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from params import CAD_DIR, ORIG_DIR, OUT_DIR, SPLIT_DIR  # noqa: E402
+from params import CAD_DIR, OUT_DIR, SPLIT_DIR  # noqa: E402
 
 BED = 180.0
 MARGIN = 3.0     # keep parts this far from the bed edge
@@ -25,7 +25,6 @@ OUT_3MF = os.path.join(CAD_DIR, "3mf")
 
 FLIP_X = trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0])      # top face down
 ROT_Z90 = trimesh.transformations.rotation_matrix(np.pi / 2, [0, 0, 1])  # turn on the bed
-CAP_DOWN = trimesh.transformations.rotation_matrix(np.pi / 2, [0, 1, 0])  # knob: axis vertical, cap end on the bed
 
 
 def part(path, *rots):
@@ -100,7 +99,7 @@ def write_3mf(path, placed, title):
 def main():
     os.makedirs(OUT_3MF, exist_ok=True)
     plates = {
-        # navy: lid pieces, ceiling (top face) on the bed; the hinge knuckle needs supports
+        # navy: lid pieces, ceiling (top face) on the bed; no supports needed
         "plate1_lid.3mf": ("Lid (A + B)", [
             [("lid_A_left", part(S("lid_A_left"), FLIP_X, ROT_Z90))],
             [("lid_B_main", part(S("lid_B_main"), FLIP_X))],
@@ -110,19 +109,14 @@ def main():
             [("tray_A_left", part(S("tray_A_left"), ROT_Z90))],
             [("tray_B_main", part(S("tray_B_main")))],
         ]),
-        # cream: display panel pieces (screen face down), strap (top face down)
-        "plate3_panel_strap.3mf": ("Display panel (A + B), strap", [
-            [("panel_A_left", part(S("panel_A_left"), ROT_Z90)),
-             ("paperdiy_strap", part(O("paperdiy_strap"), FLIP_X, ROT_Z90))],
-            [("panel_B_main", part(S("panel_B_main")))],
-        ]),
-        # red: hinge knobs x2 (original part, standing on the cap end), push-rods (flat side down)
-        "plate4_knobs_rods.3mf": ("Hinge knobs x2, push-rods", [
+        # cream: display panel pieces (screen face down), strap (top face down), push-rods (flat side down)
+        "plate3_panel_parts.3mf": ("Display panel (A + B), strap, push-rods", [
             [("key_pushrod_1", part(O("key_pushrod_x2"), ROT_Z90)),
              ("key_pushrod_2", part(O("key_pushrod_x2"), ROT_Z90)),
              ("power_pushrod", part(O("power_pushrod")))],
-            [("hinge_knob_1", part(os.path.join(ORIG_DIR, "Knob.stl"), CAP_DOWN)),
-             ("hinge_knob_2", part(os.path.join(ORIG_DIR, "Knob.stl"), CAP_DOWN))],
+            [("panel_A_left", part(S("panel_A_left"), ROT_Z90)),
+             ("paperdiy_strap", part(O("paperdiy_strap"), FLIP_X, ROT_Z90))],
+            [("panel_B_main", part(S("panel_B_main")))],
         ]),
     }
     for fname, (title, rows) in plates.items():

@@ -1,7 +1,8 @@
 # PaperDIY PDA clamshell — printable CAD (derivative of unkyulee/phone-enclosure)
 
 A Boox-Palma-free version of Un Kyu Lee's "PDA Terminal": the lid holds an **M5Stack PaperDIY** (4.7" e-paper, ESP32-S3)
-behind a new bezel panel, plus a 1S LiPo, and gets a panel-mount USB-C. The keyboard tray (CACOE mini BT keyboard) keeps the
+behind a new bezel panel, plus a 1S LiPo, and gets a panel-mount USB-C. The original knob-and-pin hinge is replaced by
+**two free-stop torque hinges (Sugatsune HG-MF08) recessed flush into the back face**. The keyboard tray (CACOE mini BT keyboard) keeps the
 original openings by default; optional charge-port / switch cut-outs can be enabled once measured. Every part is also split for a **Bambu Lab A1 mini (180 mm bed)**.
 
 ## Run
@@ -21,13 +22,13 @@ PNGs with `src/render.py` (software z-buffer, no GPU). The full log is written t
 | File | Bbox | Notes |
 |---|---|---|
 | `out/display_panel_paperdiy.stl` | 195.2 × 86.2 × 11.5 | bezel, unsplit (too big for A1 mini: use the split pieces) |
-| `out/display_lid_usbc.stl` | 202.0 × 107.6 × 29.6 | lid, unsplit (no seam pads) |
-| `out/keyboard_tray.stl` | 202.0 × 108.0 × 15.0 | tray, unsplit |
+| `out/display_lid_usbc.stl` | 202.0 × 96.5 × 22.0 | lid, unsplit (no seam pads) |
+| `out/keyboard_tray.stl` | 202.0 × 96.5 × 12.8 | tray, unsplit |
 | `out/paperdiy_strap.stl` | 8.0 × 78.4 × 2.5 | clamps the PaperDIY via its M2 standoff |
 | `out/key_pushrod_x2.stl` | 5.5 × 15.9 × 4.0 | print **2** (KEY1/KEY2) |
 | `out/power_pushrod.stl` | 41.5 × 5.5 × 4.0 | power button |
-| `out/split/lid_A_left.stl` / `lid_B_main.stl` | 29.0 × 93.0 × 22.0 / 173.0 × 107.6 × 29.6 | |
-| `out/split/tray_A_left.stl` / `tray_B_main.stl` | 35.0 × 93.0 × 12.9 / 173.0 × 108.0 × 15.0 | |
+| `out/split/lid_A_left.stl` / `lid_B_main.stl` | 29.0 × 96.5 × 22.0 / 173.0 × 96.5 × 22.0 | |
+| `out/split/tray_A_left.stl` / `tray_B_main.stl` | 35.0 × 96.5 × 12.8 / 173.0 × 96.5 × 12.8 | |
 | `out/split/panel_A_left.stl` / `panel_B_main.stl` | 31.6 × 86.2 × 7.1 / 169.6 × 86.2 × 11.5 | the panel (195.2 mm) does not fit 180 mm in any orientation either |
 
 All printed parts ≤ 173 mm (limit 175). Every STL above was re-loaded after writing: watertight, consistent winding, a single body.
@@ -54,6 +55,30 @@ All printed parts ≤ 173 mm (limit 175). Every STL above was re-loaded after wr
 * **USB-C panel mount** goes on the **left end wall** (the wall nearest the PaperDIY port). It is offset to y = +2
   (the port is at y = −24) so the extension cable can loop. A 15 × 1 mm relief in the panel back clears the plug overmold.
 
+### Hinge: two torque hinges flush in the back face
+The original hinge (a knuckle on an axis at y = 54, z = 7.5 inside a 14 mm barrel strip behind the case, two printed threaded
+knob-pins, M3×40 cores, O-rings, friction set by how tight the knobs are) is replaced:
+* **Hinges:** 2 × **Sugatsune HG-MF08-BL** (free-stop, 0.0784 N·m ±25 % each, POM, 20 × 25 × 2.0, holes Ø2.4 with Ø4.2
+  countersink, hole pitch 10 along / 16 across the axis — Sugatsune's spec table). Estimated lid torque (lid + PaperDIY +
+  2000 mAh cell ≈ 225 g, centre of mass ≈ 50 mm from the axis) is ≈ 0.11 N·m with the lid horizontal and 0.02–0.07 N·m at
+  normal viewing angles, so the pair holds the lid anywhere and still opens easily. HG-MF15 (0.147 N·m) is 30 mm long with
+  M3 holes: it needs `HINGE_LEN = 30`, `HINGE_HOLE_PITCH_X = 20`.
+* **Axis** on the outer back edge, on the parting line: y = 50.0, z = 12.85. The barrel strip, knuckle, ears and trough are
+  removed (`BACK_ZONE_X` = ±62 is cut back and rebuilt from the plain back-wall profile), so the case is 11 mm shallower.
+* **Back walls thickened outward** 3.0 → 6.5 mm (outer half of the wall, the top / bottom chamfers and the rounded back
+  corners move 3.5 mm back; the keyboard pocket and the lid interior are unchanged), so the leaf screws have material.
+* **Mortises:** each leaf sits in a 2.0 mm pocket (0.25 mm clearance) so it is flush with the back face; a slot along the axis
+  takes the barrel (up to ~Ø6.2, axis tolerated up to 0.8 mm inside the face). Under the tray leaves the bottom chamfer is
+  squared off so the whole leaf is supported.
+* **Screws:** M2 countersunk tapping screws, **M2×8 into the lid** (4.5 mm wall + an 18 × 4 × 8.5 mm boss inside the lid)
+  and **M2×5 into the tray** (4.5 mm wall; the keyboard pocket is behind it). Ø1.8 pilot holes are printed at the catalogue
+  hole positions and stop 1 mm short of the pocket / lid interior.
+* **Positions:** x = ±52 (20 mm long each), clear of the split at x = −72, the seam pads and the tray's rear opening
+  (x ≥ 72.9).
+* **Checks (`build.py`):** the lid + panel rotated about the new axis does not touch the tray anywhere from 0 to 180°; on a
+  table the lid's top-back edge reaches the table at about **150°**, which is the opening limit. Hinge envelopes vs lid /
+  tray: 0 mm³.
+
 ### Battery: integrated into the panel (no separate `battery_carrier.stl`)
 The bay frame (1.6 mm walls, 0.5 mm clearance, wire notch toward the PaperDIY) is printed on the panel back. It prints
 face-down with no supports, needs no fasteners, and is held in place when the panel is screwed to the lid.
@@ -72,41 +97,45 @@ One original Palma corner rib in the lid flares to y = −30.2 near the ceiling,
 2. **Display (lid):** front-wall Palma side-button slot (incl. ceiling-edge notch) and right-wall Palma USB opening **closed**,
    rebuilt by extruding the adjacent original wall profile. A ray scan found **0 deviations** from the original outer surface
    (flat wall at y = −46.5 / x = +101, same top chamfer). Added: panel-mount USB-C opening + 2 screw holes and the power-rod
-   bore (left wall), 2 key-rod bores (front wall), battery ceiling relief. Camera window, label recess, vents, hinge and
-   corner bosses unchanged.
-3. **Keyboard (tray):** geometry unchanged by default (`KB_CUTS_ENABLED = False`). The original right-wall (y 26.3–36.7) and
+   bore (left wall), 2 key-rod bores (front wall), battery ceiling relief. **Hinge knuckle removed**, back wall rebuilt and
+   thickened to 6.5 mm, two hinge mortises with barrel slot, pilot holes and inside screw bosses (see "Hinge").
+   Camera window, label recess, vents and corner bosses unchanged.
+3. **Keyboard (tray):** **hinge ears and trough removed**, back wall rebuilt and thickened to 6.5 mm, two hinge mortises
+   with barrel slot and pilot holes, bottom chamfer squared under the leaves. Keyboard cut-outs unchanged by default
+   (`KB_CUTS_ENABLED = False`). The original right-wall (y 26.3–36.7) and
    rear-wall (x 72.9–89.1) openings are kept; they are probably the CACOE port/switch cut-outs of the original design (not
    verified). If the real keyboard's port/switch are elsewhere, set `KB_CUTS_ENABLED = True`, measure `KB_*` and rebuild.
-4. New parts: strap, 3 push-rods. Split versions of lid / tray / panel.
+4. New parts: strap, 3 push-rods. Split versions of lid / tray / panel. The original knobs are no longer used.
 
 ## Splitting for the A1 mini
-* **Lid** at x = −72: clear of the hinge knuckle (|x| ≤ 44) and of the camera window (x ≥ −68.9 at the top).
+* **Lid** at x = −72: clear of the hinges (|x| 42–62) and of the camera window (x ≥ −68.9 at the top).
   There are two internal **seam pads** on the front and back walls (12 × 12 × 7.7 mm, z 19.3–27, clear of the panel, rods and
   USB plug). Each pad has a **Ø3.3 dowel hole** through it (3 × 10 mm dowel) and an **M2 heat-set insert** (Ø3.2, 5 deep) in
   piece A. Piece B has a Ø2.4 clearance hole with a Ø4.2 × 2.5 counterbore facing the open cavity: use **M2×6 socket head**.
   Glue the ceiling butt joint as well.
-* **Tray** at x = −72: clear of the hinge ears (|x| 46–61) and the rear opening. The tray interior is fully occupied by the
+* **Tray** at x = −72: clear of the hinges and the rear opening. The tray interior is fully occupied by the
   keyboard and the floor is only 3 mm, so dowels or inserts would break the ≥ 1.6 mm wall rule or the outer silhouette.
   The joint is **3 glued dovetail keys** through the floor (neck 6, head 10, depth 6, 0.2 mm/side clearance) plus butt-glued
   walls. Use CA or epoxy.
 * **Panel** at x = −72: same dovetail keys. Each piece keeps two of the original corner screws.
 
 ## Print-ready 3MF (A1 mini)
-`3mf/plate1_lid.3mf` (lid A+B, needs supports at the hinge knuckle), `plate2_tray.3mf` (tray A+B),
-`plate3_panel_strap.3mf` (panel A+B, strap) and `plate4_knobs_rods.3mf` (2x original hinge knob standing on its cap end,
+`3mf/plate1_lid.3mf` (lid A+B), `plate2_tray.3mf` (tray A+B) and `plate3_panel_parts.3mf` (panel A+B, strap,
 3 push-rods): every part already in print orientation and laid out on a 180 x 180 mm plate, grouped by colour.
+No supports are needed.
 Regenerate with `python3 src/export_3mf.py` after `src/build.py`.
 
 ## Print orientation (suggested)
-* Lid pieces: **top face down** (the original's ceiling is flat at z = 30). The hinge knuckle needs supports, as in the original.
+* Lid pieces: **top face down** (the ceiling is flat at z = 30). No supports (the knuckle that needed them is gone).
 * Panel pieces: **screen face down** (z = 15 on the bed). Lip, posts, cradles and bay frame grow upward with no supports.
-* Tray pieces: **floor down** (as modelled). Hinge-ear bores as in the original.
+* Tray pieces: **floor down** (as modelled).
 * Strap: **top face down** (countersinks open toward the bed, pad up). Push-rods: **flat (D) side down**.
 
 ## Hardware
 2× M2×4 (max M2×5) ISO 7046 countersunk for the strap standoff screw; 2× M2×6 ISO 7046 for the strap ends; 2 + 2 M2 inserts
 Ø3.2 L3 (strap posts + lid seam); 2× M2×6 socket head (lid seam); 2× dowel Ø3 × 10; original 4× M2 inserts + 4× M2 panel
-screws, 2× M3×40, M3 inserts, O-rings, knobs as in the original BOM; panel-mount USB-C extension; 1S LiPo with protection PCB
+screws from the original BOM; **2× Sugatsune HG-MF08-BL**, **4× M2×8 + 4× M2×5 countersunk tapping screws** (hinges);
+panel-mount USB-C extension; 1S LiPo with protection PCB
 and a JST **SH1.0-2P** lead (PaperDIY battery input per M5 docs).
 
 ## Sources of measured dimensions
@@ -119,9 +148,13 @@ and a JST **SH1.0-2P** lead (PaperDIY battery input per M5 docs).
   above (kit back-cover hole at the M2 position, button caps 12.0 apart, USB-C position) and gave the **window 105.01 × 59.72**
   with its offsets (1.39 / 8.90 / 1.39).
 * M5 docs (docs.m5stack.com/en/products/sku/K159): size, power button / KEY1 = G4 / KEY2 = G3, SH1.0-2P battery connector.
+* Sugatsune HG-MF spec table (global.sugatsune.com/eu/en/tech/products/21651_t) and retailer listings: L / W / t / W2 / H2,
+  holes, torque. The barrel diameter is not published (`HINGE_BARREL_D` = 5.5 assumed from the product photo).
 * Original enclosure geometry: sections and ray probes of the phone-enclosure STLs.
 
 ## Assumptions / placeholders — **measure on the real part**
+* **Hinge barrel / axis:** the barrel diameter and the exact axis height above the leaf seat are not published. The slot takes
+  a barrel up to ~Ø6.2 and an axis up to 0.8 mm inside the face; check the first print with the real hinge.
 * **TODO keyboard:** first fit the CACOE in the unmodified tray and check that the original openings reach its charge port
   and switch. Only if they don't: `KB_CUTS_ENABLED = True` and measure `KB_PORT_*` / `KB_SW_*` (placeholders: 10 × 5 opening
   at y = +10, z = 6.5 and an 8 mm notch down to z = 5.5 at y = −15, left short wall).
@@ -139,7 +172,8 @@ and a JST **SH1.0-2P** lead (PaperDIY battery input per M5 docs).
 ## Verification actually performed
 STL re-load watertight / single body / bbox ≤ 175 mm for every part. Zero-volume interference (closed assembly) between
 lid, panel, strap, rods, a PaperDIY envelope built from the drawing (glass, PCB + USB-end ears, module, standoff, USB-C,
-actuators) and the battery box. Ray scan of the restored lid walls against the original. Renders inspected visually.
+actuators) and the battery box; hinge envelopes vs lid / tray; lid + panel rotated 0–180° about the hinge axis vs the tray.
+Ray scan of the restored lid walls against the original. Renders inspected visually.
 **Not done:** no slicer run, no physical test fit, no FEA of the strap or seams.
 
 ## Licence & attribution
@@ -231,11 +265,22 @@ published drawing and structure files.
 | `KB_SW_Y` | `-15.0` | ASSUMED | [A] TODO switch notch centre (same wall) |
 | `KB_SW_W` | `8.0` | ASSUMED | [A] TODO |
 | `KB_SW_BOTTOM_Z` | `5.5` | ASSUMED | [A] TODO notch bottom (wall top there is ~z 9.6) |
-| `SPLIT_X_LID` | `-72.0` | design choice | clear of hinge knuckle (/x/<=44) and camera window (x>=-68.9) |
-| `SPLIT_X_TRAY` | `-72.0` | design choice | clear of tray hinge ears (/x/ 46..61) and rear opening (x 72.9..89.1) |
+| `SPLIT_X_LID` | `-72.0` | design choice | clear of the hinges (/x/ 42..62) and camera window (x>=-68.9) |
+| `SPLIT_X_TRAY` | `-72.0` | design choice | clear of the hinges and rear opening (x 72.9..89.1) |
 | `SPLIT_X_PANEL` | `-72.0` | design choice | clear of the window bevel (x>=-52.1) |
 | `MAX_PIECE` | `175.0` | design choice |  |
 | `DOVETAIL` | `dict(neck=6.0, head=10.0, depth=6.0, clr=0.2)` | design choice | glued dovetail keys (0.4 total clearance) |
 | `DOVETAIL_Y` | `(-25.0, 0.0, 25.0)` | design choice |  |
 | `DOWEL_D` | `3.3` | design choice | for 3 mm dowel pins (3x10) |
 | `LID_PAD` | `dict(half_len=6.0, depth=12.0, z0=19.3, dowel_off=3.0, dowel_z=22.6, ins_off=8.0, ins_z=24.6,` | design choice |  |
+| `HINGE_LEN` / `HINGE_WIDTH` / `HINGE_LEAF_T` | `20.0` / `25.0` / `2.0` | measured | [M:Sugatsune spec table] HG-MF08 L / W / t |
+| `HINGE_HOLE_PITCH_X` / `HINGE_HOLE_OFF` | `10.0` / `8.0` | measured | [M:Sugatsune spec table] H2 = 10, W2 = 16 |
+| `HINGE_BARREL_D` | `5.5` | ASSUMED | [A] from the product photo -> MEASURE |
+| `HINGE_X` | `52.0` | design choice | hinge centres at +-52 |
+| `HINGE_CLR` | `0.25` | design choice | mortise clearance per side |
+| `HINGE_PILOT_HOLES` / `HINGE_PILOT_D` | `True` / `1.8` | design choice | printed pilots for M2 tapping screws |
+| `BACK_EXTRA` | `3.5` | design choice | back walls 3.0 -> 6.5 mm; new back face / axis plane y = 50.0 |
+| `Z_PART` | `12.85` | measured | [M] parting line at the back |
+| `BACK_ZONE_X` | `62.0` | design choice | old hinge removed and back wall rebuilt for /x/ <= 62 |
+| `CORNER_C` | `(95.0, 40.5)` | measured | [M] centre of the r 6 back-corner arcs |
+| `LID_HINGE_BOSS` | `w 18, depth 4, z 18.5..27` | design choice | screw boss inside the lid per hinge |

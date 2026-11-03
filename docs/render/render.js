@@ -1,7 +1,5 @@
 // Renders docs/images/render_*.png from the STLs in cad/out (three.js in headless Chromium).
 //   cd docs/render && npm install && npx playwright install chromium && node render.js
-// The hinge knob comes from the original phone-enclosure repo: set PHONE_ENCLOSURE_STL if it is not
-// cloned at ~/phone-enclosure.
 const http = require('http');
 const fs = require('fs');
 const os = require('os');
@@ -10,13 +8,11 @@ const { chromium } = require('playwright');
 
 const HERE = __dirname;
 const REPO = path.resolve(HERE, '..', '..');
-const ORIG = process.env.PHONE_ENCLOSURE_STL || path.join(os.homedir(), 'phone-enclosure', 'STL');
 const OUT = path.join(REPO, 'docs', 'images');
 
 function resolve(url) {
   const p = decodeURIComponent(url.split('?')[0]);
   if (p === '/' || p === '/index.html') return path.join(HERE, 'index.html');
-  if (p === '/models/knob.stl') return path.join(ORIG, 'Knob.stl');
   if (p.startsWith('/models/')) return path.join(REPO, 'cad', 'out', path.basename(p));
   if (p.startsWith('/node_modules/')) return path.join(HERE, p);
   return null;
@@ -34,7 +30,7 @@ const types = { '.html': 'text/html', '.js': 'text/javascript', '.stl': 'applica
   const port = server.address().port;
 
   const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-  for (const view of ['open', 'closed']) {
+  for (const view of ['open', 'closed', 'back']) {
     const page = await browser.newPage({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1.5 });
     page.on('pageerror', e => console.error(view, e.message));
     await page.goto(`http://127.0.0.1:${port}/index.html?view=${view}`);
