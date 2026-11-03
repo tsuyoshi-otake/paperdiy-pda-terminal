@@ -216,8 +216,10 @@ scene.add(mesh(trayG, M.cream));
 scene.add(keyboard());
 
 // moving half: lid parts, rotated about the hinge axis (x axis through y = 54, z = 7.5)
-// torque hinges (Sugatsune HG-MF, 30 x 25 x 2.0) flush in the back face; axis on the outer back edge
-const HINGE_Y = 50.0, HINGE_Z = 12.85, HINGE_X = 52.0, H_LEN = 30.0, H_W = 25.0, H_T = 2.0, H_BD = 5.5;
+// torque hinges (Sugatsune HG-MF08, 20 x 25 x 2.0) recessed flush into the back face, axis on the outer back edge;
+// printed cover plates (case colour) over the leaves, so only the barrels show
+const HINGE_Y = 50.0, HINGE_Z = 12.85, HINGE_X = 52.0, H_LEN = 20.0, H_W = 25.0, H_BD = 5.5;
+const COVER_T = 1.0, COVER_RIM = 1.5, COVER_R0 = 3.6, H_CLR = 0.25;
 const pivot = new THREE.Group();
 pivot.position.set(0, HINGE_Y, HINGE_Z);
 const lid = new THREE.Group();
@@ -238,28 +240,22 @@ const plate = mesh(new RoundedBoxGeometry(56.0, 11.0, 1.9, 2, 0.6), M.red);
 plate.position.set((21.7 + 78.0) / 2, (21.34 + 32.5) / 2, 28.5 + 0.95);
 lid.add(plate);
 
-// hinge leaves (black POM) and barrels; the lid leaf follows the lid
+// hinge barrels (black POM) and the cover plates over the leaves; lid covers follow the lid
 const pom = pla('#1b1b1d', 0.45);
 for (const cx of [-HINGE_X, HINGE_X]) {
-  const leafH = H_W / 2 - H_BD / 2;
-  const trayLeaf = mesh(new RoundedBoxGeometry(H_LEN, H_T, leafH, 2, 0.6), pom);
-  trayLeaf.position.set(cx, HINGE_Y - H_T / 2, HINGE_Z - H_BD / 2 - leafH / 2);
-  scene.add(trayLeaf);
-  const lidLeaf = mesh(new RoundedBoxGeometry(H_LEN, H_T, leafH, 2, 0.6), pom);
-  lidLeaf.position.set(cx, HINGE_Y - H_T / 2, HINGE_Z + H_BD / 2 + leafH / 2);
-  lid.add(lidLeaf);
   const barrel = mesh(new THREE.CylinderGeometry(H_BD / 2, H_BD / 2, H_LEN, 40), pom);
   barrel.rotation.z = Math.PI / 2;
   barrel.position.set(cx, HINGE_Y, HINGE_Z);
   scene.add(barrel);
-  for (const [z, grp] of [[HINGE_Z - 8.2, scene], [HINGE_Z + 8.2, lid]]) {      // countersunk screw heads
-    for (const dx of [-10.5, 10.5]) {
-      const head = mesh(new THREE.CylinderGeometry(2.8, 2.8, 0.3, 24), pla('#8a8d93', 0.35));
-      head.rotation.x = Math.PI / 2;
-      head.position.set(cx + dx, HINGE_Y + 0.05, z);
-      grp.add(head);
-    }
-  }
+  const w = H_LEN + 2 * (H_CLR + COVER_RIM), end = H_W / 2 + H_CLR + COVER_RIM;
+  const lz0 = HINGE_Z + COVER_R0, lz1 = Math.min(HINGE_Z + end, 26.8);
+  const tz0 = Math.max(0.3, HINGE_Z - end), tz1 = HINGE_Z - COVER_R0;
+  const lidCover = mesh(new RoundedBoxGeometry(w, COVER_T, lz1 - lz0, 2, 0.4), M.lid);
+  lidCover.position.set(cx, HINGE_Y + COVER_T / 2, (lz0 + lz1) / 2);
+  lid.add(lidCover);
+  const trayCover = mesh(new RoundedBoxGeometry(w, COVER_T, tz1 - tz0, 2, 0.4), M.cream);
+  trayCover.position.set(cx, HINGE_Y + COVER_T / 2, (tz0 + tz1) / 2);
+  scene.add(trayCover);
 }
 
 // PaperDIY itself (simplified envelope from the drawing): e-paper module, PCB at the USB end, ESP32-S3 module

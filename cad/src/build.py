@@ -293,13 +293,19 @@ def hinge_centres():
 
 
 def hinge_pocket_cuts():
-    """Mortise for both leaves (flush with the back face) + channel for the barrel, centred on the axis."""
+    """Pockets for the leaves + a slot for the barrel on the axis (y = Y_BACK, z = Z_PART).
+    parting: each leaf lies in a 2 mm pocket in the parting face (tray leaf below, lid leaf above), pointing forward.
+    face:    both leaves in a 2 mm mortise in the outer back face."""
     cuts = []
     rc = HINGE_BARREL_D / 2 + 0.35
     for c in hinge_centres():
         x0, x1 = c - HINGE_LEN / 2 - HINGE_CLR, c + HINGE_LEN / 2 + HINGE_CLR
-        cuts.append(box(x0, x1, Y_BACK - HINGE_LEAF_T - 0.05, Y_BACK + 1.0,
-                        Z_PART - HINGE_WIDTH / 2 - HINGE_CLR, Z_PART + HINGE_WIDTH / 2 + HINGE_CLR))
+        if HINGE_MOUNT == "parting":
+            cuts.append(box(x0, x1, Y_BACK - HINGE_WIDTH / 2 - HINGE_CLR, Y_BACK + 1.0,
+                            Z_PART - HINGE_LEAF_T - 0.05, Z_PART + HINGE_LEAF_T + 0.05))
+        else:
+            cuts.append(box(x0, x1, Y_BACK - HINGE_LEAF_T - 0.05, Y_BACK + 1.0,
+                            Z_PART - HINGE_WIDTH / 2 - HINGE_CLR, Z_PART + HINGE_WIDTH / 2 + HINGE_CLR))
         for yc in (Y_BACK, Y_BACK - 0.8):          # slot: tolerates the axis sitting up to 0.8 mm inside the face
             cuts.append(cyl_x(rc, x0, x1, yc, Z_PART))
         cuts.append(box(x0, x1, Y_BACK - 0.8, Y_BACK, Z_PART - rc, Z_PART + rc))
@@ -307,34 +313,65 @@ def hinge_pocket_cuts():
 
 
 def hinge_pilots(lid):
-    """Pilot holes at the catalogue hole positions, from the leaf seat inward (depths keep 1 mm to the pocket)."""
+    """Pilot holes at the catalogue hole positions, from the leaf seat into the wall."""
     if not HINGE_PILOT_HOLES:
         return []
-    out, seat = [], Y_BACK - HINGE_LEAF_T
+    out = []
     for c in hinge_centres():
         for dx in (-HINGE_HOLE_PITCH_X / 2, HINGE_HOLE_PITCH_X / 2):
-            if lid:   # wall 4.5 + boss 4.0 behind the leaf: M2x8 reaches ~6 mm in
-                out.append(cyl_y(HINGE_PILOT_D / 2, seat - 7.5, seat + 0.1, c + dx, Z_PART + HINGE_HOLE_OFF))
-            else:     # wall 4.5 behind the leaf (keyboard pocket beyond): M2x5 reaches ~3 mm in
-                out.append(cyl_y(HINGE_PILOT_D / 2, seat - 3.5, seat + 0.1, c + dx, Z_PART - HINGE_HOLE_OFF))
+            x = c + dx
+            if HINGE_MOUNT == "parting":    # vertical holes, M2x8: ~6 mm past the leaf seat
+                y = Y_BACK - HINGE_HOLE_OFF
+                if lid:
+                    out.append(cyl_z(HINGE_PILOT_D / 2, Z_PART + HINGE_LEAF_T - 0.1, Z_PART + HINGE_LEAF_T + 6.5, x, y))
+                else:
+                    out.append(cyl_z(HINGE_PILOT_D / 2, Z_PART - HINGE_LEAF_T - 6.5, Z_PART - HINGE_LEAF_T + 0.1, x, y))
+            else:
+                seat = Y_BACK - HINGE_LEAF_T
+                if lid:   # wall 4.5 + boss 4.0 behind the leaf: M2x8 reaches ~6 mm in
+                    out.append(cyl_y(HINGE_PILOT_D / 2, seat - 7.5, seat + 0.1, x, Z_PART + HINGE_HOLE_OFF))
+                else:     # wall 4.5 behind the leaf (keyboard pocket beyond): M2x5 reaches ~3 mm in
+                    out.append(cyl_y(HINGE_PILOT_D / 2, seat - 3.5, seat + 0.1, x, Z_PART - HINGE_HOLE_OFF))
     return out
 
 
 def lid_hinge_bosses():
+    if HINGE_MOUNT == "parting":       # the 14.5 mm back wall holds the screws by itself
+        return []
     b = LID_HINGE_BOSS
     return [box(c - b["w"] / 2, c + b["w"] / 2, LID_INNER_Y - b["depth"], LID_INNER_Y + 0.1, b["z0"], b["z1"])
             for c in hinge_centres()]
 
 
 def hinge_envelope(open_deg=0.0):
-    """Simplified hinges (2 leaves + barrel each) for checks and renders; the lid leaf follows the lid."""
+    """Simplified hinges (2 leaves + barrel each) for checks; the lid leaf follows the lid."""
     fixed, moving = [], []
+    r = HINGE_BARREL_D / 2
     for c in hinge_centres():
         x0, x1 = c - HINGE_LEN / 2, c + HINGE_LEN / 2
-        fixed.append(box(x0, x1, Y_BACK - HINGE_LEAF_T, Y_BACK, Z_PART - HINGE_WIDTH / 2, Z_PART - HINGE_BARREL_D / 2))
-        moving.append(box(x0, x1, Y_BACK - HINGE_LEAF_T, Y_BACK, Z_PART + HINGE_BARREL_D / 2, Z_PART + HINGE_WIDTH / 2))
-        fixed.append(cyl_x(HINGE_BARREL_D / 2, x0, x1, Y_BACK, Z_PART))
+        if HINGE_MOUNT == "parting":
+            fixed.append(box(x0, x1, Y_BACK - HINGE_WIDTH / 2, Y_BACK - r, Z_PART - HINGE_LEAF_T, Z_PART))
+            moving.append(box(x0, x1, Y_BACK - HINGE_WIDTH / 2, Y_BACK - r, Z_PART, Z_PART + HINGE_LEAF_T))
+        else:
+            fixed.append(box(x0, x1, Y_BACK - HINGE_LEAF_T, Y_BACK, Z_PART - HINGE_WIDTH / 2, Z_PART - r))
+            moving.append(box(x0, x1, Y_BACK - HINGE_LEAF_T, Y_BACK, Z_PART + r, Z_PART + HINGE_WIDTH / 2))
+        fixed.append(cyl_x(r, x0, x1, Y_BACK, Z_PART))
     return union(fixed), open_lid(union(moving), open_deg)
+
+
+def hinge_covers():
+    """Cover plates over the leaves (face mounting), in the closed assembly position: (lid covers, tray covers)."""
+    if HINGE_MOUNT != "face" or not HINGE_COVER:
+        return [], []
+    lid_c, tray_c = [], []
+    half_w = HINGE_LEN / 2 + HINGE_CLR + COVER_RIM
+    leaf_end = HINGE_WIDTH / 2 + HINGE_CLR + COVER_RIM
+    for c in hinge_centres():
+        z0, z1 = Z_PART + COVER_R0, min(Z_PART + leaf_end, 26.8)            # stop below the lid's top chamfer
+        lid_c.append(prism_y(rrect(c, (z0 + z1) / 2, 2 * half_w, z1 - z0, 1.0), Y_BACK, Y_BACK + COVER_T))
+        z0, z1 = max(0.3, Z_PART - leaf_end), Z_PART - COVER_R0
+        tray_c.append(prism_y(rrect(c, (z0 + z1) / 2, 2 * half_w, z1 - z0, 1.0), Y_BACK, Y_BACK + COVER_T))
+    return lid_c, tray_c
 
 
 def open_lid(part, deg):
@@ -355,7 +392,8 @@ def build_lid(with_pads):
     L = (L - box(95.0, 102.0, ya, yb, 17.5, 31.0)) + prism_y(prof, ya, yb)
     # hinge rework: remove the knuckle, rebuild + thicken the back wall, screw bosses for the hinge leaves
     L = warp_back(rebuild_back(L, LID_BACK_PROFILE, -1.0, 31.0))
-    L = L + union(lid_hinge_bosses())
+    if lid_hinge_bosses():
+        L = L + union(lid_hinge_bosses())
     if with_pads:
         p = LID_PAD
         for sy in (-1, 1):
@@ -394,7 +432,7 @@ def build_tray():
     # hinge rework: remove ears + trough, rebuild + thicken the back wall
     T = warp_back(rebuild_back(T, TRAY_BACK_PROFILE, -1.0, 20.0), lower_rim=0.08)
     # square the bottom-back chamfer under each tray leaf so the whole leaf sits in a pocket
-    for c in hinge_centres():
+    for c in (hinge_centres() if HINGE_MOUNT == "face" else ()):
         T = T + box(c - HINGE_LEN / 2 - HINGE_CLR, c + HINGE_LEN / 2 + HINGE_CLR, LID_INNER_Y + 0.5, Y_BACK, 0.0, 3.2)
     T = T - union(hinge_pocket_cuts() + hinge_pilots(False))
     if not KB_CUTS_ENABLED:
@@ -453,6 +491,10 @@ def main():
     out["power_pushrod"] = export(prod, f"{OUT_DIR}/power_pushrod.stl")
     out["display_lid_usbc"] = export(lid, f"{OUT_DIR}/display_lid_usbc.stl")
     out["keyboard_tray"] = export(tray, f"{OUT_DIR}/keyboard_tray.stl")
+    lid_cov, tray_cov = hinge_covers()
+    if lid_cov:
+        out["hinge_cover_lid"] = export(lid_cov[0], f"{OUT_DIR}/hinge_cover_lid_x2.stl")
+        out["hinge_cover_tray"] = export(tray_cov[0], f"{OUT_DIR}/hinge_cover_tray_x2.stl")
 
     log("== split pieces for A1 mini (limit %.0f mm)" % MAX_PIECE)
     la, lb = split_plain(lid_p, SPLIT_X_LID)
@@ -482,21 +524,31 @@ def main():
     interference(h_fixed, lid, "hinge barrel vs lid", tol=1.0)
     log("== hinge motion (lid + panel rotated about the new axis; tray fixed)")
     lidset = lid + panel
+    traset = tray
+    if lid_cov:
+        for i, cv in enumerate(lid_cov):
+            interference(cv, lid, f"lid hinge cover {i} vs lid"); interference(cv, tray, f"lid hinge cover {i} vs tray")
+        for i, cv in enumerate(tray_cov):
+            interference(cv, tray, f"tray hinge cover {i} vs tray"); interference(cv, lid, f"tray hinge cover {i} vs lid")
+        lidset = lidset + union(lid_cov)
+        traset = tray + union(tray_cov)
     max_open, hits = None, []
     for deg in range(0, 181, 5):
         moved = open_lid(lidset, deg)
-        v = (moved ^ tray).volume()
+        v = (moved ^ traset).volume()
         if v > 0.5:
             hits.append((deg, v))
         if max_open is None and to_t(moved).bounds[0][2] < 0:
             max_open = deg
-    if hits:
-        for deg, v in hits:
-            log(f"  {deg:3d} deg: collides with the tray ({v:.1f} mm3)  <-- CHECK")
-    else:
+    first_hit = hits[0][0] if hits else None
+    if first_hit is None:
         log("  no collision with the tray from 0 to 180 deg")
+    else:
+        log(f"  first contact at {first_hit} deg ({hits[0][1]:.1f} mm3): the hinge covers meet there and act as the stop")
     log(f"  on a table the lid's top-back edge reaches the table at about {max_open} deg (opening limit)"
         if max_open else "  the lid never reaches the table")
+    if first_hit is not None and max_open is not None and first_hit < max_open:
+        log("  <-- CHECK: parts collide before the table limit")
     # gaps that should be small but positive
     for i, x in enumerate(KEY_X):
         log(f"  key {i}: rod tip y={KEY_TIP_Y-ROD_GAP:.2f}, actuator tip y={KEY_TIP_Y:.2f}")

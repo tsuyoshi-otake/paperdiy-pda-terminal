@@ -13,6 +13,8 @@
   out/power_pushrod.stl: bbox 41.5 x 5.5 x 4.0 mm, watertight=True, winding_ok=True, bodies=1, vol=291 mm3
   out/display_lid_usbc.stl: bbox 202.0 x 96.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=94479 mm3
   out/keyboard_tray.stl: bbox 202.0 x 96.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=72842 mm3
+  out/hinge_cover_lid_x2.stl: bbox 23.5 x 1.0 x 10.3 mm, watertight=True, winding_ok=True, bodies=1, vol=242 mm3
+  out/hinge_cover_tray_x2.stl: bbox 23.5 x 1.0 x 8.9 mm, watertight=True, winding_ok=True, bodies=1, vol=209 mm3
 == split pieces for A1 mini (limit 175 mm)
   out/split/lid_A_left.stl: bbox 29.0 x 96.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=18651 mm3
   out/split/lid_B_main.stl: bbox 173.0 x 96.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=77203 mm3
@@ -45,7 +47,15 @@
   interference hinge (lid leaf) vs lid: 0.000 mm3 OK
   interference hinge barrel vs lid: 0.000 mm3 OK
 == hinge motion (lid + panel rotated about the new axis; tray fixed)
-  no collision with the tray from 0 to 180 deg
+  interference lid hinge cover 0 vs lid: 0.000 mm3 OK
+  interference lid hinge cover 0 vs tray: 0.000 mm3 OK
+  interference lid hinge cover 1 vs lid: 0.000 mm3 OK
+  interference lid hinge cover 1 vs tray: 0.000 mm3 OK
+  interference tray hinge cover 0 vs tray: -0.000 mm3 OK
+  interference tray hinge cover 0 vs lid: 0.000 mm3 OK
+  interference tray hinge cover 1 vs tray: -0.000 mm3 OK
+  interference tray hinge cover 1 vs lid: 0.000 mm3 OK
+  first contact at 155 deg (8.4 mm3): the hinge covers meet there and act as the stop
   on a table the lid's top-back edge reaches the table at about 150 deg (opening limit)
   key 0: rod tip y=-31.60, actuator tip y=-31.30
   key 1: rod tip y=-31.60, actuator tip y=-31.30

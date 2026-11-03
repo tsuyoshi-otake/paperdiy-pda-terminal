@@ -2,7 +2,8 @@
 
 A Boox-Palma-free version of Un Kyu Lee's "PDA Terminal": the lid holds an **M5Stack PaperDIY** (4.7" e-paper, ESP32-S3)
 behind a new bezel panel, plus a 1S LiPo, and gets a panel-mount USB-C. The original knob-and-pin hinge is replaced by
-**two free-stop torque hinges (Sugatsune HG-MF08) recessed flush into the back face**. The keyboard tray (CACOE mini BT keyboard) keeps the
+**two free-stop torque hinges (Sugatsune HG-MF08) recessed flush into the back face, under printed cover plates**, so only
+the hinge barrels show. The keyboard tray (CACOE mini BT keyboard) keeps the
 original openings by default; optional charge-port / switch cut-outs can be enabled once measured. Every part is also split for a **Bambu Lab A1 mini (180 mm bed)**.
 
 ## Run
@@ -27,6 +28,7 @@ PNGs with `src/render.py` (software z-buffer, no GPU). The full log is written t
 | `out/paperdiy_strap.stl` | 8.0 × 78.4 × 2.5 | clamps the PaperDIY via its M2 standoff |
 | `out/key_pushrod_x2.stl` | 5.5 × 15.9 × 4.0 | print **2** (KEY1/KEY2) |
 | `out/power_pushrod.stl` | 41.5 × 5.5 × 4.0 | power button |
+| `out/hinge_cover_lid_x2.stl` / `hinge_cover_tray_x2.stl` | 23.5 × 1.0 × 10.3 / 23.5 × 1.0 × 8.9 | print 2 each (lid / tray colour) |
 | `out/split/lid_A_left.stl` / `lid_B_main.stl` | 29.0 × 96.5 × 22.0 / 173.0 × 96.5 × 22.0 | |
 | `out/split/tray_A_left.stl` / `tray_B_main.stl` | 35.0 × 96.5 × 12.8 / 173.0 × 96.5 × 12.8 | |
 | `out/split/panel_A_left.stl` / `panel_B_main.stl` | 31.6 × 86.2 × 7.1 / 169.6 × 86.2 × 11.5 | the panel (195.2 mm) does not fit 180 mm in any orientation either |
@@ -75,9 +77,16 @@ knob-pins, M3×40 cores, O-rings, friction set by how tight the knobs are) is re
   hole positions and stop 1 mm short of the pocket / lid interior.
 * **Positions:** x = ±52 (20 mm long each), clear of the split at x = −72, the seam pads and the tray's rear opening
   (x ≥ 72.9).
-* **Checks (`build.py`):** the lid + panel rotated about the new axis does not touch the tray anywhere from 0 to 180°; on a
-  table the lid's top-back edge reaches the table at about **150°**, which is the opening limit. Hinge envelopes vs lid /
-  tray: 0 mm³.
+* **Cover plates** (`out/hinge_cover_lid_x2.stl`, `out/hinge_cover_tray_x2.stl`, 1.0 mm, print in the case colours):
+  glued over each leaf after the screws are in, overlapping the case by 1.5 mm (glue land), starting 3.6 mm from the axis so
+  the barrel stays free. They stand 1.0 mm proud of the back face: a flush cover would push the hinge axis inside the face,
+  and the lid's back wall would then sweep into the tray when opening. The two covers of a hinge meet at about 155°, which
+  acts as the stop just past the table limit.
+* **Checks (`build.py`):** the lid + panel (+ covers) rotated about the new axis does not touch the tray (+ covers) up to
+  150°; on a table the lid's top-back edge reaches the table at about **150°**, which is the opening limit; the covers meet
+  at 155°. Hinge envelopes and covers vs lid / tray: 0 mm³.
+* `HINGE_MOUNT = "parting"` is an alternative: the leaves lie folded in the parting plane inside 14.5 mm back walls
+  (case 8 mm deeper). Closed, only the barrels show, but open, the leaves and screw heads are visible under the screen.
 
 ### Battery: integrated into the panel (no separate `battery_carrier.stl`)
 The bay frame (1.6 mm walls, 0.5 mm clearance, wire notch toward the PaperDIY) is printed on the panel back. It prints
@@ -120,8 +129,8 @@ One original Palma corner rib in the lid flares to y = −30.2 near the ceiling,
 * **Panel** at x = −72: same dovetail keys. Each piece keeps two of the original corner screws.
 
 ## Print-ready 3MF (A1 mini)
-`3mf/plate1_lid.3mf` (lid A+B), `plate2_tray.3mf` (tray A+B) and `plate3_panel_parts.3mf` (panel A+B, strap,
-3 push-rods): every part already in print orientation and laid out on a 180 x 180 mm plate, grouped by colour.
+`3mf/plate1_lid.3mf` (lid A+B, 2 lid hinge covers), `plate2_tray.3mf` (tray A+B, 2 tray hinge covers) and
+`plate3_panel_parts.3mf` (panel A+B, strap, 3 push-rods): every part already in print orientation and laid out on a 180 x 180 mm plate, grouped by colour.
 No supports are needed.
 Regenerate with `python3 src/export_3mf.py` after `src/build.py`.
 

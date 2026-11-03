@@ -133,6 +133,16 @@ LID_PAD = dict(half_len=6.0, depth=12.0, z0=19.3, dowel_off=3.0, dowel_z=22.6, i
 # off-the-shelf free-stop torque hinges recessed into the back faces of lid and tray. The hinge axis moves to the
 # outer back edge on the parting line, the knuckle/ears/trough strip behind the case is removed, and the back walls
 # are thickened outward so the hinge screws have material.
+# HINGE_MOUNT = "parting": leaves folded flat in the parting plane inside the back walls (hidden when closed; only the
+#                         barrels show at the back edge). Needs back walls >= 12.5 mm deep -> back face +11.5 mm.
+# HINGE_MOUNT = "face":    leaves flush in the outer back face (visible plates on the back), back face +3.5 mm.
+HINGE_MOUNT = "face"
+# face mounting + covers: thin printed plates (case colour) glued over each leaf so only the barrels show,
+# open or closed. They stand 1.0 mm proud of the back face (a flush cover would push the axis inside the face).
+HINGE_COVER = True
+COVER_T = 1.0                 # plate thickness, proud of the back face
+COVER_RIM = 1.5               # overlap onto the case around the leaf mortise (glue land)
+COVER_R0 = 3.6                # covers start this far from the axis (barrel + clearance for rotation)
 HINGE_MODEL = "Sugatsune HG-MF08-BL x2 (free-stop, 0.0784 N*m +-25% each, POM)"
 # [M] Sugatsune spec table (global.sugatsune.com, 21651_t): HG-MF08 L 20, W 25, t 2, W2 16, H2 10, holes 2.4 / csk 4.2
 HINGE_LEN = 20.0              # [M] L: length along the axis
@@ -141,13 +151,14 @@ HINGE_LEAF_T = 2.0            # [M] t
 HINGE_BARREL_D = 5.5          # [A] not in the table -> MEASURE (the channel below takes up to ~6.2)
 HINGE_HOLE_PITCH_X = 10.0     # [M] H2: hole pitch along the axis
 HINGE_HOLE_OFF = 8.0          # [M] W2 16 / 2: hole centres from the axis
-HINGE_SCREW = "M2 countersunk tapping screws: lid M2x8, tray M2x5 (holes 2.4 with 4.2 countersink)"
+HINGE_SCREW = ("M2x8 countersunk tapping screws x8 (holes 2.4 / csk 4.2)" if HINGE_MOUNT == "parting"
+               else "M2 countersunk tapping screws: lid M2x8, tray M2x5")
 HINGE_X = 52.0                # hinge centres at x = +-52: clear of the lid/tray split (x=-72) and the tray rear opening (x>=72.9)
 HINGE_CLR = 0.25              # mortise clearance per side
 HINGE_PILOT_HOLES = True      # print pilot holes at the catalogue hole positions
 HINGE_PILOT_D = 1.8           # for M2 tapping screws in PLA
 BACK_OLD_Y = 46.5             # [M] original outer back face of lid and tray
-BACK_EXTRA = 3.5              # back walls thickened outward 3.0 -> 6.5 mm
+BACK_EXTRA = 11.5 if HINGE_MOUNT == "parting" else 3.5   # back walls 3.0 -> 14.5 mm (parting) / 6.5 mm (face)
 Y_BACK = BACK_OLD_Y + BACK_EXTRA   # new outer back face = hinge axis plane
 Z_PART = 12.85                # [M] parting line at the back (lid underside 12.78..12.89, tray top 12.83..12.89)
 BACK_ZONE_X = 62.0            # |x| <= this: knuckle / ears / trough removed and the back wall rebuilt from its profile

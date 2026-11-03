@@ -25,6 +25,7 @@ OUT_3MF = os.path.join(CAD_DIR, "3mf")
 
 FLIP_X = trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0])      # top face down
 ROT_Z90 = trimesh.transformations.rotation_matrix(np.pi / 2, [0, 0, 1])  # turn on the bed
+LAY_FLAT_Y = trimesh.transformations.rotation_matrix(-np.pi / 2, [1, 0, 0])  # hinge cover plates: visible face on the bed
 
 
 def part(path, *rots):
@@ -101,12 +102,16 @@ def main():
     plates = {
         # navy: lid pieces, ceiling (top face) on the bed; no supports needed
         "plate1_lid.3mf": ("Lid (A + B)", [
-            [("lid_A_left", part(S("lid_A_left"), FLIP_X, ROT_Z90))],
+            [("lid_A_left", part(S("lid_A_left"), FLIP_X, ROT_Z90)),
+             ("hinge_cover_lid_1", part(O("hinge_cover_lid_x2"), LAY_FLAT_Y)),
+             ("hinge_cover_lid_2", part(O("hinge_cover_lid_x2"), LAY_FLAT_Y))],
             [("lid_B_main", part(S("lid_B_main"), FLIP_X))],
         ]),
         # cream: keyboard tray pieces, floor on the bed
         "plate2_tray.3mf": ("Keyboard tray (A + B)", [
-            [("tray_A_left", part(S("tray_A_left"), ROT_Z90))],
+            [("tray_A_left", part(S("tray_A_left"), ROT_Z90)),
+             ("hinge_cover_tray_1", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y)),
+             ("hinge_cover_tray_2", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y))],
             [("tray_B_main", part(S("tray_B_main")))],
         ]),
         # cream: display panel pieces (screen face down), strap (top face down), push-rods (flat side down)
