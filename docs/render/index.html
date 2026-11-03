@@ -219,12 +219,12 @@ P.kb = keyboard(); scene.add(P.kb);
 // moving half: lid parts, rotated about the hinge axis (x axis through y = Y_BACK, z = Z_PART)
 // hinge and cover positions come from cad/out/assembly.json (written by cad/src/build.py)
 const A = await (await fetch('models/assembly.json')).json();
-const HINGE_Y = A.Y_BACK, HINGE_Z = A.Z_PART, HINGE_X = A.HINGE_X, H_LEN = A.HINGE_LEN, H_W = A.HINGE_WIDTH,
+const HINGE_Y = A.Y_BACK, AXIS_Y = A.HINGE_AXIS_Y ?? A.Y_BACK, HINGE_Z = A.Z_PART, HINGE_X = A.HINGE_X, H_LEN = A.HINGE_LEN, H_W = A.HINGE_WIDTH,
       H_BD = A.HINGE_BARREL_D, H_CLR = A.HINGE_CLR, COVER_T = A.COVER_T, COVER_RIM = A.COVER_RIM, COVER_R0 = A.COVER_R0;
 const pivot = new THREE.Group();
-pivot.position.set(0, HINGE_Y, HINGE_Z);
+pivot.position.set(0, AXIS_Y, HINGE_Z);
 const lid = new THREE.Group();
-lid.position.set(0, -HINGE_Y, -HINGE_Z);
+lid.position.set(0, -AXIS_Y, -HINGE_Z);
 pivot.add(lid);
 scene.add(pivot);
 
@@ -250,12 +250,12 @@ P.trayCovers = new THREE.Group(); scene.add(P.trayCovers);
 for (const cx of [-HINGE_X, HINGE_X]) {
   const barrel = mesh(new THREE.CylinderGeometry(H_BD / 2, H_BD / 2, H_LEN, 40), pom);
   barrel.rotation.z = Math.PI / 2;
-  barrel.position.set(cx, HINGE_Y, HINGE_Z);
+  barrel.position.set(cx, AXIS_Y, HINGE_Z);
   P.hinges.add(barrel);
   if (VIEW === 'hinge') {         // show the leaves (they are under the covers otherwise)
     for (const s of [-1, 1]) {
       const leaf = box(H_LEN, A.HINGE_LEAF_T, H_W / 2 - H_BD / 2, pla('#26262a', 0.4), cx,
-                       HINGE_Y - A.HINGE_LEAF_T / 2, HINGE_Z + s * (H_BD / 2 + (H_W / 2 - H_BD / 2) / 2));
+                       HINGE_Y - A.HINGE_LEAF_T / 2 - 0.05, HINGE_Z + s * (H_BD / 2 + (H_W / 2 - H_BD / 2) / 2));
       P.hinges.add(leaf);
     }
   }

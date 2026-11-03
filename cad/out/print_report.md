@@ -39,17 +39,17 @@ Largest share apart from the noted part: 0.13 %. OK: only sharp edges and the do
 
 ## Does it tip over backwards?
 
-Lid side (printed parts as sliced + PaperDIY 26.4 g + battery 38 g + USB-C cable 10 g + half the hinges): **199 g**, centre of mass 48.8 mm in front of the hinge axis when closed. Base without the keyboard: **68 g**. The device rests on the back edge of the tray at y = 51.0 mm; the lid reaches the table at 152 deg and is supported from there on.
+Lid side (printed parts as sliced + PaperDIY 26.4 g + battery 38 g + USB-C cable 10 g + half the hinges): **199 g**, centre of mass 49.9 mm in front of the hinge axis when closed. Base without the keyboard: **68 g**. The device rests on the back edge of the tray at y = 51.0 mm; the lid reaches the table at 154 deg and is supported from there on.
 
 | Opening | lid centre of mass behind the back edge | keyboard needed so it does not tip |
 | --- | --- | --- |
-| 90 deg | +11.1 mm | 0 g |
-| 100 deg | +19.5 mm | 26 g |
-| 110 deg | +27.3 mm | 56 g |
-| 120 deg | +34.3 mm | 84 g |
-| 130 deg | +40.4 mm | 107 g |
-| 140 deg | +45.3 mm | 127 g |
-| 152 deg | +49.4 mm | 143 g |
+| 90 deg | +12.3 mm | 0 g |
+| 100 deg | +20.8 mm | 31 g |
+| 110 deg | +28.8 mm | 62 g |
+| 120 deg | +36.0 mm | 91 g |
+| 130 deg | +42.3 mm | 115 g |
+| 140 deg | +47.3 mm | 134 g |
+| 154 deg | +52.1 mm | 153 g |
 
-**The keyboard has to weigh at least 143 g** (centre of mass assumed in the middle of the tray) for the device to stay on its feet at every angle up to 152 deg. Weigh yours; if it is lighter, stay below the angle in the table where the needed weight exceeds it, or add weight in the tray.
+**The keyboard has to weigh at least 153 g** (centre of mass assumed in the middle of the tray) for the device to stay on its feet at every angle up to 154 deg. Weigh yours; if it is lighter, stay below the angle in the table where the needed weight exceeds it, or add weight in the tray.
 

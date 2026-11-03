@@ -364,10 +364,11 @@ def hinge_envelope(open_deg=0.0):
         if HINGE_MOUNT == "parting":
             fixed.append(box(x0, x1, Y_BACK - HINGE_WIDTH / 2, Y_BACK - r, Z_PART - HINGE_LEAF_T, Z_PART))
             moving.append(box(x0, x1, Y_BACK - HINGE_WIDTH / 2, Y_BACK - r, Z_PART, Z_PART + HINGE_LEAF_T))
-        else:
-            fixed.append(box(x0, x1, Y_BACK - HINGE_LEAF_T, Y_BACK, Z_PART - HINGE_WIDTH / 2, Z_PART - r))
-            moving.append(box(x0, x1, Y_BACK - HINGE_LEAF_T, Y_BACK, Z_PART + r, Z_PART + HINGE_WIDTH / 2))
-        fixed.append(cyl_x(r, x0, x1, Y_BACK, Z_PART))
+        else:     # flat back on the mortise floor, barrel on the front around the real axis
+            seat = Y_BACK - HINGE_LEAF_T - 0.05
+            fixed.append(box(x0, x1, seat, seat + HINGE_LEAF_T, Z_PART - HINGE_WIDTH / 2, Z_PART - r))
+            moving.append(box(x0, x1, seat, seat + HINGE_LEAF_T, Z_PART + r, Z_PART + HINGE_WIDTH / 2))
+        fixed.append(cyl_x(r, x0, x1, HINGE_AXIS_Y if HINGE_MOUNT == "face" else Y_BACK, Z_PART))
     return union(fixed), open_lid(union(moving), open_deg)
 
 
@@ -378,7 +379,7 @@ def build_top_plate():
 
 def write_assembly_json():
     """Positions the README renderer needs (docs/render reads this instead of copying numbers)."""
-    data = dict(Y_BACK=Y_BACK, Z_PART=Z_PART, HINGE_X=HINGE_X, HINGE_LEN=HINGE_LEN, HINGE_WIDTH=HINGE_WIDTH,
+    data = dict(Y_BACK=Y_BACK, Z_PART=Z_PART, HINGE_AXIS_Y=HINGE_AXIS_Y if HINGE_MOUNT == "face" else Y_BACK, HINGE_X=HINGE_X, HINGE_LEN=HINGE_LEN, HINGE_WIDTH=HINGE_WIDTH,
                 HINGE_LEAF_T=HINGE_LEAF_T, HINGE_BARREL_D=HINGE_BARREL_D, HINGE_CLR=HINGE_CLR,
                 HINGE_COVER=bool(HINGE_COVER and HINGE_MOUNT == "face"), COVER_T=COVER_T, COVER_RIM=COVER_RIM,
                 COVER_R0=COVER_R0, HINGE_MOUNT=HINGE_MOUNT, LABEL_POCKET=list(LID_LABEL_POCKET),
@@ -405,8 +406,8 @@ def hinge_covers():
 
 
 def open_lid(part, deg):
-    """Rotate a lid-side part about the hinge axis; positive = opening."""
-    return part.translate([0, -Y_BACK, -Z_PART]).rotate([-deg, 0, 0]).translate([0, Y_BACK, Z_PART])
+    """Rotate a lid-side part about the real hinge axis (HINGE_AXIS_Y, Z_PART); positive = opening."""
+    return part.translate([0, -HINGE_AXIS_Y, -Z_PART]).rotate([-deg, 0, 0]).translate([0, HINGE_AXIS_Y, Z_PART])
 
 
 def kb_port_bay():
@@ -658,7 +659,7 @@ def main():
     h_fixed, h_moving = hinge_envelope(0.0)
     interference(h_fixed, tray, "hinge (tray leaf + barrel) vs tray"); interference(h_moving, lid, "hinge (lid leaf) vs lid")
     interference(h_fixed, lid, "hinge barrel vs lid", tol=1.0)
-    log("== hinge motion (lid + panel rotated about the new axis; tray fixed)")
+    log(f"== hinge motion (lid + panel rotated about the real axis y={HINGE_AXIS_Y:.2f}, z={Z_PART}; tray fixed)")
     lidset = lid + panel
     traset = tray
     if lid_cov:
@@ -680,7 +681,7 @@ def main():
     if first_hit is None:
         log("  no collision with the tray from 0 to 180 deg")
     else:
-        log(f"  first contact at {first_hit} deg ({hits[0][1]:.1f} mm3): the hinge covers meet there and act as the stop")
+        log(f"  first contact at {first_hit} deg ({hits[0][1]:.1f} mm3)")
     log(f"  on a table the lid's top-back edge reaches the table at about {max_open} deg (opening limit)"
         if max_open else "  the lid never reaches the table")
     if first_hit is not None and max_open is not None and first_hit < max_open:

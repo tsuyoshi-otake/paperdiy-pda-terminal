@@ -27,7 +27,7 @@ import trimesh
 HERE = os.path.dirname(os.path.abspath(__file__))
 CAD = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(CAD, "src"))
-from params import (OUT_DIR, SPLIT_DIR, Y_BACK, Z_PART, PD_L, PD_TOP_X, PANEL_Z_BACK, BATT_CX, BATT_CY,  # noqa: E402
+from params import (OUT_DIR, SPLIT_DIR, Y_BACK, HINGE_AXIS_Y, Z_PART, PD_L, PD_TOP_X, PANEL_Z_BACK, BATT_CX, BATT_CY,  # noqa: E402
                     BATT_T, USB_PM_Y, USB_PM_Z)
 
 INI = os.path.join(HERE, "a1mini_pla_020.ini")
@@ -122,8 +122,8 @@ def thickness(mesh, n=6000):
 def open_point(p, deg):
     """Rotate a closed-assembly point about the hinge axis (lid opening)."""
     a = np.radians(-deg)
-    y, z = p[1] - Y_BACK, p[2] - Z_PART
-    return np.array([p[0], Y_BACK + y * np.cos(a) - z * np.sin(a), Z_PART + y * np.sin(a) + z * np.cos(a)])
+    y, z = p[1] - HINGE_AXIS_Y, p[2] - Z_PART
+    return np.array([p[0], HINGE_AXIS_Y + y * np.cos(a) - z * np.sin(a), Z_PART + y * np.sin(a) + z * np.cos(a)])
 
 
 def main():
@@ -192,14 +192,14 @@ def main():
     pd_c = np.array([PD_TOP_X - PD_L / 2, 0.0, PANEL_Z_BACK + 2.5])
     bat_c = np.array([BATT_CX, BATT_CY, PANEL_Z_BACK + BATT_T / 2 - 0.75])
     usb_c = np.array([-90.0, USB_PM_Y, USB_PM_Z])
-    for g, c in ((PAPERDIY_G, pd_c), (BATTERY_G, bat_c), (USB_CABLE_G, usb_c), (HINGE_G, np.array([0, Y_BACK, Z_PART]))):
+    for g, c in ((PAPERDIY_G, pd_c), (BATTERY_G, bat_c), (USB_CABLE_G, usb_c), (HINGE_G, np.array([0, HINGE_AXIS_Y, Z_PART]))):
         lid_m += g; lid_mc += g * c
     lid_cg = lid_mc / lid_m
     base_m, base_mc = 0.0, np.zeros(3)
     for name, qty in BASE_PARTS:
         g, c = part_mass(name)
         base_m += g * qty; base_mc += g * qty * c
-    base_m += HINGE_G; base_mc += HINGE_G * np.array([0, Y_BACK, Z_PART])
+    base_m += HINGE_G; base_mc += HINGE_G * np.array([0, HINGE_AXIS_Y, Z_PART])
     base_cg = base_mc / base_m
 
     tray = trimesh.load(stl("keyboard_tray") if os.path.exists(os.path.join(OUT_DIR, "keyboard_tray.stl")) else stl("tray_B_main"))
@@ -219,7 +219,7 @@ def main():
     lines += ["## Does it tip over backwards?", "",
               f"Lid side (printed parts{' as sliced' if exe else ' (solid estimate)'} + PaperDIY {PAPERDIY_G} g + battery "
               f"{BATTERY_G:g} g + USB-C cable {USB_CABLE_G:g} g + half the hinges): **{lid_m:.0f} g**, centre of mass "
-              f"{Y_BACK - lid_cg[1]:.1f} mm in front of the hinge axis when closed. Base without the keyboard: **{base_m:.0f} g**. "
+              f"{HINGE_AXIS_Y - lid_cg[1]:.1f} mm in front of the hinge axis when closed. Base without the keyboard: **{base_m:.0f} g**. "
               f"The device rests on the back edge of the tray at y = {pivot_y:.1f} mm; the lid reaches the table at "
               f"{table_limit} deg and is supported from there on.", "",
               "| Opening | lid centre of mass behind the back edge | keyboard needed so it does not tip |", "| --- | --- | --- |"] + rows

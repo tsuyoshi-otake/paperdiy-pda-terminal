@@ -72,7 +72,7 @@
   interference hinge (tray leaf + barrel) vs tray: 0.000 mm3 OK
   interference hinge (lid leaf) vs lid: 0.000 mm3 OK
   interference hinge barrel vs lid: 0.000 mm3 OK
-== hinge motion (lid + panel rotated about the new axis; tray fixed)
+== hinge motion (lid + panel rotated about the real axis y=54.15, z=12.85; tray fixed)
   interference lid hinge cover 0 vs lid: 0.000 mm3 OK
   interference lid hinge cover 0 vs tray: 0.000 mm3 OK
   interference lid hinge cover 1 vs lid: 0.000 mm3 OK
@@ -81,14 +81,14 @@
   interference tray hinge cover 0 vs lid: 0.000 mm3 OK
   interference tray hinge cover 1 vs tray: -0.000 mm3 OK
   interference tray hinge cover 1 vs lid: 0.000 mm3 OK
-  first contact at 155 deg (8.4 mm3): the hinge covers meet there and act as the stop
-  on a table the lid's top-back edge reaches the table at about 150 deg (opening limit)
+  no collision with the tray from 0 to 180 deg
+  on a table the lid's top-back edge reaches the table at about 155 deg (opening limit)
   key 0: rod tip y=-31.60, actuator tip y=-31.30
   key 1: rod tip y=-31.60, actuator tip y=-31.30
 == keyboard charge port (straight plug, overmold 12 x 6.5 mm, centred at x=81 z=9.4)
   interference charge plug vs tray: 0.000 mm3 OK
   interference charge plug vs lid (closed): 0.000 mm3 OK
-  with that plug in, the lid opens to 90 deg; beyond that its back face meets the plug
+  with that plug in, the lid opens to 95 deg; beyond that its back face meets the plug
 == USB-C panel-mount fit per lid-A variant (rough screw-ear envelope: ears 4 mm past the holes, 8 tall, 3 thick)
   interference lid_A_left_usb_noscrew: connector vs lid: 0.000 mm3 OK
   interference lid_A_left_usb_noscrew: connector vs power push-rod: 0.000 mm3 OK

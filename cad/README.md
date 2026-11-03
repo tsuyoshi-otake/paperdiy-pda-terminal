@@ -104,10 +104,13 @@ The original hinge (a knuckle on an axis at y = 54, z = 7.5 inside a 14 mm barre
 knob-pins, M3×40 cores, O-rings, friction set by how tight the knobs are) is replaced:
 * **Hinges:** 2 × **Sugatsune HG-MF08-BL** (free-stop, 0.0784 N·m ±25 % each, POM, 20 × 25 × 2.0, holes Ø2.4 with Ø4.2
   countersink, hole pitch 10 along / 16 across the axis — Sugatsune's spec table). Estimated lid torque (lid side ≈ 200 g
-  from the sliced masses plus PaperDIY, 2000 mAh cell and cable, centre of mass ≈ 49 mm from the axis) is ≈ 0.1 N·m with
+  from the sliced masses plus PaperDIY, 2000 mAh cell and cable, centre of mass ≈ 50 mm from the axis) is ≈ 0.1 N·m with
   the lid horizontal and 0.02–0.07 N·m at normal viewing angles, so the pair holds the lid anywhere and still opens easily. HG-MF15 (0.147 N·m) is 30 mm long with
   M3 holes: it needs `HINGE_LEN = 30`, `HINGE_HOLE_PITCH_X = 20`.
-* **Axis** on the outer back edge, on the parting line: y = 53.0, z = 12.85. The barrel strip, knuckle, ears and trough are
+* **Axis** at the outer back edge, on the parting line (z = 12.85). Sugatsune's 3D model shows a flat back and a barrel
+  (≈ Ø5.5) standing on the front only, its axis ≈ 3.2 mm above the flat back (`HINGE_AXIS_ABOVE_BACK`). Seated flat side
+  down in the 2.05 mm mortise, the axis is at y ≈ 54.15, ≈ 1.15 mm outside the back face (y = 53.0); every motion check, the
+  tipping estimate and the renders rotate about that real axis. The barrel strip, knuckle, ears and trough are
   removed (`BACK_ZONE_X` = ±62 is cut back and rebuilt from the plain back-wall profile): the case is 99.5 mm deep
   instead of 108.
 * **Back walls thickened outward** 3.0 → 9.5 mm (outer half of the wall, the top / bottom chamfers and the rounded back
@@ -122,12 +125,12 @@ knob-pins, M3×40 cores, O-rings, friction set by how tight the knobs are) is re
   opening (x ≥ 72.9).
 * **Cover plates** (`out/hinge_cover_lid_x2.stl`, `out/hinge_cover_tray_x2.stl`, 1.0 mm, print in the case colours):
   glued over each leaf after the screws are in, overlapping the case by 1.5 mm (glue land), starting 3.6 mm from the axis so
-  the barrel stays free. They stand 1.0 mm proud of the back face: a flush cover would push the hinge axis inside the face,
-  and the lid's back wall would then sweep into the tray when opening. The two covers of a hinge meet at about 155°, which
-  acts as the stop just past the table limit.
-* **Checks (`build.py`):** the lid + panel (+ covers) rotated about the new axis does not touch the tray (+ covers) up to
-  150°; on a table the lid's top-back edge reaches the table at about **150°**, which is the opening limit; the covers meet
-  at 155°. Hinge envelopes and covers vs lid / tray: 0 mm³.
+  the barrel stays free (0.85 mm). They stand 1.0 mm proud of the back face. The axis position matters: if it sat inside
+  the back face the lid's back wall would sweep into the tray (axis 0.5 mm inside: contact at 132°, 1.0 mm inside: 91°);
+  with the measured axis 1.15 mm outside, nothing touches from 0 to 180°. The hinge coupon checks this with a real hinge.
+* **Checks (`build.py`):** the lid + panel (+ covers) rotated about the real axis does not touch the tray (+ covers) from
+  0 to 180°; on a table the lid's top-back edge reaches the table at about **154°**, which is the opening limit.
+  Hinge envelopes (flat back on the mortise floor, barrel around the real axis) and covers vs lid / tray: 0 mm³.
 * `HINGE_MOUNT = "parting"` is an alternative: the leaves lie folded in the parting plane inside 14.5 mm back walls
   (case 8 mm deeper). Closed, only the barrels show, but open, the leaves and screw heads are visible under the screen.
 
@@ -137,8 +140,8 @@ The original tray has an opening in its 3 mm back wall at x 72.9–89.1, open fr
 plug overmold would have to fit through. A **bay** (x 70.5–91.5, z 4.0–15.5, r 1.5) is now cut from the outside back to
 the original wall face (y = 46.5), in the tray and 2.65 mm up into the lid wall, so the plug meets the same 3 mm wall as in
 the original: any straight plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits. `build.py` checks a
-12 × 6.5 mm overmold (0 mm³ against tray and closed lid) and sweeps the lid: **with that plug in, the lid opens to 90°**;
-beyond that the lid's back face swings down behind the tray into the plug. Charge with the lid closed or up to 90°.
+12 × 6.5 mm overmold (0 mm³ against tray and closed lid) and sweeps the lid: **with that plug in, the lid opens to 95°**;
+beyond that the lid's back face swings down behind the tray into the plug. Charge with the lid closed or up to 95°.
 Both bay faces print without overhang (open at the top in each part's print orientation).
 
 ### Battery: integrated into the panel (no separate `battery_carrier.stl`)
@@ -247,12 +250,14 @@ If something is tight or loose, change `DOVETAIL["clr"]`, `HINGE_CLR`, `HINGE_BA
   with its offsets (1.39 / 8.90 / 1.39).
 * M5 docs (docs.m5stack.com/en/products/sku/K159): size, power button / KEY1 = G4 / KEY2 = G3, SH1.0-2P battery connector.
 * Sugatsune HG-MF spec table (global.sugatsune.com/eu/en/tech/products/21651_t) and retailer listings: L / W / t / W2 / H2,
-  holes, torque. The barrel diameter is not published (`HINGE_BARREL_D` = 5.5 assumed from the product photo).
+  holes, torque. The barrel is not in the table: `HINGE_BARREL_D` = 5.5 and `HINGE_AXIS_ABOVE_BACK` = 3.2 are read off
+  Sugatsune's online 3D viewer (end view, scaled by the 25 mm width), so they are good to a few tenths of a mm.
 * Original enclosure geometry: sections and ray probes of the phone-enclosure STLs.
 
 ## Assumptions / placeholders — **measure on the real part**
-* **Hinge barrel / axis:** the barrel diameter and the exact axis height above the leaf seat are not published. The slot takes
-  a barrel up to ~Ø6.2 and an axis up to 0.8 mm inside the face; check the first print with the real hinge.
+* **Hinge barrel / axis:** read off Sugatsune's 3D viewer, not a drawing (Ø ≈ 5.5, axis ≈ 3.2 mm above the flat back).
+  The slot takes a barrel up to ~Ø6.2. The opening range depends on the axis staying outside the back face (it is ≈ 1.15 mm
+  outside); join the hinge coupons with a real hinge and open them past 150° before printing lid and tray.
 * **TODO keyboard:** first fit the CACOE in the tray and check that the original openings reach its charge port
   and switch. Only if they don't: `KB_CUTS_ENABLED = True` and measure `KB_PORT_*` / `KB_SW_*` (placeholders: 10 × 5 opening
   at y = +10, z = 6.5 and an 8 mm notch down to z = 5.5 at y = −15, left short wall). Its weight decides the tipping angle.
@@ -270,15 +275,15 @@ If something is tight or loose, change `DOVETAIL["clr"]`, `HINGE_CLR`, `HINGE_BA
 
 ## Does it tip over when open?
 `tools/print_report.py` adds the sliced part masses, the PaperDIY (26.4 g, M5Stack spec), a 38 g cell and a 10 g cable
-(both assumed) and finds the lid side at **≈ 199 g** with its centre of mass 49 mm in front of the hinge axis when closed;
+(both assumed) and finds the lid side at **≈ 199 g** with its centre of mass 50 mm in front of the hinge axis when closed;
 the printed base is ≈ 68 g. The device rests on the back edge of the tray (y = 51.0). Opened past 90° the lid's centre of
 mass moves behind that edge, so the keyboard has to supply the counterweight:
 
-| Opening | 100° | 110° | 120° | 130° | 140° | 152° (lid touches the table) |
+| Opening | 100° | 110° | 120° | 130° | 140° | 154° (lid touches the table) |
 |---|---|---|---|---|---|---|
-| Keyboard needed | 26 g | 56 g | 84 g | 107 g | 127 g | 143 g |
+| Keyboard needed | 31 g | 62 g | 91 g | 115 g | 134 g | 153 g |
 
-**Weigh the CACOE keyboard.** At 143 g or more it never tips; lighter keyboards are fine up to the angle in the table.
+**Weigh the CACOE keyboard.** At 153 g or more it never tips; lighter keyboards are fine up to the angle in the table.
 
 ## Verification actually performed
 STL re-load watertight / single body / bbox ≤ 175 mm for every part. Zero-volume interference (closed assembly) between
@@ -396,7 +401,8 @@ published drawing and structure files.
 | `LID_PAD` | `dict(...)` | unused | (old lid seam pads; `LID_SEAM = "dovetail"` replaces them) |
 | `HINGE_LEN` / `HINGE_WIDTH` / `HINGE_LEAF_T` | `20.0` / `25.0` / `2.0` | measured | [M:Sugatsune spec table] HG-MF08 L / W / t |
 | `HINGE_HOLE_PITCH_X` / `HINGE_HOLE_OFF` | `10.0` / `8.0` | measured | [M:Sugatsune spec table] H2 = 10, W2 = 16 |
-| `HINGE_BARREL_D` | `5.5` | ASSUMED | [A] from the product photo -> MEASURE |
+| `HINGE_BARREL_D` | `5.5` | measured | [M: Sugatsune 3D viewer, ± a few 0.1 mm] |
+| `HINGE_AXIS_ABOVE_BACK` / `HINGE_AXIS_Y` | `3.2` / `≈ 54.15` | measured / derived | axis height above the hinge's flat back; real rotation axis |
 | `HINGE_X` | `52.0` | design choice | hinge centres at +-52 |
 | `HINGE_CLR` | `0.25` | design choice | mortise clearance per side |
 | `HINGE_PILOT_HOLES` / `HINGE_PILOT_D` | `True` / `1.8` | design choice | printed pilots for M2 tapping screws |
