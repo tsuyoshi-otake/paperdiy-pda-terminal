@@ -74,7 +74,7 @@ def write_3mf(path, placed, title):
         t = "".join(f'<triangle v1="{a}" v2="{b}" v3="{c}"/>' for a, b, c in m.faces)
         objs.append(f'<object id="{i}" name="{escape(name)}" type="model"><mesh><vertices>{v}</vertices>'
                     f'<triangles>{t}</triangles></mesh></object>')
-        items.append(f'<item objectid="{i}" transform="1 0 0 0 1 0 0 0 1 {cx:.4f} {cy:.4f} 0" printable="1"/>')
+        items.append(f'<item objectid="{i}" transform="1 0 0 0 1 0 0 0 1 {cx:.4f} {cy:.4f} 0"/>')
     model = ('<?xml version="1.0" encoding="UTF-8"?>\n'
              '<model unit="millimeter" xml:lang="en-US" '
              'xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">'
