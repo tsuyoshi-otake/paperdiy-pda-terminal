@@ -39,7 +39,9 @@ log is written to `out/build_log.txt`.
 * **Input pinned:** `ORIG_COMMIT` and `ORIG_SHA256` in `src/params.py`; `load()` refuses STLs with other hashes
   (override: `PHONE_ENCLOSURE_ANY_VERSION=1`). `tools/fetch_original.sh` checks out that commit.
 * **Tools pinned:** `requirements.txt` (Python 3.13). The README images use `docs/render/package-lock.json`.
-* **Deterministic:** two builds give byte-identical STL / 3MF files (also with one CPU); the 3MF zips carry fixed timestamps.
+* **Deterministic:** on one machine, two builds give byte-identical STL / 3MF files (also with one CPU); the 3MF zips carry
+  fixed timestamps. Another machine can round the last digit differently: on the GitHub Actions runner 32 of the 44
+  files were byte-identical and the other 12 matched in geometry only.
 * **Recorded:** `out/MANIFEST.json` holds the SHA-256, volume, bounding box and triangle count of every output.
   `tools/manifest.py --check` accepts byte differences only when the geometry matches to 0.01 mm / 0.01 %.
 * **CI:** `.github/workflows/build.yml` runs `make verify`, the slicer report, the firmware build (compared byte for byte

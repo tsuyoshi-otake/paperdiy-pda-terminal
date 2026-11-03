@@ -74,7 +74,7 @@ make report    # （PrusaSlicer があれば）印刷時間・重さ・警告・
 ```
 
 - **元データの固定**：元のリポジトリはコミット `a21bfd6` に固定し、使う 3 つの STL の SHA-256 を `src/params.py` に書いてあります。違うものを読もうとするとビルドが止まります（`tools/fetch_original.sh` が正しいものを取ってきます）
-- **同じものが出る**：同じ入力からは、STL も 3MF も 1 バイトも違わないファイルができます（2 回ビルドして確認）。`out/MANIFEST.json` に全ファイルの SHA-256 と体積・寸法を記録してあり、`make verify` がこれと比べます
+- **同じものが出る**：同じ PC なら、STL も 3MF も 1 バイトも違わないファイルができます（2 回ビルドして確認）。別の PC では計算の最後の桁の丸めでバイトが変わるファイルがありますが、形は一致します。`out/MANIFEST.json` に全ファイルの SHA-256 と体積・寸法を記録してあり、`make verify` はバイトが同じか、形が 0.01 mm / 0.01 % 以内で同じかを確かめます（GitHub Actions では 44 ファイル中 32 がバイト一致、12 が形だけ一致）
 - **CI**：GitHub Actions（`.github/workflows/build.yml`）で、push のたびに同じ確認をします
 
 寸法と作り方の切り替えはすべて `src/params.py` にあります。たとえば `FASTENING = "inserts"` で M2 インサート式、`HINGE_MOUNT = "parting"` でヒンジを合わせ目に隠す方式、`KB_CUTS_ENABLED = True` でキーボードの開口の追加に切り替えられます。形を変えたら `make manifest` で記録を更新します。

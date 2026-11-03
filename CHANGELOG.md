@@ -16,8 +16,8 @@
 **再現性**
 - 元データ（phone-enclosure）をコミット `a21bfd6` と STL の SHA-256 で固定。違うものではビルドが止まる。`cad/tools/fetch_original.sh` で取得
 - Python のパッケージ（`cad/requirements.txt`）、npm パッケージ（`docs/render/package-lock.json`）を固定
-- 筐体の出力が 1 バイトも違わずに再現することを確認（1 CPU でも同じ）。3MF の zip の日時を固定。全出力の指紋を `cad/out/MANIFEST.json` に記録し、`make verify` で比べる
-- ファーム：ESP-IDF を v5.5.6（タグ）に固定し、`CONFIG_APP_REPRODUCIBLE_BUILD=y` とバージョン 0.2.0 で再現可能ビルドに。別のフォルダで 2 回ビルドして同じバイナリになることを確認し、`prebuilt/` を差し替えて `SHA256SUMS` と `BUILDINFO.md` を追加。sdkconfig.defaults から ESP-IDF 5.5 に存在しない設定 2 つを削除（バイナリは変わらない）
+- 筐体の出力が同じ PC では 1 バイトも違わずに再現することを確認（1 CPU でも同じ）。3MF の zip の日時を固定。全出力の指紋を `cad/out/MANIFEST.json` に記録し、`make verify` で比べる（別の PC では丸めでバイトが変わるファイルがあるので、形が 0.01 mm / 0.01 % 以内なら一致とする。GitHub Actions では 32 / 44 がバイト一致、12 が形だけ一致）
+- ファーム：ESP-IDF を v5.5.6（タグ）に固定し、`CONFIG_APP_REPRODUCIBLE_BUILD=y` とバージョン 0.2.0 で再現可能ビルドに。別のフォルダで 2 回、新しく clone したリポジトリで 1 回、GitHub Actions の `espressif/idf:v5.5.6` コンテナで 1 回ビルドし、どれも同じバイナリになることを確認。`prebuilt/` を差し替えて `SHA256SUMS` と `BUILDINFO.md` を追加。sdkconfig.defaults から ESP-IDF 5.5 に存在しない設定 2 つを削除（バイナリは変わらない）
 - 端末エミュレータのホスト上テストを `firmware/test/host/` に入れた（AddressSanitizer・UBSan 付き、`make test`）
 - ルートの `Makefile` と GitHub Actions（`.github/workflows/build.yml`）
 
