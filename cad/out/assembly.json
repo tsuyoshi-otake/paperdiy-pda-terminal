@@ -1,0 +1,21 @@
+{
+ "Y_BACK": 53.0,
+ "Z_PART": 12.85,
+ "HINGE_X": 52.0,
+ "HINGE_LEN": 20.0,
+ "HINGE_WIDTH": 25.0,
+ "HINGE_LEAF_T": 2.0,
+ "HINGE_BARREL_D": 5.5,
+ "HINGE_CLR": 0.25,
+ "HINGE_COVER": true,
+ "COVER_T": 1.0,
+ "COVER_RIM": 1.5,
+ "COVER_R0": 3.6,
+ "HINGE_MOUNT": "face",
+ "LABEL_POCKET": [
+  21.7,
+  78.0,
+  21.34,
+  32.5
+ ]
+}

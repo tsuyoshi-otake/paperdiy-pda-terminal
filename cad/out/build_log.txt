@@ -7,21 +7,22 @@
   battery 50.0x34.0x10.0: lid cavity 9.00, needs +1.50 -> panel pocket 0.75 + ceiling relief 0.75 (max 1.40 each, leaves >= 1.6) -> FITS; cell top z=27.25, ceiling z=27.75
 == building
 == exports (bounding boxes are axis-aligned in the original assembly frame)
-  out/display_panel_paperdiy.stl: bbox 195.2 x 86.2 x 11.5 mm, watertight=True, winding_ok=True, bodies=1, vol=32334 mm3
+  out/display_panel_paperdiy.stl: bbox 195.2 x 86.2 x 11.5 mm, watertight=True, winding_ok=True, bodies=1, vol=32366 mm3
   out/paperdiy_strap.stl: bbox 8.0 x 78.4 x 2.5 mm, watertight=True, winding_ok=True, bodies=1, vol=1230 mm3
   out/key_pushrod_x2.stl: bbox 5.5 x 15.9 x 4.0 mm, watertight=True, winding_ok=True, bodies=1, vol=120 mm3
   out/power_pushrod.stl: bbox 41.5 x 5.5 x 4.0 mm, watertight=True, winding_ok=True, bodies=1, vol=291 mm3
-  out/display_lid_usbc.stl: bbox 202.0 x 96.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=94479 mm3
-  out/keyboard_tray.stl: bbox 202.0 x 96.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=72842 mm3
+  out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=105622 mm3
+  out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=80139 mm3
+  out/top_plate_blank.stl: bbox 56.0 x 10.9 x 1.5 mm, watertight=True, winding_ok=True, bodies=1, vol=909 mm3
   out/hinge_cover_lid_x2.stl: bbox 23.5 x 1.0 x 10.3 mm, watertight=True, winding_ok=True, bodies=1, vol=242 mm3
   out/hinge_cover_tray_x2.stl: bbox 23.5 x 1.0 x 8.9 mm, watertight=True, winding_ok=True, bodies=1, vol=209 mm3
 == split pieces for A1 mini (limit 175 mm)
-  out/split/lid_A_left.stl: bbox 29.0 x 96.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=18651 mm3
-  out/split/lid_B_main.stl: bbox 173.0 x 96.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=77203 mm3
-  out/split/tray_A_left.stl: bbox 35.0 x 96.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=12160 mm3
-  out/split/tray_B_main.stl: bbox 173.0 x 96.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=60640 mm3
+  out/split/lid_A_left.stl: bbox 35.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=20035 mm3
+  out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=85545 mm3
+  out/split/tray_A_left.stl: bbox 35.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=13254 mm3
+  out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=66843 mm3
   out/split/panel_A_left.stl: bbox 31.6 x 86.2 x 7.1 mm, watertight=True, winding_ok=True, bodies=1, vol=6766 mm3
-  out/split/panel_B_main.stl: bbox 169.6 x 86.2 x 11.5 mm, watertight=True, winding_ok=True, bodies=1, vol=25532 mm3
+  out/split/panel_B_main.stl: bbox 169.6 x 86.2 x 11.5 mm, watertight=True, winding_ok=True, bodies=1, vol=25563 mm3
 == interference checks (assembled, closed lid)
   interference PaperDIY envelope vs panel: -0.000 mm3 OK
   interference PaperDIY envelope vs strap: 0.000 mm3 OK
@@ -29,7 +30,7 @@
   interference battery vs panel: 0.000 mm3 OK
   interference battery vs lid: 0.000 mm3 OK
   interference strap vs lid: 0.000 mm3 OK
-  interference strap vs panel: 0.000 mm3 OK
+  interference strap vs panel: -0.000 mm3 OK
   interference key rod 0 vs lid: 0.000 mm3 OK
   interference key rod 0 vs panel: 0.000 mm3 OK
   interference key rod 0 vs PaperDIY: 0.000 mm3 OK
@@ -42,7 +43,7 @@
   interference panel vs lid: -0.000 mm3 OK
   interference panel A vs B (dovetail): 0.000 mm3 OK
   interference tray A vs B (dovetail): 0.000 mm3 OK
-  interference lid A vs B: 0.000 mm3 OK
+  interference lid A vs B: -0.000 mm3 OK
   interference hinge (tray leaf + barrel) vs tray: 0.000 mm3 OK
   interference hinge (lid leaf) vs lid: 0.000 mm3 OK
   interference hinge barrel vs lid: 0.000 mm3 OK

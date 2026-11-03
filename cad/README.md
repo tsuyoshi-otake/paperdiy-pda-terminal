@@ -4,7 +4,11 @@ A Boox-Palma-free version of Un Kyu Lee's "PDA Terminal": the lid holds an **M5S
 behind a new bezel panel, plus a 1S LiPo, and gets a panel-mount USB-C. The original knob-and-pin hinge is replaced by
 **two free-stop torque hinges (Sugatsune HG-MF08) recessed flush into the back face, under printed cover plates**, so only
 the hinge barrels show. The keyboard tray (CACOE mini BT keyboard) keeps the
-original openings by default; optional charge-port / switch cut-outs can be enabled once measured. Every part is also split for a **Bambu Lab A1 mini (180 mm bed)**.
+original openings by default; optional charge-port / switch cut-outs can be enabled once measured. Every part is also split
+for a **Bambu Lab A1 mini (180 mm bed)** and joined with glued dovetail keys; nothing needs supports. All case fasteners are
+**M2×8 countersunk tapping screws into printed pilot holes** (14), plus one M2×4 machine screw into the PaperDIY standoff:
+no heat-set inserts, dowels or socket screws. Bill of materials, print settings and assembly order (Japanese):
+[ASSEMBLY_ja.md](ASSEMBLY_ja.md).
 
 ## Run
 
@@ -23,14 +27,15 @@ PNGs with `src/render.py` (software z-buffer, no GPU). The full log is written t
 | File | Bbox | Notes |
 |---|---|---|
 | `out/display_panel_paperdiy.stl` | 195.2 × 86.2 × 11.5 | bezel, unsplit (too big for A1 mini: use the split pieces) |
-| `out/display_lid_usbc.stl` | 202.0 × 96.5 × 22.0 | lid, unsplit (no seam pads) |
-| `out/keyboard_tray.stl` | 202.0 × 96.5 × 12.8 | tray, unsplit |
+| `out/display_lid_usbc.stl` | 202.0 × 99.5 × 22.0 | lid, unsplit |
+| `out/keyboard_tray.stl` | 202.0 × 99.5 × 12.8 | tray, unsplit |
 | `out/paperdiy_strap.stl` | 8.0 × 78.4 × 2.5 | clamps the PaperDIY via its M2 standoff |
 | `out/key_pushrod_x2.stl` | 5.5 × 15.9 × 4.0 | print **2** (KEY1/KEY2) |
 | `out/power_pushrod.stl` | 41.5 × 5.5 × 4.0 | power button |
+| `out/top_plate_blank.stl` | 56.0 × 10.9 × 1.5 | optional plate for the lid-top recess (accent colour) |
 | `out/hinge_cover_lid_x2.stl` / `hinge_cover_tray_x2.stl` | 23.5 × 1.0 × 10.3 / 23.5 × 1.0 × 8.9 | print 2 each (lid / tray colour) |
-| `out/split/lid_A_left.stl` / `lid_B_main.stl` | 29.0 × 96.5 × 22.0 / 173.0 × 96.5 × 22.0 | |
-| `out/split/tray_A_left.stl` / `tray_B_main.stl` | 35.0 × 96.5 × 12.8 / 173.0 × 96.5 × 12.8 | |
+| `out/split/lid_A_left.stl` / `lid_B_main.stl` | 35.0 × 99.5 × 22.0 / 173.0 × 99.5 × 22.0 | |
+| `out/split/tray_A_left.stl` / `tray_B_main.stl` | 35.0 × 99.5 × 12.8 / 173.0 × 99.5 × 12.8 | |
 | `out/split/panel_A_left.stl` / `panel_B_main.stl` | 31.6 × 86.2 × 7.1 / 169.6 × 86.2 × 11.5 | the panel (195.2 mm) does not fit 180 mm in any orientation either |
 
 All printed parts ≤ 173 mm (limit 175). Every STL above was re-loaded after writing: watertight, consistent winding, a single body.
@@ -44,7 +49,7 @@ All printed parts ≤ 173 mm (limit 175). Every STL above was re-loaded after wr
   It sits 1.39 mm from the non-USB end and 8.90 mm from the USB end of the glass, which hides the FPC/bond area.
   The window centre is at x = +1.9.
 * **Retention:** a 1.6 × 1.0 mm locating lip around the glass (0.3 mm clearance). A printed **strap** is screwed to two
-  posts on the panel (M2 heat-set inserts) and clamps the board through its **single M2 standoff** (the drawing shows only one
+  posts on the panel (M2×8 tapping screws into Ø1.8 pilots; `FASTENING = "inserts"` restores M2 heat-set inserts) and clamps the board through its **single M2 standoff** (the drawing shows only one
   M2, centred, 77.9 mm from the non-USB end). The strap is 2.5 mm thick under the countersunk head, so **ISO 7046 M2×4 gives
   1.5 mm of thread in the standoff, and M2×5 gives 2.5 mm. Both are under the 3 mm limit. Do not use M2×6 or longer.**
   `build.py` asserts this. Elsewhere the strap's underside clears the ESP32-S3 module (5.45 mm tall) by 0.45 mm.
@@ -65,18 +70,19 @@ knob-pins, M3×40 cores, O-rings, friction set by how tight the knobs are) is re
   2000 mAh cell ≈ 225 g, centre of mass ≈ 50 mm from the axis) is ≈ 0.11 N·m with the lid horizontal and 0.02–0.07 N·m at
   normal viewing angles, so the pair holds the lid anywhere and still opens easily. HG-MF15 (0.147 N·m) is 30 mm long with
   M3 holes: it needs `HINGE_LEN = 30`, `HINGE_HOLE_PITCH_X = 20`.
-* **Axis** on the outer back edge, on the parting line: y = 50.0, z = 12.85. The barrel strip, knuckle, ears and trough are
-  removed (`BACK_ZONE_X` = ±62 is cut back and rebuilt from the plain back-wall profile), so the case is 11 mm shallower.
-* **Back walls thickened outward** 3.0 → 6.5 mm (outer half of the wall, the top / bottom chamfers and the rounded back
-  corners move 3.5 mm back; the keyboard pocket and the lid interior are unchanged), so the leaf screws have material.
+* **Axis** on the outer back edge, on the parting line: y = 53.0, z = 12.85. The barrel strip, knuckle, ears and trough are
+  removed (`BACK_ZONE_X` = ±62 is cut back and rebuilt from the plain back-wall profile): the case is 99.5 mm deep
+  instead of 108.
+* **Back walls thickened outward** 3.0 → 9.5 mm (outer half of the wall, the top / bottom chamfers and the rounded back
+  corners move 6.5 mm back; the keyboard pocket and the lid interior are unchanged), so M2×8 screws fit on both sides.
 * **Mortises:** each leaf sits in a 2.0 mm pocket (0.25 mm clearance) so it is flush with the back face; a slot along the axis
   takes the barrel (up to ~Ø6.2, axis tolerated up to 0.8 mm inside the face). Under the tray leaves the bottom chamfer is
-  squared off so the whole leaf is supported.
-* **Screws:** M2 countersunk tapping screws, **M2×8 into the lid** (4.5 mm wall + an 18 × 4 × 8.5 mm boss inside the lid)
-  and **M2×5 into the tray** (4.5 mm wall; the keyboard pocket is behind it). Ø1.8 pilot holes are printed at the catalogue
-  hole positions and stop 1 mm short of the pocket / lid interior.
-* **Positions:** x = ±52 (20 mm long each), clear of the split at x = −72, the seam pads and the tray's rear opening
-  (x ≥ 72.9).
+  squared off and the mortise runs out through the bottom edge (no 0.1 mm skin).
+* **Screws:** 8 × **M2×8 countersunk tapping screws** (head in the leaf countersink, 6 mm into the wall). 7.5 mm of wall
+  behind each leaf, so no bosses are needed; Ø1.8 pilot holes at the catalogue hole positions stop 1.5 mm short of the
+  keyboard pocket / lid interior.
+* **Positions:** x = ±52 (20 mm long each), clear of the split at x = −72 (and its dovetail keys) and the tray's rear
+  opening (x ≥ 72.9).
 * **Cover plates** (`out/hinge_cover_lid_x2.stl`, `out/hinge_cover_tray_x2.stl`, 1.0 mm, print in the case colours):
   glued over each leaf after the screws are in, overlapping the case by 1.5 mm (glue land), starting 3.6 mm from the axis so
   the barrel stays free. They stand 1.0 mm proud of the back face: a flush cover would push the hinge axis inside the face,
@@ -107,21 +113,22 @@ One original Palma corner rib in the lid flares to y = −30.2 near the ceiling,
    rebuilt by extruding the adjacent original wall profile. A ray scan found **0 deviations** from the original outer surface
    (flat wall at y = −46.5 / x = +101, same top chamfer). Added: panel-mount USB-C opening + 2 screw holes and the power-rod
    bore (left wall), 2 key-rod bores (front wall), battery ceiling relief. **Hinge knuckle removed**, back wall rebuilt and
-   thickened to 6.5 mm, two hinge mortises with barrel slot, pilot holes and inside screw bosses (see "Hinge").
-   Camera window, label recess, vents and corner bosses unchanged.
-3. **Keyboard (tray):** **hinge ears and trough removed**, back wall rebuilt and thickened to 6.5 mm, two hinge mortises
+   thickened to 9.5 mm, two hinge mortises with barrel slot and pilot holes (see "Hinge"). **Camera window filled**
+   (flat top). The 4 corner insert holes are refilled and re-drilled as Ø1.8 pilots for M2×8 tapping screws.
+   Label recess, vents and corner bosses otherwise unchanged.
+3. **Keyboard (tray):** **hinge ears and trough removed**, back wall rebuilt and thickened to 9.5 mm, two hinge mortises
    with barrel slot and pilot holes, bottom chamfer squared under the leaves. Keyboard cut-outs unchanged by default
    (`KB_CUTS_ENABLED = False`). The original right-wall (y 26.3–36.7) and
    rear-wall (x 72.9–89.1) openings are kept; they are probably the CACOE port/switch cut-outs of the original design (not
    verified). If the real keyboard's port/switch are elsewhere, set `KB_CUTS_ENABLED = True`, measure `KB_*` and rebuild.
-4. New parts: strap, 3 push-rods. Split versions of lid / tray / panel. The original knobs are no longer used.
+4. New parts: strap, 3 push-rods, 4 hinge covers, optional top plate. Split versions of lid / tray / panel. The original
+   knobs and label are not used.
 
 ## Splitting for the A1 mini
-* **Lid** at x = −72: clear of the hinges (|x| 42–62) and of the camera window (x ≥ −68.9 at the top).
-  There are two internal **seam pads** on the front and back walls (12 × 12 × 7.7 mm, z 19.3–27, clear of the panel, rods and
-  USB plug). Each pad has a **Ø3.3 dowel hole** through it (3 × 10 mm dowel) and an **M2 heat-set insert** (Ø3.2, 5 deep) in
-  piece A. Piece B has a Ø2.4 clearance hole with a Ø4.2 × 2.5 counterbore facing the open cavity: use **M2×6 socket head**.
-  Glue the ceiling butt joint as well.
+* **Lid** at x = −72: clear of the hinges (|x| 42–62). Joined like the tray and panel: **3 glued dovetail keys** through
+  the 3 mm ceiling (y = −25 / 0 / +25; the camera window that used to sit there is filled) plus butt-glued front / back
+  walls. The hinges are in piece B, so the seam carries no hinge load. (The earlier seam pads with dowels, inserts and
+  socket screws are gone.)
 * **Tray** at x = −72: clear of the hinges and the rear opening. The tray interior is fully occupied by the
   keyboard and the floor is only 3 mm, so dowels or inserts would break the ≥ 1.6 mm wall rule or the outer silhouette.
   The joint is **3 glued dovetail keys** through the floor (neck 6, head 10, depth 6, 0.2 mm/side clearance) plus butt-glued
@@ -130,7 +137,7 @@ One original Palma corner rib in the lid flares to y = −30.2 near the ceiling,
 
 ## Print-ready 3MF (A1 mini)
 `3mf/plate1_lid.3mf` (lid A+B, 2 lid hinge covers), `plate2_tray.3mf` (tray A+B, 2 tray hinge covers) and
-`plate3_panel_parts.3mf` (panel A+B, strap, 3 push-rods): every part already in print orientation and laid out on a 180 x 180 mm plate, grouped by colour.
+`plate3_panel_parts.3mf` (panel A+B, strap, 3 push-rods, optional top plate): every part already in print orientation and laid out on a 180 x 180 mm plate, grouped by colour.
 No supports are needed.
 Regenerate with `python3 src/export_3mf.py` after `src/build.py`.
 
@@ -139,13 +146,20 @@ Regenerate with `python3 src/export_3mf.py` after `src/build.py`.
 * Panel pieces: **screen face down** (z = 15 on the bed). Lip, posts, cradles and bay frame grow upward with no supports.
 * Tray pieces: **floor down** (as modelled).
 * Strap: **top face down** (countersinks open toward the bed, pad up). Push-rods: **flat (D) side down**.
+* Hinge covers and top plate: **visible face down**, like the lid, so they match its texture.
+* Suggested process (Bambu Studio): 0.20 mm Standard, PLA, textured PEI, **3 wall loops** (material around the screw
+  pilots), 15 % gyroid, no supports, no brim.
 
 ## Hardware
-2× M2×4 (max M2×5) ISO 7046 countersunk for the strap standoff screw; 2× M2×6 ISO 7046 for the strap ends; 2 + 2 M2 inserts
-Ø3.2 L3 (strap posts + lid seam); 2× M2×6 socket head (lid seam); 2× dowel Ø3 × 10; original 4× M2 inserts + 4× M2 panel
-screws from the original BOM; **2× Sugatsune HG-MF08-BL**, **4× M2×8 + 4× M2×5 countersunk tapping screws** (hinges);
-panel-mount USB-C extension; 1S LiPo with protection PCB
-and a JST **SH1.0-2P** lead (PaperDIY battery input per M5 docs).
+* **14× M2×8 countersunk tapping screws** (plastic type): 4 panel corners, 2 strap ends, 8 hinges.
+* **1× M2×4 countersunk machine screw** (ISO 7046) into the PaperDIY standoff — **max M2×5** (3 mm thread limit).
+* **2× Sugatsune HG-MF08** (-WT or -BL; hidden under the covers).
+* CA gel or epoxy (dovetail seams, hinge covers, top plate); thin double-sided tape and 0.5 mm foam (battery, keyboard).
+* Panel-mount USB-C extension (male–female, screw ears, **data and CC lines passed through**), with its own screws / nuts.
+* 1S LiPo with protection PCB, ≤ 50 × 34 × 11.3 mm, JST **SH1.0-2P** lead (PaperDIY battery input per M5 docs) —
+  **check the polarity** before plugging it in.
+* `FASTENING = "inserts"` switches the panel corners and strap posts back to M2 heat-set inserts (Ø3.2 L3) with M2 machine
+  screws, for a panel that will be opened often.
 
 ## Sources of measured dimensions
 * PaperDIY Assembly Kit mechanical drawing **K159_PaperDIY_Assembly_Kit_model_size.pdf**
@@ -176,7 +190,8 @@ and a JST **SH1.0-2P** lead (PaperDIY battery input per M5 docs).
   The power actuator protrusion (0.7) comes from an extension line and the kit cap position.
 * The ED047TC1 active area is **not** taken from a datasheet. The window is M5's kit window, which shows some inactive border.
 * Battery default 50 × 34 × 10 is the requested default, not a specific cell. Check charge current vs. cell size (not verified).
-* Fits: 0.3 mm lip, 0.4 mm on rod bores, 0.2 mm/side on dovetails, Ø3.3 for 3 mm dowels. Tune for your printer.
+* Fits: 0.3 mm lip, 0.4 mm on rod bores, 0.2 mm/side on dovetails, 0.25 mm/side on the hinge mortises, Ø1.8 screw pilots.
+  Tune for your printer.
 
 ## Verification actually performed
 STL re-load watertight / single body / bbox ≤ 175 mm for every part. Zero-volume interference (closed assembly) between
@@ -280,16 +295,24 @@ published drawing and structure files.
 | `MAX_PIECE` | `175.0` | design choice |  |
 | `DOVETAIL` | `dict(neck=6.0, head=10.0, depth=6.0, clr=0.2)` | design choice | glued dovetail keys (0.4 total clearance) |
 | `DOVETAIL_Y` | `(-25.0, 0.0, 25.0)` | design choice |  |
-| `DOWEL_D` | `3.3` | design choice | for 3 mm dowel pins (3x10) |
-| `LID_PAD` | `dict(half_len=6.0, depth=12.0, z0=19.3, dowel_off=3.0, dowel_z=22.6, ins_off=8.0, ins_z=24.6,` | design choice |  |
+| `DOWEL_D` | `3.3` | unused | (old lid seam pads) |
+| `LID_PAD` | `dict(...)` | unused | (old lid seam pads; `LID_SEAM = "dovetail"` replaces them) |
 | `HINGE_LEN` / `HINGE_WIDTH` / `HINGE_LEAF_T` | `20.0` / `25.0` / `2.0` | measured | [M:Sugatsune spec table] HG-MF08 L / W / t |
 | `HINGE_HOLE_PITCH_X` / `HINGE_HOLE_OFF` | `10.0` / `8.0` | measured | [M:Sugatsune spec table] H2 = 10, W2 = 16 |
 | `HINGE_BARREL_D` | `5.5` | ASSUMED | [A] from the product photo -> MEASURE |
 | `HINGE_X` | `52.0` | design choice | hinge centres at +-52 |
 | `HINGE_CLR` | `0.25` | design choice | mortise clearance per side |
 | `HINGE_PILOT_HOLES` / `HINGE_PILOT_D` | `True` / `1.8` | design choice | printed pilots for M2 tapping screws |
-| `BACK_EXTRA` | `3.5` | design choice | back walls 3.0 -> 6.5 mm; new back face / axis plane y = 50.0 |
+| `BACK_EXTRA` | `6.5` | design choice | back walls 3.0 -> 9.5 mm; new back face / axis plane y = 53.0 |
 | `Z_PART` | `12.85` | measured | [M] parting line at the back |
 | `BACK_ZONE_X` | `62.0` | design choice | old hinge removed and back wall rebuilt for /x/ <= 62 |
 | `CORNER_C` | `(95.0, 40.5)` | measured | [M] centre of the r 6 back-corner arcs |
 | `LID_HINGE_BOSS` | `w 18, depth 4, z 18.5..27` | design choice | screw boss inside the lid per hinge |
+| `HINGE_MOUNT` | `"face"` | design choice | leaves flush in the back face ("parting": folded in the parting plane) |
+| `HINGE_COVER` / `COVER_T` / `COVER_RIM` / `COVER_R0` | `True` / `1.0` / `1.5` / `3.6` | design choice | printed covers over the leaves |
+| `FASTENING` | `"tapping"` | design choice | M2x8 tapping screws into printed pilots ("inserts": M2 heat-set inserts) |
+| `SCREW_PILOT_D` / `TAP_SCREW_LEN` | `1.8` / `8.0` | design choice | one tapping-screw size everywhere |
+| `LID_CORNER_HOLES` | `(+-92.8, +-38.78)` | measured | [M] panel screw bosses in the lid |
+| `LID_FILL_CAMERA` / `CAMERA_FILL` | `True` / `(-69.5, -22.5, -34.8, -17.8)` | design choice | Palma camera window filled |
+| `LID_SEAM` | `"dovetail"` | design choice | lid halves joined by 3 glued dovetail keys in the ceiling |
+| `TOP_PLATE` | `True` | design choice | blank plate for the lid-top recess |

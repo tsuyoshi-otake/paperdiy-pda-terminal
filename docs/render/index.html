@@ -216,10 +216,10 @@ scene.add(mesh(trayG, M.cream));
 scene.add(keyboard());
 
 // moving half: lid parts, rotated about the hinge axis (x axis through y = 54, z = 7.5)
-// torque hinges (Sugatsune HG-MF08, 20 x 25 x 2.0) recessed flush into the back face, axis on the outer back edge;
-// printed cover plates (case colour) over the leaves, so only the barrels show
-const HINGE_Y = 50.0, HINGE_Z = 12.85, HINGE_X = 52.0, H_LEN = 20.0, H_W = 25.0, H_BD = 5.5;
-const COVER_T = 1.0, COVER_RIM = 1.5, COVER_R0 = 3.6, H_CLR = 0.25;
+// hinge and cover positions come from cad/out/assembly.json (written by cad/src/build.py)
+const A = await (await fetch('models/assembly.json')).json();
+const HINGE_Y = A.Y_BACK, HINGE_Z = A.Z_PART, HINGE_X = A.HINGE_X, H_LEN = A.HINGE_LEN, H_W = A.HINGE_WIDTH,
+      H_BD = A.HINGE_BARREL_D, H_CLR = A.HINGE_CLR, COVER_T = A.COVER_T, COVER_RIM = A.COVER_RIM, COVER_R0 = A.COVER_R0;
 const pivot = new THREE.Group();
 pivot.position.set(0, HINGE_Y, HINGE_Z);
 const lid = new THREE.Group();

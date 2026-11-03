@@ -114,13 +114,15 @@ def main():
              ("hinge_cover_tray_2", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y))],
             [("tray_B_main", part(S("tray_B_main")))],
         ]),
-        # cream: display panel pieces (screen face down), strap (top face down), push-rods (flat side down)
+        # cream: display panel pieces (screen face down), strap (top face down), push-rods (flat side down),
+        # optional top plate (visible face down; print it in an accent colour if you like)
         "plate3_panel_parts.3mf": ("Display panel (A + B), strap, push-rods", [
             [("key_pushrod_1", part(O("key_pushrod_x2"), ROT_Z90)),
              ("key_pushrod_2", part(O("key_pushrod_x2"), ROT_Z90)),
              ("power_pushrod", part(O("power_pushrod")))],
             [("panel_A_left", part(S("panel_A_left"), ROT_Z90)),
              ("paperdiy_strap", part(O("paperdiy_strap"), FLIP_X, ROT_Z90))],
+            [("top_plate_blank", part(O("top_plate_blank"), FLIP_X))],
             [("panel_B_main", part(S("panel_B_main")))],
         ]),
     }

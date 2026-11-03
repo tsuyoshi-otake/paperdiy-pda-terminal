@@ -15,7 +15,7 @@ M5Stack PaperDIY（4.7 型 e-paper、ESP32-S3）を画面に、CACOE キーボ�
 | [`firmware/`](firmware/) | PaperDIY 用ファームウェア（ESP-IDF 5.5）。BLE キーボードのペアリング、Wi-Fi 設定、SSH ターミナル |
 | [`cad/`](cad/) | 3D プリント用の筐体データ。Bambu Lab A1 mini（180 mm）に載るよう分割済み |
 
-ビルド済みのファームは [`firmware/prebuilt/`](firmware/prebuilt/) にあります。書き込み方は [`firmware/README.md`](firmware/README.md)、印刷と組み立ては [`cad/README_ja.md`](cad/README_ja.md) を見てください。
+ビルド済みのファームは [`firmware/prebuilt/`](firmware/prebuilt/) にあります。書き込み方は [`firmware/README.md`](firmware/README.md)、筐体の概要は [`cad/README_ja.md`](cad/README_ja.md)、**部品表・印刷設定・組み立て手順は [`cad/ASSEMBLY_ja.md`](cad/ASSEMBLY_ja.md)** を見てください。
 
 ## 実機で確かめること
 

@@ -151,16 +151,27 @@ HINGE_LEAF_T = 2.0            # [M] t
 HINGE_BARREL_D = 5.5          # [A] not in the table -> MEASURE (the channel below takes up to ~6.2)
 HINGE_HOLE_PITCH_X = 10.0     # [M] H2: hole pitch along the axis
 HINGE_HOLE_OFF = 8.0          # [M] W2 16 / 2: hole centres from the axis
-HINGE_SCREW = ("M2x8 countersunk tapping screws x8 (holes 2.4 / csk 4.2)" if HINGE_MOUNT == "parting"
-               else "M2 countersunk tapping screws: lid M2x8, tray M2x5")
+HINGE_SCREW = "M2x8 countersunk tapping screws x8 (leaf holes 2.4 / csk 4.2)"
 HINGE_X = 52.0                # hinge centres at x = +-52: clear of the lid/tray split (x=-72) and the tray rear opening (x>=72.9)
 HINGE_CLR = 0.25              # mortise clearance per side
 HINGE_PILOT_HOLES = True      # print pilot holes at the catalogue hole positions
 HINGE_PILOT_D = 1.8           # for M2 tapping screws in PLA
 BACK_OLD_Y = 46.5             # [M] original outer back face of lid and tray
-BACK_EXTRA = 11.5 if HINGE_MOUNT == "parting" else 3.5   # back walls 3.0 -> 14.5 mm (parting) / 6.5 mm (face)
+BACK_EXTRA = 11.5 if HINGE_MOUNT == "parting" else 6.5   # back walls 3.0 -> 14.5 mm (parting) / 9.5 mm (face: M2x8 + 1.5 mm skin)
 Y_BACK = BACK_OLD_Y + BACK_EXTRA   # new outer back face = hinge axis plane
 Z_PART = 12.85                # [M] parting line at the back (lid underside 12.78..12.89, tray top 12.83..12.89)
 BACK_ZONE_X = 62.0            # |x| <= this: knuckle / ears / trough removed and the back wall rebuilt from its profile
 CORNER_C = (95.0, 40.5)       # [M] centre of the outer back-corner arcs (r = 6.0) in plan view
 LID_HINGE_BOSS = dict(w=18.0, depth=4.0, z0=18.5, z1=LID_CEILING_Z + 0.05)  # one screw boss per hinge, inside the lid
+
+# ---------------------------------------------------------------- manufacturing / assembly choices
+# FASTENING = "tapping": every case screw is an M2x8 countersunk tapping screw into a printed 1.8 mm pilot hole
+#                        (no heat-set inserts, no soldering iron). "inserts": the original M2 heat-set inserts.
+FASTENING = "tapping"
+SCREW_PILOT_D = 1.8           # M2 tapping screw in PLA
+TAP_SCREW_LEN = 8.0           # the one tapping-screw length used everywhere (M2x8)
+LID_CORNER_HOLES = [(sx * 92.8, sy * 38.78) for sx in (-1, 1) for sy in (-1, 1)]   # [M] panel screw bosses in the lid
+LID_FILL_CAMERA = True        # fill the Boox Palma camera window (x -67..-25, y -32..-20.5 + 1.6 mm bevel)
+CAMERA_FILL = (-69.5, -22.5, -34.8, -17.8)
+LID_SEAM = "dovetail"         # lid halves joined like tray / panel: 3 glued dovetail keys in the 3 mm ceiling
+TOP_PLATE = True              # optional blank plate for the lid-top recess (accent colour)

@@ -194,12 +194,15 @@ def build_panel():
     rim = prism_z(rrect(cx, PD_CY, iw + 2 * RIM_W, ih + 2 * RIM_W, 0) - rrect(cx, PD_CY, iw, ih, 0), z1 - 0.01, z1 + RIM_H)
     rim = rim - box(X_USB - 3, X_USB + 1, USB_Y - 6, USB_Y + 6, z1 - 1, z1 + 5)          # USB plug gap
     P = P + rim
-    # strap posts with vertical M2 heat-set insert holes
+    # strap posts: pilot holes for M2x8 tapping screws (or M2 heat-set insert holes)
     h = STRAP_POST_SIZE / 2
     for sy in (1, -1):
         y = sy * STRAP_POST_Y
         P = P + box(STRAP_X - h, STRAP_X + h, y - h, y + h, z1 - 0.01, STRAP_UNDER)
-        P = P - cyl_z(INSERT_M2_D / 2, STRAP_UNDER - INSERT_M2_L - 1.0, STRAP_UNDER + 1, STRAP_X, y)
+        if FASTENING == "tapping":    # screw passes the 2 mm strap, ~6 mm into post + panel
+            P = P - cyl_z(SCREW_PILOT_D / 2, STRAP_UNDER - (TAP_SCREW_LEN - STRAP_THK) - 0.5, STRAP_UNDER + 1, STRAP_X, y)
+        else:
+            P = P - cyl_z(INSERT_M2_D / 2, STRAP_UNDER - INSERT_M2_L - 1.0, STRAP_UNDER + 1, STRAP_X, y)
     # push-rod cradles (open-top U)
     w = ROD_HOLE / 2 + MIN_WALL
     for x in KEY_X:
@@ -304,8 +307,9 @@ def hinge_pocket_cuts():
             cuts.append(box(x0, x1, Y_BACK - HINGE_WIDTH / 2 - HINGE_CLR, Y_BACK + 1.0,
                             Z_PART - HINGE_LEAF_T - 0.05, Z_PART + HINGE_LEAF_T + 0.05))
         else:
-            cuts.append(box(x0, x1, Y_BACK - HINGE_LEAF_T - 0.05, Y_BACK + 1.0,
-                            Z_PART - HINGE_WIDTH / 2 - HINGE_CLR, Z_PART + HINGE_WIDTH / 2 + HINGE_CLR))
+            zlo = Z_PART - HINGE_WIDTH / 2 - HINGE_CLR
+            zlo = -1.0 if zlo < 1.0 else zlo          # within 1 mm of the bottom: run out through it (no 0.1 mm skin)
+            cuts.append(box(x0, x1, Y_BACK - HINGE_LEAF_T - 0.05, Y_BACK + 1.0, zlo, Z_PART + HINGE_WIDTH / 2 + HINGE_CLR))
         for yc in (Y_BACK, Y_BACK - 0.8):          # slot: tolerates the axis sitting up to 0.8 mm inside the face
             cuts.append(cyl_x(rc, x0, x1, yc, Z_PART))
         cuts.append(box(x0, x1, Y_BACK - 0.8, Y_BACK, Z_PART - rc, Z_PART + rc))
@@ -328,15 +332,15 @@ def hinge_pilots(lid):
                     out.append(cyl_z(HINGE_PILOT_D / 2, Z_PART - HINGE_LEAF_T - 6.5, Z_PART - HINGE_LEAF_T + 0.1, x, y))
             else:
                 seat = Y_BACK - HINGE_LEAF_T
-                if lid:   # wall 4.5 + boss 4.0 behind the leaf: M2x8 reaches ~6 mm in
-                    out.append(cyl_y(HINGE_PILOT_D / 2, seat - 7.5, seat + 0.1, x, Z_PART + HINGE_HOLE_OFF))
-                else:     # wall 4.5 behind the leaf (keyboard pocket beyond): M2x5 reaches ~3 mm in
-                    out.append(cyl_y(HINGE_PILOT_D / 2, seat - 3.5, seat + 0.1, x, Z_PART - HINGE_HOLE_OFF))
+                depth = TAP_SCREW_LEN - HINGE_LEAF_T                # M2x8, head in the leaf countersink: 6 mm past the seat
+                zz = Z_PART + HINGE_HOLE_OFF if lid else Z_PART - HINGE_HOLE_OFF
+                out.append(cyl_y(HINGE_PILOT_D / 2, seat - depth, seat + 0.1, x, zz))
     return out
 
 
 def lid_hinge_bosses():
-    if HINGE_MOUNT == "parting":       # the 14.5 mm back wall holds the screws by itself
+    behind = BACK_OLD_Y - LID_INNER_Y + BACK_EXTRA - HINGE_LEAF_T          # wall behind the leaf seat
+    if HINGE_MOUNT == "parting" or behind >= TAP_SCREW_LEN - HINGE_LEAF_T + 1.0:   # wall alone holds the screws
         return []
     b = LID_HINGE_BOSS
     return [box(c - b["w"] / 2, c + b["w"] / 2, LID_INNER_Y - b["depth"], LID_INNER_Y + 0.1, b["z0"], b["z1"])
@@ -357,6 +361,21 @@ def hinge_envelope(open_deg=0.0):
             moving.append(box(x0, x1, Y_BACK - HINGE_LEAF_T, Y_BACK, Z_PART + r, Z_PART + HINGE_WIDTH / 2))
         fixed.append(cyl_x(r, x0, x1, Y_BACK, Z_PART))
     return union(fixed), open_lid(union(moving), open_deg)
+
+
+def build_top_plate():
+    x0, x1, y0, y1 = LID_LABEL_POCKET
+    return prism_z(rrect((x0 + x1) / 2, (y0 + y1) / 2, x1 - x0 - 0.3, y1 - y0 - 0.3, 1.5), 28.5, 30.0)
+
+
+def write_assembly_json():
+    """Positions the README renderer needs (docs/render reads this instead of copying numbers)."""
+    data = dict(Y_BACK=Y_BACK, Z_PART=Z_PART, HINGE_X=HINGE_X, HINGE_LEN=HINGE_LEN, HINGE_WIDTH=HINGE_WIDTH,
+                HINGE_LEAF_T=HINGE_LEAF_T, HINGE_BARREL_D=HINGE_BARREL_D, HINGE_CLR=HINGE_CLR,
+                HINGE_COVER=bool(HINGE_COVER and HINGE_MOUNT == "face"), COVER_T=COVER_T, COVER_RIM=COVER_RIM,
+                COVER_R0=COVER_R0, HINGE_MOUNT=HINGE_MOUNT, LABEL_POCKET=list(LID_LABEL_POCKET))
+    with open(os.path.join(OUT_DIR, "assembly.json"), "w") as f:
+        json.dump(data, f, indent=1)
 
 
 def hinge_covers():
@@ -390,6 +409,12 @@ def build_lid(with_pads):
     ya, yb = LID_RIGHT_OPEN_Y[0] - 2.0, LID_RIGHT_OPEN_Y[1] + 2.0
     prof = section_cs(tl, "y", 10.0, (95.0, 102.0, 17.5, 31.0))
     L = (L - box(95.0, 102.0, ya, yb, 17.5, 31.0)) + prism_y(prof, ya, yb)
+    if LID_FILL_CAMERA:      # the Palma camera window has no use here and would show the PaperDIY board
+        x0, x1, y0, y1 = CAMERA_FILL
+        L = L + box(x0, x1, y0, y1, LID_CEILING_Z, LID_CEILING_Z + 3.0)
+    if FASTENING == "tapping":   # panel screws: refill the insert holes, leave a pilot for M2x8 (3 mm panel + 5 mm)
+        for (x, y) in LID_CORNER_HOLES:
+            L = L + cyl_z(1.75, PANEL_Z_BACK, LID_CEILING_Z + 0.05, x, y)
     # hinge rework: remove the knuckle, rebuild + thicken the back wall, screw bosses for the hinge leaves
     L = warp_back(rebuild_back(L, LID_BACK_PROFILE, -1.0, 31.0))
     if lid_hinge_bosses():
@@ -414,6 +439,9 @@ def build_lid(with_pads):
         cuts.append(prism_z(rrect((BI_X0 + BI_X1) / 2, (BI_Y0 + BI_Y1) / 2, BI_X1 - BI_X0, BI_Y1 - BI_Y0, 1.0),
                             LID_CEILING_Z - 0.1, LID_CEILING_Z + BATT_RELIEF))
     cuts += hinge_pocket_cuts() + hinge_pilots(True)
+    if FASTENING == "tapping":
+        for (x, y) in LID_CORNER_HOLES:
+            cuts.append(cyl_z(SCREW_PILOT_D / 2, PANEL_Z_BACK - 0.1, PANEL_Z_BACK + TAP_SCREW_LEN - 3.0 + 0.5, x, y))
     if with_pads:
         p, X = LID_PAD, SPLIT_X_LID
         for sy in (-1, 1):
@@ -480,7 +508,7 @@ def main():
     log("== building")
     panel = build_panel(); strap = build_strap()
     krods = [build_key_rod(x) for x in KEY_X]; prod = build_power_rod()
-    lid = build_lid(False); lid_p = build_lid(True)
+    lid = build_lid(False)
     tray = build_tray()
 
     log("== exports (bounding boxes are axis-aligned in the original assembly frame)")
@@ -492,12 +520,15 @@ def main():
     out["display_lid_usbc"] = export(lid, f"{OUT_DIR}/display_lid_usbc.stl")
     out["keyboard_tray"] = export(tray, f"{OUT_DIR}/keyboard_tray.stl")
     lid_cov, tray_cov = hinge_covers()
+    if TOP_PLATE:
+        out["top_plate_blank"] = export(build_top_plate(), f"{OUT_DIR}/top_plate_blank.stl")
+    write_assembly_json()
     if lid_cov:
         out["hinge_cover_lid"] = export(lid_cov[0], f"{OUT_DIR}/hinge_cover_lid_x2.stl")
         out["hinge_cover_tray"] = export(tray_cov[0], f"{OUT_DIR}/hinge_cover_tray_x2.stl")
 
     log("== split pieces for A1 mini (limit %.0f mm)" % MAX_PIECE)
-    la, lb = split_plain(lid_p, SPLIT_X_LID)
+    la, lb = split_dovetail(lid, SPLIT_X_LID, DOVETAIL_Y, LID_CEILING_Z, LID_CEILING_Z + 3.0)
     ta, tb = split_dovetail(tray, SPLIT_X_TRAY, DOVETAIL_Y, 0.0, 3.0)
     pa, pb = split_dovetail(panel, SPLIT_X_PANEL, DOVETAIL_Y, PANEL_Z_FRONT, PANEL_Z_BACK)
     pieces = {"lid_A_left": la, "lid_B_main": lb, "tray_A_left": ta, "tray_B_main": tb, "panel_A_left": pa, "panel_B_main": pb}

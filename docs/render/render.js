@@ -17,7 +17,7 @@ function resolve(url) {
   if (p.startsWith('/node_modules/')) return path.join(HERE, p);
   return null;
 }
-const types = { '.html': 'text/html', '.js': 'text/javascript', '.stl': 'application/octet-stream' };
+const types = { '.html': 'text/html', '.js': 'text/javascript', '.stl': 'application/octet-stream', '.json': 'application/json' };
 
 (async () => {
   const server = http.createServer((req, res) => {
