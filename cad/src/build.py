@@ -281,9 +281,10 @@ def rebuild_back(part, profile, z0, z1):
     return (part - box(-X, X, LID_INNER_Y - 0.05, 70.0, z0, z1)) + prism_x(poly_cs(profile), -X, X)
 
 
-def warp_back(part, lower_rim=0.0):
+def warp_back(part, lower_rim=0.0, extra=None):
     """Thicken the back wall outward by BACK_EXTRA: move the outer half of the wall (and the top / bottom
     chamfers and the rounded back corners) back, leave the inner pocket untouched."""
+    extra = BACK_EXTRA if extra is None else extra
     tm = to_t(part)
     v = tm.vertices.copy()
     ax, y, z = np.abs(v[:, 0]), v[:, 1], v[:, 2]
@@ -293,7 +294,7 @@ def warp_back(part, lower_rim=0.0):
     straight = (y > 45.0) | ((y > 43.0) & zc)
     corner = (y > cy) & ((r > 4.5) | (zc & (r >= 2.9)))
     move = np.where(ax <= cx, straight, corner)
-    v[move, 1] += BACK_EXTRA
+    v[move, 1] += extra
     if lower_rim:          # tray only: the warped lid / tray parting surfaces differ by <= 0.05 mm; keep a gap
         v[z > 12.3, 2] -= lower_rim
     return to_m(trimesh.Trimesh(v, tm.faces, process=False))
@@ -301,6 +302,44 @@ def warp_back(part, lower_rim=0.0):
 
 def hinge_centres():
     return (-HINGE_X, HINGE_X)
+
+
+def housing_zone():
+    """Where the thick back wall is kept with BACK_STYLE = "housings": a block behind each hinge plus a tapered rib
+    (gusset) each side, in plan view; full height (the thick wall's own top / bottom chamfers shape it)."""
+    zone = []
+    g, y0 = HOUSING_GUSSET, LID_INNER_Y + 0.5
+    for c in hinge_centres():
+        x0, x1 = c - HOUSING_HALF, c + HOUSING_HALF
+        zone.append(box(x0, x1, y0, Y_BACK + 2.0, -5.0, 40.0))
+        for xe, s in ((x0, -1.0), (x1, 1.0)):
+            pts = [(xe, y0), (xe, Y_BACK + 0.5), (xe + s * g, BACK_OLD_Y), (xe + s * g, y0)]
+            zone.append(prism_z(poly_cs(pts), -5.0, 40.0))
+    return union(zone)
+
+
+def slim_back(thin, thick):
+    """3 mm back wall with a 9.5 mm housing (and its gussets) behind each hinge."""
+    if BACK_STYLE != "housings":
+        return thick
+    zone = housing_zone()             # each region from one source only: near-coplanar faces would leave slivers
+    m = (thin - zone) + (thick ^ zone)
+    # the original mesh and the rebuilt profile meet at x = +-BACK_ZONE_X with ~0.01 mm steps on the parting face;
+    # cutting there can leave a zero-volume flap as a separate component: drop it
+    return union([p for p in m.decompose() if p.volume() > 1.0])
+
+
+def lid_ribs():
+    """Triangular ribs between the lid's long walls and its ceiling (in print orientation they stand on the bed)."""
+    if BACK_STYLE != "housings":
+        return []
+    r, out = LID_RIBS, []
+    zt = LID_CEILING_Z
+    for side, xs in ((1.0, r["back_x"]), (-1.0, r["front_x"])):
+        w = side * LID_INNER_Y
+        tri = [(w + side * 0.5, zt + 0.5), (w - side * r["depth"], zt + 0.5), (w + side * 0.5, zt - r["drop"])]
+        out += [prism_x(poly_cs(tri), x - r["t"] / 2, x + r["t"] / 2) for x in xs]
+    return out
 
 
 def hinge_pocket_cuts():
@@ -405,6 +444,16 @@ def hinge_covers():
     return lid_c, tray_c
 
 
+def table_angle(verts, step=0.1):
+    """First opening angle (deg) at which a lid-side vertex goes below the table (z = 0), or None."""
+    y, z = np.asarray(verts)[:, 1] - HINGE_AXIS_Y, np.asarray(verts)[:, 2] - Z_PART
+    for i in range(int(round(180.0 / step)) + 1):
+        a = np.radians(-i * step)
+        if (Z_PART + y * np.sin(a) + z * np.cos(a)).min() < 0:
+            return round(i * step, 1)
+    return None
+
+
 def open_lid(part, deg):
     """Rotate a lid-side part about the real hinge axis (HINGE_AXIS_Y, Z_PART); positive = opening."""
     return part.translate([0, -HINGE_AXIS_Y, -Z_PART]).rotate([-deg, 0, 0]).translate([0, HINGE_AXIS_Y, Z_PART])
@@ -412,7 +461,7 @@ def open_lid(part, deg):
 
 def kb_port_bay():
     """Recess in the back face around the keyboard charge port, back to the original 3 mm wall (lid and tray)."""
-    if not KB_PORT_BAY:
+    if not KB_PORT_BAY or BACK_STYLE == "housings":
         return []
     x0, x1 = KB_PORT_BAY_X
     z0, z1 = KB_PORT_BAY_Z
@@ -475,7 +524,10 @@ def build_lid(with_pads, usb_spacing=None):
         for (x, y) in LID_CORNER_HOLES:
             L = L + cyl_z(1.75, PANEL_Z_BACK, LID_CEILING_Z + 0.05, x, y)
     # hinge rework: remove the knuckle, rebuild + thicken the back wall, screw bosses for the hinge leaves
-    L = warp_back(rebuild_back(L, LID_BACK_PROFILE, -1.0, 31.0))
+    L = rebuild_back(L, LID_BACK_PROFILE, -1.0, 31.0)
+    L = slim_back(L, warp_back(L))
+    if lid_ribs():
+        L = L + union(lid_ribs())
     if lid_hinge_bosses():
         L = L + union(lid_hinge_bosses())
     if with_pads:
@@ -517,7 +569,8 @@ def build_lid(with_pads, usb_spacing=None):
 def build_tray():
     T = to_m(load("Keyboard.stl"))
     # hinge rework: remove ears + trough, rebuild + thicken the back wall
-    T = warp_back(rebuild_back(T, TRAY_BACK_PROFILE, -1.0, 20.0), lower_rim=0.08)
+    T = rebuild_back(T, TRAY_BACK_PROFILE, -1.0, 20.0)
+    T = slim_back(warp_back(T, lower_rim=0.08, extra=0.0), warp_back(T, lower_rim=0.08))
     # square the bottom-back chamfer under each tray leaf so the whole leaf sits in a pocket
     for c in (hinge_centres() if HINGE_MOUNT == "face" else ()):
         T = T + box(c - HINGE_LEN / 2 - HINGE_CLR, c + HINGE_LEN / 2 + HINGE_CLR, LID_INNER_Y + 0.5, Y_BACK, 0.0, 3.2)
@@ -675,14 +728,13 @@ def main():
         v = (moved ^ traset).volume()
         if v > 0.5:
             hits.append((deg, v))
-        if max_open is None and to_t(moved).bounds[0][2] < 0:
-            max_open = deg
+    max_open = table_angle(to_t(lidset).vertices)
     first_hit = hits[0][0] if hits else None
     if first_hit is None:
         log("  no collision with the tray from 0 to 180 deg")
     else:
         log(f"  first contact at {first_hit} deg ({hits[0][1]:.1f} mm3)")
-    log(f"  on a table the lid's top-back edge reaches the table at about {max_open} deg (opening limit)"
+    log(f"  on a table the lid's top-back edge reaches the table at {max_open:.1f} deg (opening limit)"
         if max_open else "  the lid never reaches the table")
     if first_hit is not None and max_open is not None and first_hit < max_open:
         log("  <-- CHECK: parts collide before the table limit")

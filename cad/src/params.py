@@ -125,7 +125,7 @@ USB_PM_BODY = dict(w=13.0, h=7.0, len=25.0)           # housing behind the ears
 # was a 3 mm deep hole in the 3 mm back wall. Thickening the back wall to 9.5 mm made it a 9.5 mm tunnel, so a
 # bay is cut from the outside back to the original wall face (y = 46.5): the plug sees the same 3 mm wall as in the
 # original design. The bay crosses the parting line, so lid and tray both get their part of it.
-KB_PORT_BAY = True
+KB_PORT_BAY = True            # only used with BACK_STYLE = "solid" (the 3 mm wall of "housings" needs no bay)
 KB_PORT_BAY_X = (70.5, 91.5)  # 2.5 mm wider than the opening on each side (overmold + fingers)
 KB_PORT_BAY_Z = (4.0, 15.5)   # floor 1 mm above the bottom chamfer, 2.65 mm up into the lid wall
 KB_PORT_BAY_R = 1.5
@@ -194,6 +194,18 @@ Y_BACK = BACK_OLD_Y + BACK_EXTRA   # new outer back face (the leaves sit flush i
 HINGE_AXIS_Y = (Y_BACK - HINGE_LEAF_T - 0.05 + HINGE_AXIS_ABOVE_BACK if HINGE_MOUNT == "face"   # real rotation axis,
                 else Y_BACK)                                                                # ~Y_BACK + 1.15
 Z_PART = 12.85                # [M] parting line at the back (lid underside 12.78..12.89, tray top 12.83..12.89)
+# Only the hinges need the 9.5 mm back wall (2 mm leaf mortise + 6 mm of M2x8 + 1.5 mm). "housings" keeps the original
+# 3 mm back wall everywhere else and puts a 9.5 mm deep housing behind each hinge, blended into the wall by a tapered
+# rib on each side; "solid" is the v0.3 design (whole back wall 9.5 mm). The slicer fills thick walls with 15 % infill,
+# so hollowing them would not save material: the saving comes from the smaller outer shape.
+BACK_STYLE = "housings" if HINGE_MOUNT == "face" else "solid"
+HOUSING_HALF = 13.5           # housing half-length along x: cover 23.5 mm + 1.75 mm of glue land each side
+HOUSING_GUSSET = 5.5          # tapered rib each side of a housing (plan view 5.5 mm long, 6.5 mm deep at the housing)
+# triangular ribs (gussets) inside the lid between the long walls and the ceiling, 1.6 mm thick (4 lines);
+# x positions stay clear of the strap (x -22.6), the key push-rods (x -17.1, -29.1) and the USB-C cable loop (x < -62)
+LID_RIBS = dict(t=1.6, depth=7.0, drop=7.5,
+                back_x=(-52.0, -40.0, -6.0, 16.0, 36.0, 52.0, 74.0),
+                front_x=(-52.0, -42.0, -4.0, 16.0, 36.0, 56.0, 76.0))
 BACK_ZONE_X = 62.0            # |x| <= this: knuckle / ears / trough removed and the back wall rebuilt from its profile
 CORNER_C = (95.0, 40.5)       # [M] centre of the outer back-corner arcs (r = 6.0) in plan view
 LID_HINGE_BOSS = dict(w=18.0, depth=4.0, z0=18.5, z1=LID_CEILING_Z + 0.05)  # one screw boss per hinge, inside the lid

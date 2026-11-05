@@ -205,26 +205,32 @@ def main():
     tray = trimesh.load(stl("keyboard_tray") if os.path.exists(os.path.join(OUT_DIR, "keyboard_tray.stl")) else stl("tray_B_main"))
     pivot_y = float(tray.vertices[tray.vertices[:, 2] < 0.05][:, 1].max())   # rearmost point touching the table
     lid = trimesh.load(os.path.join(OUT_DIR, "display_lid_usbc.stl"))
-    table_limit = next((d for d in range(0, 181) if np.min([open_point(v, d)[2] for v in lid.vertices[::7]]) < 0), 180)
+    lv = np.asarray(lid.vertices)
+    def lowest(deg):                                  # lowest lid point at this opening (all vertices)
+        a = np.radians(-deg)
+        return float((Z_PART + (lv[:, 1] - HINGE_AXIS_Y) * np.sin(a) + (lv[:, 2] - Z_PART) * np.cos(a)).min())
+    touch = next((d / 10 for d in range(0, 1801) if lowest(d / 10) < 0), 180.0)   # first contact, 0.1 deg steps
+    table_limit = int(np.ceil(touch)) - 1                # last whole degree with the lid still above the table
 
     need, rows = 0.0, []
-    for deg in range(0, table_limit + 1):
+    angles = list(range(0, table_limit + 1)) + [touch]     # whole degrees, then the exact contact angle
+    for deg in angles:
         ly = open_point(lid_cg, deg)[1]
         k = (lid_m * (ly - pivot_y) + base_m * (base_cg[1] - pivot_y)) / (pivot_y - KB_CG[1])
         need = max(need, k)
-        if deg in (90, 100, 110, 120, 130, 140, table_limit):
-            rows.append(f"| {deg} deg | {ly - pivot_y:+.1f} mm | {max(0.0, k):.0f} g |")
-    report.update(lid_g=lid_m, base_g=base_m, lid_cg=lid_cg.tolist(), pivot_y=pivot_y, table_limit=table_limit,
+        if deg in (90, 100, 110, 120, 130, 140) or deg is touch:
+            rows.append(f"| {deg:.0f} deg | {ly - pivot_y:+.1f} mm | {max(0.0, k):.0f} g |")
+    report.update(lid_g=lid_m, base_g=base_m, lid_cg=lid_cg.tolist(), pivot_y=pivot_y, table_contact_deg=touch, table_limit=table_limit,
                   keyboard_min_g=need)
     lines += ["## Does it tip over backwards?", "",
               f"Lid side (printed parts{' as sliced' if exe else ' (solid estimate)'} + PaperDIY {PAPERDIY_G} g + battery "
               f"{BATTERY_G:g} g + USB-C cable {USB_CABLE_G:g} g + half the hinges): **{lid_m:.0f} g**, centre of mass "
               f"{HINGE_AXIS_Y - lid_cg[1]:.1f} mm in front of the hinge axis when closed. Base without the keyboard: **{base_m:.0f} g**. "
               f"The device rests on the back edge of the tray at y = {pivot_y:.1f} mm; the lid reaches the table at "
-              f"{table_limit} deg and is supported from there on.", "",
+              f"{touch:.1f} deg and is supported from there on.", "",
               "| Opening | lid centre of mass behind the back edge | keyboard needed so it does not tip |", "| --- | --- | --- |"] + rows
     lines += ["", f"**The keyboard has to weigh at least {need:.0f} g** (centre of mass assumed in the middle of the tray) for "
-              f"the device to stay on its feet at every angle up to {table_limit} deg. Weigh yours; if it is lighter, "
+              f"the device to stay on its feet at every angle until the lid rests on the table ({touch:.0f} deg). Weigh yours; if it is lighter, "
               "stay below the angle in the table where the needed weight exceeds it, or add weight in the tray.", ""]
     with open(os.path.join(OUT_DIR, "print_report.md"), "w") as f:
         f.write("\n".join(lines) + "\n")

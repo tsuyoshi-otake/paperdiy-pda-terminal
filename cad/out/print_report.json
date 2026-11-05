@@ -5,23 +5,23 @@
    "Low bed adhesion: key_pushrod"
   ],
   "ok": true,
-  "time": "28m 34s",
-  "grams": 12.76,
-  "metres": 4.277520000000001
+  "time": "27m 55s",
+  "grams": 12.17,
+  "metres": 4.07875
  },
  "plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "2h 14m 53s",
-  "grams": 85.18,
-  "metres": 28.55818
+  "time": "2h 10m 22s",
+  "grams": 81.32,
+  "metres": 27.26391
  },
  "plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 37m 22s",
-  "grams": 63.9,
-  "metres": 21.42408
+  "time": "1h 30m 46s",
+  "grams": 59.98,
+  "metres": 20.11056
  },
  "plate3_panel_parts.3mf": {
   "warnings": [
@@ -32,16 +32,17 @@
   "grams": 33.72,
   "metres": 11.3071
  },
- "total_g": 182.8,
- "total_min": 290,
- "lid_g": 198.79,
- "base_g": 67.9,
+ "total_g": 175.01999999999998,
+ "total_min": 279,
+ "lid_g": 194.95999999999998,
+ "base_g": 64.01,
  "lid_cg": [
-  9.220099008324013,
-  4.204245172910185,
-  21.94019452713739
+  9.505559834385855,
+  1.299301226023826,
+  22.080246147132378
  ],
  "pivot_y": 50.95000076293945,
- "table_limit": 154,
- "keyboard_min_g": 153.07045792749582
+ "table_contact_deg": 150.4,
+ "table_limit": 150,
+ "keyboard_min_g": 151.94685890132814
 }

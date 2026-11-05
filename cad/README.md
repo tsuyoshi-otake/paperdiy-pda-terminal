@@ -3,8 +3,9 @@
 A Boox-Palma-free version of Un Kyu Lee's "PDA Terminal": the lid holds an **M5Stack PaperDIY** (4.7" e-paper, ESP32-S3)
 behind a new bezel panel, plus a 1S LiPo, and gets a panel-mount USB-C. The original knob-and-pin hinge is replaced by
 **two free-stop torque hinges (Sugatsune HG-MF08) recessed flush into the back face, under printed cover plates**, so only
-the hinge barrels show. The keyboard tray (CACOE mini BT keyboard) keeps the
-original openings; a bay in the thickened back wall keeps the charge port as reachable as in the original. Every part is
+the hinge barrels show. The back wall keeps the original 3 mm except for a 9.5 mm deep housing behind each hinge (for the
+screws), blended in by tapered ribs; ribs inside the lid tie the long walls to the ceiling. The keyboard tray (CACOE mini
+BT keyboard) keeps the original openings. Every part is
 also split for a **Bambu Lab A1 mini (180 mm bed)** and joined with glued dovetail keys; nothing needs supports. All case
 fasteners are **M2×8 countersunk tapping screws into printed pilot holes** (14), plus one M2×4 machine screw into the
 PaperDIY standoff: no heat-set inserts, dowels or socket screws. Only the small lid piece A depends on the USB-C cable you
@@ -59,10 +60,10 @@ log is written to `out/build_log.txt`.
 | `out/power_pushrod.stl` | 41.5 × 5.5 × 3.6 | power button |
 | `out/top_plate_blank.stl` | 56.0 × 10.9 × 1.5 | optional plate for the lid-top recess (accent colour) |
 | `out/hinge_cover_lid_x2.stl` / `hinge_cover_tray_x2.stl` | 23.5 × 1.0 × 10.3 / 23.5 × 1.0 × 8.9 | print 2 each (lid / tray colour) |
-| `out/split/lid_A_left.stl` / `lid_B_main.stl` | 35.0 × 99.5 × 22.0 / 173.0 × 99.5 × 22.0 | |
-| `out/split/tray_A_left.stl` / `tray_B_main.stl` | 35.0 × 99.5 × 12.8 / 173.0 × 99.5 × 12.8 | |
+| `out/split/lid_A_left.stl` / `lid_B_main.stl` | 35.0 × 93.0 × 22.0 / 173.0 × 99.5 × 22.0 | |
+| `out/split/tray_A_left.stl` / `tray_B_main.stl` | 35.0 × 93.0 × 12.8 / 173.0 × 99.5 × 12.8 | |
 | `out/split/panel_A_left.stl` / `panel_B_main.stl` | 31.6 × 86.2 × 7.1 / 169.6 × 86.2 × 11.5 | the panel (195.2 mm) does not fit 180 mm in any orientation either |
-| `out/split/usb_variants/lid_A_left_usb{16,18,20,22,25,28,30}mm.stl`, `…_usb_noscrew.stl` | 35.0 × 99.5 × 22.0 | lid A for other USB-C hole spacings (28 mm = the default `lid_A_left`) |
+| `out/split/usb_variants/lid_A_left_usb{16,18,20,22,25,28,30}mm.stl`, `…_usb_noscrew.stl` | 35.0 × 93.0 × 22.0 | lid A for other USB-C hole spacings (28 mm = the default `lid_A_left`) |
 | `out/coupons/coupon_*.stl` | ≤ 27 × 21 × 18 | test prints cut from the real parts (see "Test coupons") |
 | `out/assembly.json` | | positions for the README renderer |
 | `out/print_report.md` | | slicer estimates, wall thickness, tipping check (`tools/print_report.py`) |
@@ -111,10 +112,18 @@ knob-pins, M3×40 cores, O-rings, friction set by how tight the knobs are) is re
   (≈ Ø5.5) standing on the front only, its axis ≈ 3.2 mm above the flat back (`HINGE_AXIS_ABOVE_BACK`). Seated flat side
   down in the 2.05 mm mortise, the axis is at y ≈ 54.15, ≈ 1.15 mm outside the back face (y = 53.0); every motion check, the
   tipping estimate and the renders rotate about that real axis. The barrel strip, knuckle, ears and trough are
-  removed (`BACK_ZONE_X` = ±62 is cut back and rebuilt from the plain back-wall profile): the case is 99.5 mm deep
-  instead of 108.
-* **Back walls thickened outward** 3.0 → 9.5 mm (outer half of the wall, the top / bottom chamfers and the rounded back
-  corners move 6.5 mm back; the keyboard pocket and the lid interior are unchanged), so M2×8 screws fit on both sides.
+  removed (`BACK_ZONE_X` = ±62 is cut back and rebuilt from the plain back-wall profile): the case is 93 mm deep (99.5 mm
+  over the hinge housings) instead of 108.
+* **Hinge housings** (`BACK_STYLE = "housings"`): the screws need 9.5 mm of back wall (2 mm mortise + 6 mm of M2×8 +
+  1.5 mm), but only behind the hinges. Each hinge gets a 27 mm wide housing (`HOUSING_HALF`) that carries the back-wall
+  profile, top / bottom chamfers included, 6.5 mm further back, and a tapered rib on each side (`HOUSING_GUSSET`, 5.5 mm
+  long in plan) blends it into the original 3 mm wall. Everywhere else the back wall, the keyboard pocket and the lid
+  interior are the original. Inside the lid, 14 triangular ribs (`LID_RIBS`: 1.6 mm thick, 7 mm along the ceiling, 7.5 mm
+  down the wall) tie the long walls to the ceiling, placed clear of the strap, the key push-rods and the USB-C cable;
+  they are part of the lid in every interference check. `BACK_STYLE = "solid"` rebuilds the v0.3 design (whole back
+  wall 9.5 mm). Compared with it the solid volume of lid and tray is 13 % lower, but the sliced mass only 8 g (lid
+  85 → 81 g, tray 64 → 60 g): the slicer prints the core of a thick wall with 15 % infill anyway, so the saving comes from
+  the smaller outside, not from the thinner wall.
 * **Mortises:** each leaf sits in a 2.0 mm pocket (0.25 mm clearance) so it is flush with the back face; a slot along the axis
   takes the barrel (up to ~Ø6.2, axis tolerated up to 0.8 mm inside the face). Under the tray leaves the bottom chamfer is
   squared off and the mortise runs out through the bottom edge (no 0.1 mm skin).
@@ -129,20 +138,18 @@ knob-pins, M3×40 cores, O-rings, friction set by how tight the knobs are) is re
   the back face the lid's back wall would sweep into the tray (axis 0.5 mm inside: contact at 132°, 1.0 mm inside: 91°);
   with the measured axis 1.15 mm outside, nothing touches from 0 to 180°. The hinge coupon checks this with a real hinge.
 * **Checks (`build.py`):** the lid + panel (+ covers) rotated about the real axis does not touch the tray (+ covers) from
-  0 to 180°; on a table the lid's top-back edge reaches the table at about **154°**, which is the opening limit.
+  0 to 180°; on a table the lid's top-back edge reaches the table at about **150°**, which is the opening limit.
   Hinge envelopes (flat back on the mortise floor, barrel around the real axis) and covers vs lid / tray: 0 mm³.
 * `HINGE_MOUNT = "parting"` is an alternative: the leaves lie folded in the parting plane inside 14.5 mm back walls
   (case 8 mm deeper). Closed, only the barrels show, but open, the leaves and screw heads are visible under the screen.
 
-### Keyboard charge port: bay in the back wall
+### Keyboard charge port
 The original tray has an opening in its 3 mm back wall at x 72.9–89.1, open from the lip at z ≈ 6.0 up to the lid
-(z 12.78), probably for the CACOE charge port. Thickening the back wall to 9.5 mm turned it into a 9.5 mm tunnel that a
-plug overmold would have to fit through. A **bay** (x 70.5–91.5, z 4.0–15.5, r 1.5) is now cut from the outside back to
-the original wall face (y = 46.5), in the tray and 2.65 mm up into the lid wall, so the plug meets the same 3 mm wall as in
-the original: any straight plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits. `build.py` checks a
-12 × 6.5 mm overmold (0 mm³ against tray and closed lid) and sweeps the lid: **with that plug in, the lid opens to 95°**;
-beyond that the lid's back face swings down behind the tray into the plug. Charge with the lid closed or up to 95°.
-Both bay faces print without overhang (open at the top in each part's print orientation).
+(z 12.78), probably for the CACOE charge port. The back wall there is the original 3 mm, so any straight plug whose
+overmold fits the original opening (≈ 16 × 6.8 mm) fits. `build.py` checks a 12 × 6.5 mm overmold (0 mm³ against tray and
+closed lid) and sweeps the lid: **with that plug in, the lid opens to 119°**; beyond that the lid's back face swings down
+behind the tray into the plug. (With `BACK_STYLE = "solid"` the 9.5 mm wall would turn the opening into a tunnel; there
+`KB_PORT_BAY` cuts a bay back to the original wall face and the limit drops to 95°.)
 
 ### Battery: integrated into the panel (no separate `battery_carrier.stl`)
 The bay frame (1.6 mm walls, 0.5 mm clearance, wire notch toward the PaperDIY) is printed on the panel back. It prints
@@ -162,14 +169,14 @@ One original Palma corner rib in the lid flares to y = −30.2 near the ceiling,
 2. **Display (lid):** front-wall Palma side-button slot (incl. ceiling-edge notch) and right-wall Palma USB opening **closed**,
    rebuilt by extruding the adjacent original wall profile. A ray scan found **0 deviations** from the original outer surface
    (flat wall at y = −46.5 / x = +101, same top chamfer). Added: panel-mount USB-C opening + 2 screw holes (inner fillet
-   squared behind them) and the power-rod bore (left wall), 2 key-rod bores (front wall), battery ceiling relief, the upper
-   2.65 mm of the keyboard charge-port bay. **Hinge knuckle removed**, back wall rebuilt and
-   thickened to 9.5 mm, two hinge mortises with barrel slot and pilot holes (see "Hinge"). **Camera window filled**
-   (flat top). The 4 corner insert holes are refilled and re-drilled as Ø1.8 pilots for M2×8 tapping screws.
+   squared behind them) and the power-rod bore (left wall), 2 key-rod bores (front wall), battery ceiling relief.
+   **Hinge knuckle removed**, back wall rebuilt (original 3 mm) with a 9.5 mm housing and two tapered ribs behind each
+   hinge, two hinge mortises with barrel slot and pilot holes, 14 triangular ribs between the long walls and the ceiling
+   (see "Hinge"). **Camera window filled** (flat top). The 4 corner insert holes are refilled and re-drilled as Ø1.8 pilots for M2×8 tapping screws.
    Label recess, vents and corner bosses otherwise unchanged.
-3. **Keyboard (tray):** **hinge ears and trough removed**, back wall rebuilt and thickened to 9.5 mm, two hinge mortises
-   with barrel slot and pilot holes, bottom chamfer squared under the leaves, charge-port bay back to the original wall
-   face. Keyboard cut-outs otherwise unchanged by default
+3. **Keyboard (tray):** **hinge ears and trough removed**, back wall rebuilt (original 3 mm) with a 9.5 mm housing and two
+   tapered ribs behind each hinge, two hinge mortises with barrel slot and pilot holes, bottom chamfer squared under the
+   leaves. Keyboard cut-outs otherwise unchanged by default
    (`KB_CUTS_ENABLED = False`). The original right-wall (y 26.3–36.7) and
    rear-wall (x 72.9–89.1) openings are kept; they are probably the CACOE port/switch cut-outs of the original design (not
    verified). If the real keyboard's port/switch are elsewhere, set `KB_CUTS_ENABLED = True`, measure `KB_*` and rebuild.
@@ -177,7 +184,7 @@ One original Palma corner rib in the lid flares to y = −30.2 near the ceiling,
    lid-A variants for other USB-C cables. The original knobs and label are not used.
 
 ## Splitting for the A1 mini
-* **Lid** at x = −72: clear of the hinges (|x| 42–62). Joined like the tray and panel: **3 glued dovetail keys** through
+* **Lid** at x = −72: clear of the hinges and their housings (|x| 33–71). Joined like the tray and panel: **3 glued dovetail keys** through
   the 3 mm ceiling (y = −25 / 0 / +25; the camera window that used to sit there is filled) plus butt-glued front / back
   walls. The hinges are in piece B, so the seam carries no hinge load. (The earlier seam pads with dowels, inserts and
   socket screws are gone.)
@@ -198,11 +205,14 @@ Standard + PLA profile, 3 walls, 15 % gyroid; Bambu Studio's own numbers will di
 
 | Plate | Time | PLA |
 |---|---|---|
-| 0 test coupons | 0 h 29 min | 13 g |
-| 1 lid | 2 h 15 min | 85 g |
-| 2 tray | 1 h 37 min | 64 g |
+| 0 test coupons | 0 h 28 min | 12 g |
+| 1 lid | 2 h 10 min | 81 g |
+| 2 tray | 1 h 31 min | 60 g |
 | 3 panel, strap, rods, top plate | 1 h 00 min | 34 g |
-| 1–3 together | 4 h 50 min | 183 g |
+| 1–3 together | 4 h 39 min | 175 g |
+
+With 2 wall loops (Bambu Studio's default) instead of 3, plates 1–3 come to ≈ 163 g and 4 h 32 min: the 3 mm walls then
+get a sparse core, and the screw pilots get 2 loops as well.
 
 The slicer's own stability check reports nothing for plates 1 and 2. On plate 3 it flags the thin push-rods for low bed
 adhesion (keep Bambu Studio's brim type on Auto, its default, or give them a brim); on plate 0 also the panel-corner coupon,
@@ -275,15 +285,15 @@ If something is tight or loose, change `DOVETAIL["clr"]`, `HINGE_CLR`, `HINGE_BA
 
 ## Does it tip over when open?
 `tools/print_report.py` adds the sliced part masses, the PaperDIY (26.4 g, M5Stack spec), a 38 g cell and a 10 g cable
-(both assumed) and finds the lid side at **≈ 199 g** with its centre of mass 50 mm in front of the hinge axis when closed;
-the printed base is ≈ 68 g. The device rests on the back edge of the tray (y = 51.0). Opened past 90° the lid's centre of
+(both assumed) and finds the lid side at **≈ 195 g** with its centre of mass 53 mm in front of the hinge axis when closed;
+the printed base is ≈ 64 g. The device rests on the back edge of the tray (y = 51.0). Opened past 90° the lid's centre of
 mass moves behind that edge, so the keyboard has to supply the counterweight:
 
-| Opening | 100° | 110° | 120° | 130° | 140° | 154° (lid touches the table) |
+| Opening | 100° | 110° | 120° | 130° | 140° | 150° (lid touches the table) |
 |---|---|---|---|---|---|---|
-| Keyboard needed | 31 g | 62 g | 91 g | 115 g | 134 g | 153 g |
+| Keyboard needed | 29 g | 61 g | 90 g | 116 g | 136 g | 152 g |
 
-**Weigh the CACOE keyboard.** At 153 g or more it never tips; lighter keyboards are fine up to the angle in the table.
+**Weigh the CACOE keyboard.** At 152 g or more it never tips; lighter keyboards are fine up to the angle in the table.
 
 ## Verification actually performed
 STL re-load watertight / single body / bbox ≤ 175 mm for every part. Zero-volume interference (closed assembly) between
@@ -379,7 +389,7 @@ published drawing and structure files.
 | `USB_PM_WEB` | `1.2` | design choice | minimum wall between the opening and a screw hole |
 | `USB_PM_VARIANTS` | `(0, 16, 18, 20, 22, 25, 28, 30)` | design choice | lid-A variants (0 = opening only) |
 | `USB_PM_EAR` / `USB_PM_BODY` | `4 past hole, 8 tall, 3 thick` / `13 × 7 × 25` | ASSUMED | connector envelope for the fit check |
-| `KB_PORT_BAY` / `_X` / `_Z` / `_R` | `True` / `(70.5, 91.5)` / `(4.0, 15.5)` / `1.5` | design choice | charge-port bay back to the original wall face |
+| `KB_PORT_BAY` / `_X` / `_Z` / `_R` | `True` / `(70.5, 91.5)` / `(4.0, 15.5)` / `1.5` | design choice | charge-port bay back to the original wall face (`BACK_STYLE = "solid"` only) |
 | `KB_PLUG` | `12 × 6.5 overmold at x 81, z 9.4` | ASSUMED | straight USB-C plug for the fit / opening check |
 | `ROD_FLAT` | `0.9` | design choice | push-rod flat below the axis (2.4 mm on the bed) |
 | `ORIG_REPO` / `ORIG_COMMIT` / `ORIG_SHA256` | `a21bfd6…` | pinned | original phone-enclosure version the build accepts |
@@ -406,7 +416,10 @@ published drawing and structure files.
 | `HINGE_X` | `52.0` | design choice | hinge centres at +-52 |
 | `HINGE_CLR` | `0.25` | design choice | mortise clearance per side |
 | `HINGE_PILOT_HOLES` / `HINGE_PILOT_D` | `True` / `1.8` | design choice | printed pilots for M2 tapping screws |
-| `BACK_EXTRA` | `6.5` | design choice | back walls 3.0 -> 9.5 mm; new back face / axis plane y = 53.0 |
+| `BACK_EXTRA` | `6.5` | design choice | hinge housings 3.0 -> 9.5 mm deep; new back face / axis plane y = 53.0 |
+| `BACK_STYLE` | `"housings"` | design choice | 9.5 mm only behind the hinges (`"solid"`: whole back wall, v0.3) |
+| `HOUSING_HALF` / `HOUSING_GUSSET` | `13.5` / `5.5` | design choice | housing 27 mm wide; tapered rib 5.5 mm long each side |
+| `LID_RIBS` | `t 1.6, depth 7.0, drop 7.5`, 7 + 7 x positions | design choice | ribs between the long walls and the lid ceiling |
 | `Z_PART` | `12.85` | measured | [M] parting line at the back |
 | `BACK_ZONE_X` | `62.0` | design choice | old hinge removed and back wall rebuilt for /x/ <= 62 |
 | `CORNER_C` | `(95.0, 40.5)` | measured | [M] centre of the r 6 back-corner arcs |

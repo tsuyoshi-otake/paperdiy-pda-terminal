@@ -11,41 +11,41 @@
   out/paperdiy_strap.stl: bbox 8.0 x 78.4 x 2.5 mm, watertight=True, winding_ok=True, bodies=1, vol=1230 mm3
   out/key_pushrod_x2.stl: bbox 5.5 x 15.9 x 3.7 mm, watertight=True, winding_ok=True, bodies=1, vol=109 mm3
   out/power_pushrod.stl: bbox 41.5 x 5.5 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=264 mm3
-  out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=105250 mm3
-  out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=79791 mm3
+  out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=90995 mm3
+  out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=69792 mm3
   out/top_plate_blank.stl: bbox 56.0 x 10.9 x 1.5 mm, watertight=True, winding_ok=True, bodies=1, vol=909 mm3
   out/hinge_cover_lid_x2.stl: bbox 23.5 x 1.0 x 10.3 mm, watertight=True, winding_ok=True, bodies=1, vol=242 mm3
   out/hinge_cover_tray_x2.stl: bbox 23.5 x 1.0 x 8.9 mm, watertight=True, winding_ok=True, bodies=1, vol=209 mm3
 == split pieces for A1 mini (limit 175 mm)
-  out/split/lid_A_left.stl: bbox 35.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=20007 mm3
-  out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=85202 mm3
-  out/split/tray_A_left.stl: bbox 35.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=13254 mm3
-  out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=66495 mm3
+  out/split/lid_A_left.stl: bbox 35.0 x 93.0 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=16806 mm3
+  out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=74148 mm3
+  out/split/tray_A_left.stl: bbox 35.0 x 93.0 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=10884 mm3
+  out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=58866 mm3
   out/split/panel_A_left.stl: bbox 31.6 x 86.2 x 7.1 mm, watertight=True, winding_ok=True, bodies=1, vol=6780 mm3
   out/split/panel_B_main.stl: bbox 169.6 x 86.2 x 11.5 mm, watertight=True, winding_ok=True, bodies=1, vol=25572 mm3
 == lid A variants for other USB-C panel-mount hole spacings (only lid A changes)
-  out/split/usb_variants/lid_A_left_usb_noscrew.stl: bbox 35.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=20073 mm3
+  out/split/usb_variants/lid_A_left_usb_noscrew.stl: bbox 35.0 x 93.0 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=16872 mm3
     lid_A_left_usb_noscrew: opening 13.0 x 7.0 mm, no screw holes (glue)
-  out/split/usb_variants/lid_A_left_usb16mm.stl: bbox 35.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=20075 mm3
+  out/split/usb_variants/lid_A_left_usb16mm.stl: bbox 35.0 x 93.0 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=16874 mm3
     lid_A_left_usb16mm: opening 10.2 x 7.0 mm, M3 holes 16 mm apart
-  out/split/usb_variants/lid_A_left_usb18mm.stl: bbox 35.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=20031 mm3
+  out/split/usb_variants/lid_A_left_usb18mm.stl: bbox 35.0 x 93.0 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=16830 mm3
     lid_A_left_usb18mm: opening 12.2 x 7.0 mm, M3 holes 18 mm apart
-  out/split/usb_variants/lid_A_left_usb20mm.stl: bbox 35.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=20013 mm3
+  out/split/usb_variants/lid_A_left_usb20mm.stl: bbox 35.0 x 93.0 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=16812 mm3
     lid_A_left_usb20mm: opening 13.0 x 7.0 mm, M3 holes 20 mm apart
-  out/split/usb_variants/lid_A_left_usb22mm.stl: bbox 35.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=20011 mm3
+  out/split/usb_variants/lid_A_left_usb22mm.stl: bbox 35.0 x 93.0 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=16810 mm3
     lid_A_left_usb22mm: opening 13.0 x 7.0 mm, M3 holes 22 mm apart
-  out/split/usb_variants/lid_A_left_usb25mm.stl: bbox 35.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=20009 mm3
+  out/split/usb_variants/lid_A_left_usb25mm.stl: bbox 35.0 x 93.0 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=16808 mm3
     lid_A_left_usb25mm: opening 13.0 x 7.0 mm, M3 holes 25 mm apart
-  out/split/usb_variants/lid_A_left_usb28mm.stl: bbox 35.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=20007 mm3
+  out/split/usb_variants/lid_A_left_usb28mm.stl: bbox 35.0 x 93.0 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=16806 mm3
     lid_A_left_usb28mm: opening 13.0 x 7.0 mm, M3 holes 28 mm apart
-  out/split/usb_variants/lid_A_left_usb30mm.stl: bbox 35.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=20005 mm3
+  out/split/usb_variants/lid_A_left_usb30mm.stl: bbox 35.0 x 93.0 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=16804 mm3
     lid_A_left_usb30mm: opening 13.0 x 7.0 mm, M3 holes 30 mm apart
 == test coupons (cut from the real parts; print these first, ~1 h)
-  out/coupons/coupon_hinge_tray.stl: bbox 27.0 x 17.0 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=3196 mm3
-  out/coupons/coupon_hinge_lid.stl: bbox 27.0 x 17.0 x 17.2 mm, watertight=True, winding_ok=True, bodies=1, vol=4260 mm3
+  out/coupons/coupon_hinge_tray.stl: bbox 27.0 x 17.0 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=3193 mm3
+  out/coupons/coupon_hinge_lid.stl: bbox 27.0 x 17.0 x 17.2 mm, watertight=True, winding_ok=True, bodies=1, vol=4292 mm3
   out/coupons/coupon_dovetail_A.stl: bbox 18.0 x 18.0 x 3.0 mm, watertight=True, winding_ok=True, bodies=1, vol=792 mm3
   out/coupons/coupon_dovetail_B.stl: bbox 14.0 x 18.0 x 3.0 mm, watertight=True, winding_ok=True, bodies=1, vol=598 mm3
-  out/coupons/coupon_corner_lid.stl: bbox 15.2 x 21.2 x 16.0 mm, watertight=True, winding_ok=True, bodies=1, vol=3719 mm3
+  out/coupons/coupon_corner_lid.stl: bbox 15.2 x 14.7 x 16.0 mm, watertight=True, winding_ok=True, bodies=1, vol=2226 mm3
   out/coupons/coupon_corner_panel.stl: bbox 11.8 x 11.3 x 3.0 mm, watertight=True, winding_ok=True, bodies=1, vol=361 mm3
   out/coupons/coupon_keywall_lid.stl: bbox 16.0 x 13.5 x 18.0 mm, watertight=True, winding_ok=True, bodies=1, vol=1281 mm3
 == interference checks (assembled, closed lid)
@@ -59,15 +59,15 @@
   interference key rod 0 vs lid: 0.000 mm3 OK
   interference key rod 0 vs panel: 0.000 mm3 OK
   interference key rod 0 vs PaperDIY: 0.000 mm3 OK
-  interference key rod 1 vs lid: 0.000 mm3 OK
+  interference key rod 1 vs lid: -0.000 mm3 OK
   interference key rod 1 vs panel: 0.000 mm3 OK
   interference key rod 1 vs PaperDIY: 0.000 mm3 OK
   interference power rod vs lid: -0.000 mm3 OK
   interference power rod vs panel: 0.000 mm3 OK
   interference power rod vs PaperDIY: 0.000 mm3 OK
-  interference panel vs lid: -0.000 mm3 OK
+  interference panel vs lid: 0.000 mm3 OK
   interference panel A vs B (dovetail): 0.000 mm3 OK
-  interference tray A vs B (dovetail): 0.000 mm3 OK
+  interference tray A vs B (dovetail): -0.000 mm3 OK
   interference lid A vs B: -0.000 mm3 OK
   interference hinge (tray leaf + barrel) vs tray: 0.000 mm3 OK
   interference hinge (lid leaf) vs lid: 0.000 mm3 OK
@@ -77,18 +77,18 @@
   interference lid hinge cover 0 vs tray: 0.000 mm3 OK
   interference lid hinge cover 1 vs lid: 0.000 mm3 OK
   interference lid hinge cover 1 vs tray: 0.000 mm3 OK
-  interference tray hinge cover 0 vs tray: -0.000 mm3 OK
+  interference tray hinge cover 0 vs tray: 0.000 mm3 OK
   interference tray hinge cover 0 vs lid: 0.000 mm3 OK
-  interference tray hinge cover 1 vs tray: -0.000 mm3 OK
+  interference tray hinge cover 1 vs tray: 0.000 mm3 OK
   interference tray hinge cover 1 vs lid: 0.000 mm3 OK
   no collision with the tray from 0 to 180 deg
-  on a table the lid's top-back edge reaches the table at about 155 deg (opening limit)
+  on a table the lid's top-back edge reaches the table at 150.4 deg (opening limit)
   key 0: rod tip y=-31.60, actuator tip y=-31.30
   key 1: rod tip y=-31.60, actuator tip y=-31.30
 == keyboard charge port (straight plug, overmold 12 x 6.5 mm, centred at x=81 z=9.4)
   interference charge plug vs tray: 0.000 mm3 OK
   interference charge plug vs lid (closed): 0.000 mm3 OK
-  with that plug in, the lid opens to 95 deg; beyond that its back face meets the plug
+  with that plug in, the lid opens to 119 deg; beyond that its back face meets the plug
 == USB-C panel-mount fit per lid-A variant (rough screw-ear envelope: ears 4 mm past the holes, 8 tall, 3 thick)
   interference lid_A_left_usb_noscrew: connector vs lid: 0.000 mm3 OK
   interference lid_A_left_usb_noscrew: connector vs power push-rod: 0.000 mm3 OK
