@@ -43,6 +43,7 @@ manifest: 3mf
 render:
 	cd docs/render && npm ci && npx playwright install chromium && npm run render
 	$(PYTHON) docs/hinge_figure.py docs/images/hinge_screws.png
+	$(PYTHON) docs/coupons_figure.py docs/images/plate0_coupons.png
 
 test:
 	$(MAKE) -C firmware/test/host test PYTHON=$(PYTHON)
