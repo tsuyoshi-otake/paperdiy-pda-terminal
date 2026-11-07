@@ -119,7 +119,10 @@ PANEL_WIN_CLR = 0.3           # window = the kit's window + 0.3 per side, 1.0 mm
 PANEL_RIM = dict(h=2.0, w=1.2)   # locating rim on the panel's back around the kit (below the caps at 2.1 mm)
 PANEL_SLOT = dict(out=6.5, end=1.5, r=1.5)   # finger slots through the panel in front of the caps
 PANEL_SCREWS = ((-91.0, -37.5), (91.0, -37.5), (-91.0, 46.0), (91.0, 46.0), (-62.0, -39.5), (-62.0, 40.0))  # clear of the housings
-PANEL_DOVETAIL_Y = (-36.0, 0.0, 40.0)        # panel keys clear of the power slot (y 16.4..30.3)
+# The panel is open over the USB-C plug path (left edge to the kit's port, like the button slots): a plug can be
+# guided into the port by hand, and a panel-mount female's inner plug goes in and out without taking the panel off.
+PANEL_USB_SLOT = dict(frame=2.2, half=6.6, r=1.5)   # None = closed; frame left at the panel's left edge
+PANEL_DOVETAIL_Y = (-37.6, 0.0, 40.0)        # keys between the front edge (y -44.7) and the USB slot (-30.6), 1.8 mm each side; clear of the power slot (16.4..30.3)
 KIT_RIBS_X = (-50.0, 0.0, 40.0)              # ribs from the ceiling onto the kit's back (clear of the ESP32 window)
 USB_GUIDE_X = (-84.0, None)                  # USB-C guide ribs from x = -84 to the kit, either side of the plug path
 SPLIT_BLOCK = dict(dx=7.0, dy=7.0, h=3.4)    # thicker ceiling around the lid's dovetail keys

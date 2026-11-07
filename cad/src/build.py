@@ -923,6 +923,10 @@ def build_kit_panel():
     xa, xb, ya, yb = xe - g["out"], xe + 0.5, KIT_PWR_CAP_Y[0] - g["end"], KIT_PWR_CAP_Y[1] + g["end"]
     cuts.append(prism_z(rrect((xa + xb) / 2, (ya + yb) / 2, xb - xa, yb - ya, g["r"]), z0, z1))
     cuts.append(box(KIT_X0 - r["w"] - 1.0, KIT_X0 + 0.01, KIT_USB_Y - 6.6, KIT_USB_Y + 6.6, PANEL_Z1, z1))  # plug
+    if PANEL_USB_SLOT:  # open over the plug path, from a frame at the panel's left edge to the kit's end
+        u = PANEL_USB_SLOT
+        xa, xb = -101.0 + SHELL_WALL + PANEL_CLR + u["frame"], KIT_X0
+        cuts.append(prism_z(rrect((xa + xb) / 2, KIT_USB_Y, xb - xa, 2 * u["half"], u["r"]), z0, z1))
     for x, y in PANEL_SCREWS:
         cuts += [cyl_z(M2_CLEAR / 2, z0, z1, x, y), cyl_z(CSK_D / 2, PANEL_Z0 - 0.01, PANEL_Z0 + 1.2, x, y, M2_CLEAR / 2 - 0.2)]
     return P - union(cuts)

@@ -96,7 +96,9 @@ def inner_view(ax, lid, panel, kit):
     note(ax, (B.KIT_CX - B.KIT_L / 2 - 2.5, -sum(B.KIT_PWR_CAP_Y) / 2), "電源ボタンを押す切り欠き", (-40.0, -61.0))
     ax.add_patch(FancyArrowPatch((-112.0, -B.KIT_USB_Y), (-101.5, -B.KIT_USB_Y), arrowstyle="-|>", mutation_scale=12,
                                  color=RED, lw=1.4, zorder=8))
-    ax.text(-113.0, 52.0, "USB-C：左端の穴から挿す\n（端子まで溝が案内する）", fontsize=10, color=RED, va="bottom")
+    ax.text(-113.0, 52.0, "USB-C：左端の穴から挿す\n（切り欠きから見ながら端子まで）", fontsize=10, color=RED, va="bottom")
+    if B.PANEL_USB_SLOT:
+        note(ax, (-82.0, -B.KIT_USB_Y - B.PANEL_USB_SLOT["half"] + 1.0), "USB-C プラグの\n切り欠き", (-96.0, 6.0), fs=9.5)
     ax.text(75.0, -63.0, "↓ ヒンジ側", fontsize=9.5, color="#666")
     finish(ax, (-114, 104), (-67, 62), "① 化粧パネル（開いて画面側から見たところ）")
 

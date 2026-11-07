@@ -8,7 +8,7 @@
   out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=44241 mm3
   out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=79710 mm3
   out/paperdiy_kit_envelope.stl: bbox 121.3 x 68.2 x 6.3 mm, watertight=True, winding_ok=True, bodies=1, vol=50716 mm3
-  out/display_panel_kit.stl: bbox 198.4 x 95.9 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=19435 mm3
+  out/display_panel_kit.stl: bbox 198.4 x 95.9 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=18745 mm3
   out/hinge_cover_lid_x2.stl: bbox 23.5 x 1.0 x 9.9 mm, watertight=True, winding_ok=True, bodies=1, vol=233 mm3
   out/hinge_cover_tray_x2.stl: bbox 23.5 x 1.0 x 8.9 mm, watertight=True, winding_ok=True, bodies=1, vol=209 mm3
 == split pieces for A1 mini (limit 175 mm)
@@ -16,8 +16,8 @@
   out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=36157 mm3
   out/split/tray_A_left.stl: bbox 35.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=13254 mm3
   out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=66414 mm3
-  out/split/panel_A_left.stl: bbox 33.2 x 95.9 x 1.6 mm, watertight=True, winding_ok=True, bodies=1, vol=4369 mm3
-  out/split/panel_B_main.stl: bbox 171.2 x 95.9 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=15043 mm3
+  out/split/panel_A_left.stl: bbox 33.2 x 95.9 x 1.6 mm, watertight=True, winding_ok=True, bodies=1, vol=3843 mm3
+  out/split/panel_B_main.stl: bbox 171.2 x 95.9 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=14880 mm3
 == lid A for a screw-ear panel-mount female USB-C (swap only lid A; room inside the end wall 8.0 mm)
   out/split/usb_variants/lid_A_left_usb_noscrew.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=7873 mm3
     lid_A_left_usb_noscrew: opening 13.0 x 7.0 mm at y = 20, z = 20.6, no screw holes (glue)
@@ -52,7 +52,7 @@
   interference bezel panel vs tray: 0.000 mm3 OK
   interference USB-C plug vs bezel panel: 0.000 mm3 OK
   interference keyboard space vs bezel panel: 0.000 mm3 OK
-  interference panel A vs B (dovetail): 0.000 mm3 OK
+  interference panel A vs B (dovetail): -0.000 mm3 OK
   interference lid_A_left_usb_noscrew: panel-mount female vs lid: 0.000 mm3 OK
   interference lid_A_left_usb_noscrew: panel-mount female vs panel: 0.000 mm3 OK
   interference lid_A_left_usb_noscrew: panel-mount female vs kit: 0.000 mm3 OK

@@ -35,10 +35,10 @@
  },
  "3mf/plate3_panel.3mf": {
   "objects": 2,
-  "sha256": "33c413bba87fa6f396093f304d238233c9fb065a914a2f002fe8274f338cfe83",
+  "sha256": "d26e78e87f6620a6bc1efb5dfa072b4d10bb720893729316c62dfbebb2e79fa6",
   "volumes": [
-   4369.02,
-   15043.28
+   3842.58,
+   14880.11
   ]
  },
  "3mf/usb_variants/lid_A_left_usb16mm.3mf": {
@@ -235,9 +235,9 @@
     18.6
    ]
   ],
-  "faces": 3092,
-  "sha256": "32ff6d5f35f05026535cdbb71486da8c7c3b072cade5f705ad95fa3cb9156b14",
-  "volume": 19434.52
+  "faces": 3310,
+  "sha256": "90f22dcb61a4d9dd3fb34465b0c481332c1b0f551c47ee2e29bcd7e1317f4579",
+  "volume": 18744.9
  },
  "out/hinge_cover_lid_x2.stl": {
   "bbox": [
@@ -354,9 +354,9 @@
     16.6
    ]
   ],
-  "faces": 758,
-  "sha256": "e0fc41cf57470be02248e12ac1c218b19884db0ec560cc726244a10b664c3990",
-  "volume": 4369.02
+  "faces": 864,
+  "sha256": "30f777c369a5ecbb480cab05ae8f6e874bb2ac6fa39fd20e5a9680a7e9c167f2",
+  "volume": 3842.58
  },
  "out/split/panel_B_main.stl": {
   "bbox": [
@@ -371,9 +371,9 @@
     18.6
    ]
   ],
-  "faces": 2464,
-  "sha256": "f09dcc3e3afc5526b5d0c9b57c346c8d796a3031195c488d2928ff3726a27506",
-  "volume": 15043.28
+  "faces": 2582,
+  "sha256": "b2b46514bc0a7d8ef4cb2568b7fb2ff95f85666893536ffe66c162ea8100d9e3",
+  "volume": 14880.11
  },
  "out/split/tray_A_left.stl": {
   "bbox": [

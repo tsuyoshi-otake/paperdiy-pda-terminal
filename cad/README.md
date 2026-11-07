@@ -71,10 +71,10 @@ log is written to `out/build_log.txt`.
 | `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~22 min, 9 g |
 | `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers, ~1 h 18 min, 52 g |
 | `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers, ~1 h 38 min, 64 g |
-| `3mf/plate3_panel.3mf` | panel A + B, ~35 min, 24 g |
+| `3mf/plate3_panel.3mf` | panel A + B, ~34 min, 23 g |
 | `3mf/usb_variants/lid_A_left_usb*.3mf` | the lid-A variants, one per file |
 
-Plates 1–3: about 141 g and 3 h 28 min (the solid kit lid took 87 g and 2 h 45 min for plate 1 alone).
+Plates 1–3: about 140 g and 3 h 28 min (the solid kit lid took 87 g and 2 h 45 min for plate 1 alone).
 
 ### The kit
 Measured from M5Stack's model of the Complete Kit (`m5stack/M5_Hardware`, `Products/K159-B_PaperDIY_Complete_Kit/Structures/PaperDlY_Complete_Kit.stl`,
@@ -111,7 +111,10 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
 * **Buttons**: finger slots through the panel, 6.5 mm out from the kit, at the KEY caps (one slot for both, on the front
   edge) and the power cap (on the USB end). No push-rods.
 * **USB-C, direct** (default): a 13 × 7.6 mm opening in the left end face; the guide ribs lead a straight plug (overmold
-  ≤ 12 × 6.5) to the port, and the plug stays in with the lid closed.
+  ≤ 12 × 6.5) to the port, and the plug stays in with the lid closed. The panel is open over the plug path
+  (`PANEL_USB_SLOT`: 13.2 mm wide, from a 2.2 mm frame at its left edge to the kit), like the button slots, so the plug
+  can be watched and pushed home by hand; with a panel-mount female the extension's inner plug goes in and out the same
+  way, without taking the panel off. The front panel key moved to y −37.6 to clear it.
 * **USB-C, panel-mount female** (lid-A variants): the same lid with the opening moved to y = 20 (`USB_PM_Y_KIT`, clear of
   the split blocks and the power slot), 13 × 7 mm (narrower for close ears) and two Ø3.4 holes. The connector's ears and
   body can be up to 7.8 mm tall between the panel and the ceiling. Only lid A changes (the build asserts that lid B is
@@ -143,8 +146,8 @@ axis: no contact with the tray; the lid reaches the table at 160.5°. With the k
 95°.
 
 ### Tipping
-Lid side 127 g (printed parts as sliced + kit 43.1 g + half the hinges), centre of mass 48.6 mm in front of the hinge
-axis: a keyboard of **77 g** keeps the device on its feet up to the table contact at 160.5° (`out/print_report.md`).
+Lid side 126 g (printed parts as sliced + kit 43.1 g + half the hinges), centre of mass 48.4 mm in front of the hinge
+axis: a keyboard of **76 g** keeps the device on its feet up to the table contact at 160.5° (`out/print_report.md`).
 
 ### Colour mock-ups
 `make render` also draws the closed and open views in three palettes: all black, all khaki, and a mix (khaki lid, black
@@ -494,7 +497,8 @@ published drawing and structure files.
 | `PANEL_T` / `PANEL_CLR` / `PANEL_WIN_CLR` | `1.6` / `0.2` / `0.3` | design choice | bezel panel; clearance to the lid's walls; window = kit window + 0.3 per side |
 | `PANEL_RIM` / `PANEL_SLOT` | `h 2.0, w 1.2` / `out 6.5, end 1.5, r 1.5` | design choice | locating rim around the kit; finger slots at the caps |
 | `PANEL_SCREWS` | `(±91, −37.5), (±91, 46), (−62, −39.5), (−62, 40)` | design choice | six M2×8 into the lid's bosses, clear of the housings |
-| `PANEL_DOVETAIL_Y` / `DOVETAIL_Y_KIT` | `(-36, 0, 40)` / `(-37, 5, 36)` | design choice | panel keys / lid keys |
+| `PANEL_DOVETAIL_Y` / `DOVETAIL_Y_KIT` | `(-37.6, 0, 40)` / `(-37, 5, 36)` | design choice | panel keys (the front one between the edge and the USB slot) / lid keys |
+| `PANEL_USB_SLOT` | `frame 2.2, half 6.6, r 1.5` | design choice | panel open over the USB-C plug path, from a 2.2 mm frame at the left edge to the kit (`None` = closed) |
 | `KIT_RIBS_X` / `USB_GUIDE_X` / `SPLIT_BLOCK` | `(-50, 0, 40)` / `(-84, None)` / `7 × 7 × 3.4` | design choice | ribs onto the kit's back; USB-C guide ribs; ceiling blocks around the lid keys |
 | `USB_PM_Y_KIT` | `20.0` | design choice | panel-mount female opening in the lid-A variants (clear of the split blocks and the power slot) |
 | `LATCH` | `w 18, t 1.0, slot 0.8, root 9, below 3.6, bump 0.45 @ 2.0, clr 0.15, 45° / 35°` | design choice | snap tab (see "Snap tab") |
