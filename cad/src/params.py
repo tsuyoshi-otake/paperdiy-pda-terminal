@@ -125,6 +125,16 @@ USB_PM_BODY = dict(w=13.0, h=7.0, len=25.0)           # housing behind the ears
 # was a 3 mm deep hole in the 3 mm back wall. Thickening the back wall to 9.5 mm made it a 9.5 mm tunnel, so a
 # bay is cut from the outside back to the original wall face (y = 46.5): the plug sees the same 3 mm wall as in the
 # original design. The bay crosses the parting line, so lid and tray both get their part of it.
+# Front clip (accessory; nothing else changes): a U pushed onto the front edge of the closed case keeps the lid shut in a
+# bag. It follows the case's front profile at CLIP_X with CLIP_CLR all round; a CLIP_BUMP ridge near each lip tip presses
+# on the lid top and tray bottom so the clip stays on. It fits anywhere along the front except over the KEY push-rods.
+CLIP_X = 20.0                 # where the profile is taken and where build_log checks it
+CLIP_W = 20.0
+CLIP_T = 1.6
+CLIP_LIP = 12.0               # the lips reach this far back from the front face (the case's 3 mm chamfers included)
+CLIP_CLR = 0.1
+CLIP_BUMP = 0.2               # interference of each ridge with the case (spring preload)
+CLIP_BUMP_R = 0.8
 KB_PORT_BAY = True            # only used with BACK_STYLE = "solid" (the 3 mm wall of "housings" needs no bay)
 KB_PORT_BAY_X = (70.5, 91.5)  # 2.5 mm wider than the opening on each side (overmold + fingers)
 KB_PORT_BAY_Z = (4.0, 15.5)   # floor 1 mm above the bottom chamfer, 2.65 mm up into the lid wall

@@ -241,6 +241,22 @@ def build_strap():
     return s
 
 
+def build_front_clip(lid, tray, bumps=True):
+    """Accessory: push-on U clip for the front edge of the closed case (CLIP_* in params). The profile is the outline of
+    the closed lid + tray at x = CLIP_X, so the clip hugs the front face and the 3 mm chamfers with CLIP_CLR."""
+    to_yz = np.array([[0, 1, 0, 0], [0, 0, 1, 0], [1, 0, 0, 0]], float)        # (x, y, z) -> (y, z, x)
+    outer = (lid + tray).transform(to_yz).slice(CLIP_X).hull()
+    y0, z0, y1, z1 = outer.bounds()
+    y_tip = y0 + CLIP_LIP
+    keep = CS.square([CLIP_LIP + 10.0, z1 - z0 + 20.0]).translate([y_tip - CLIP_LIP - 10.0, z0 - 10.0])
+    u = (outer.offset(CLIP_CLR + CLIP_T, m3.JoinType.Round, 2.0, SEG)
+         - outer.offset(CLIP_CLR, m3.JoinType.Round, 2.0, SEG)) ^ keep
+    if bumps:   # ridges 2 mm from the lip tips, CLIP_BUMP into the lid top / tray bottom
+        for zc in (z1 + CLIP_BUMP_R - CLIP_BUMP, z0 - CLIP_BUMP_R + CLIP_BUMP):
+            u = u + CS.circle(CLIP_BUMP_R, SEG).translate([y_tip - 2.0, zc])
+    return prism_x(u, CLIP_X - CLIP_W / 2, CLIP_X + CLIP_W / 2)
+
+
 def dflat(rod, zc):        # flat underside ROD_FLAT below the axis: prints flat, rests on the U-cradle floor
     return rod ^ box(-BIG, BIG, -BIG, BIG, zc - ROD_FLAT, BIG)
 
@@ -657,6 +673,8 @@ def main():
     if TOP_PLATE:
         out["top_plate_blank"] = export(build_top_plate(), f"{OUT_DIR}/top_plate_blank.stl")
     write_assembly_json()
+    clip = build_front_clip(lid, tray)
+    out["front_clip"] = export(clip, f"{OUT_DIR}/front_clip.stl")
     if lid_cov:
         out["hinge_cover_lid"] = export(lid_cov[0], f"{OUT_DIR}/hinge_cover_lid_x2.stl")
         out["hinge_cover_tray"] = export(tray_cov[0], f"{OUT_DIR}/hinge_cover_tray_x2.stl")
@@ -712,6 +730,15 @@ def main():
     h_fixed, h_moving = hinge_envelope(0.0)
     interference(h_fixed, tray, "hinge (tray leaf + barrel) vs tray"); interference(h_moving, lid, "hinge (lid leaf) vs lid")
     interference(h_fixed, lid, "hinge barrel vs lid", tol=1.0)
+    log("== front clip (accessory; checked without its ridges at several places along the front)")
+    clip0 = build_front_clip(lid, tray, bumps=False)
+    for xc in (-75.0, -50.0, CLIP_X, 50.0, 80.0):
+        c = clip0.translate([xc - CLIP_X, 0, 0])
+        interference(c, lid, f"front clip at x={xc:.0f} vs lid"); interference(c, tray, f"front clip at x={xc:.0f} vs tray")
+        for i, r in enumerate(krods):
+            interference(c, r, f"front clip at x={xc:.0f} vs key rod {i}")
+    log(f"  ridges: {(clip ^ lid).volume() + (clip ^ tray).volume():.2f} mm3 of intended overlap "
+        f"({CLIP_BUMP} mm into the lid top and the tray bottom, the clip's spring preload)")
     log(f"== hinge motion (lid + panel rotated about the real axis y={HINGE_AXIS_Y:.2f}, z={Z_PART}; tray fixed)")
     lidset = lid + panel
     traset = tray

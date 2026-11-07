@@ -32,6 +32,15 @@
   "grams": 33.72,
   "metres": 11.3071
  },
+ "plate4_front_clip.3mf": {
+  "warnings": [
+   "Low bed adhesion: front_clip_1, front_clip_2"
+  ],
+  "ok": true,
+  "time": "10m 10s",
+  "grams": 4.17,
+  "metres": 1.3973900000000001
+ },
  "total_g": 175.01999999999998,
  "total_min": 279,
  "lid_g": 194.95999999999998,

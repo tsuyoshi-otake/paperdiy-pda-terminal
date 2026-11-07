@@ -42,8 +42,8 @@ KB_CG = (0.0, 0.0, 8.0)         # [A] keyboard centre of mass: middle of the tra
 
 # what the slicer warnings on these parts mean (checked by hand)
 KNOWN = {
-    "Low bed adhesion": "the push-rods are 3-4 mm thin bars: keep Bambu Studio's brim type on Auto (its default) "
-                        "or give them a brim",
+    "Low bed adhesion": "the push-rods are 3-4 mm thin bars and the front clips stand 20 mm tall on a 1.6 mm U: keep "
+                        "Bambu Studio's brim type on Auto (its default) or give them a brim",
     "Loose extrusions": "the 5 mm counterbore at the panel's screen face is bridged 1.5 mm above the bed "
                         "(same in the real panel, a short bridge that prints fine)",
 }
@@ -146,12 +146,12 @@ def main():
             if not r["ok"]:
                 lines.append(f"| {os.path.basename(p)} | slicing failed | | {r.get('error', '')[:80]} |")
                 continue
-            if not os.path.basename(p).startswith("plate0"):
+            if os.path.basename(p)[:6] in ("plate1", "plate2", "plate3"):
                 total_g += r["grams"]; total_min += minutes(r["time"])
             lines.append(f"| `{os.path.basename(p)}` | {r['time']} | {r['grams']:.0f} g ({r['metres']:.1f} m) | "
                          f"{'; '.join(r['warnings']) if r['warnings'] else 'none'} |")
         lines += ["", f"Plates 1-3 together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
-                  "of printing (plate 0, the test coupons, comes on top).", ""]
+                  "of printing (plate 0, the test coupons, and plate 4, the optional front clip, come on top).", ""]
         seen = sorted({w.split(":")[0] for r in report.values() if isinstance(r, dict) for w in r.get("warnings", [])})
         for k in seen:
             lines.append(f"- *{k}*: {KNOWN.get(k, 'not reviewed yet - look at it in the slicer preview')}")

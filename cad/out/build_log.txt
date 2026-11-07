@@ -14,6 +14,7 @@
   out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=90995 mm3
   out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=69792 mm3
   out/top_plate_blank.stl: bbox 56.0 x 10.9 x 1.5 mm, watertight=True, winding_ok=True, bodies=1, vol=909 mm3
+  out/front_clip.stl: bbox 20.0 x 13.7 x 33.4 mm, watertight=True, winding_ok=True, bodies=1, vol=1717 mm3
   out/hinge_cover_lid_x2.stl: bbox 23.5 x 1.0 x 10.3 mm, watertight=True, winding_ok=True, bodies=1, vol=242 mm3
   out/hinge_cover_tray_x2.stl: bbox 23.5 x 1.0 x 8.9 mm, watertight=True, winding_ok=True, bodies=1, vol=209 mm3
 == split pieces for A1 mini (limit 175 mm)
@@ -72,6 +73,28 @@
   interference hinge (tray leaf + barrel) vs tray: 0.000 mm3 OK
   interference hinge (lid leaf) vs lid: 0.000 mm3 OK
   interference hinge barrel vs lid: 0.000 mm3 OK
+== front clip (accessory; checked without its ridges at several places along the front)
+  interference front clip at x=-75 vs lid: 0.000 mm3 OK
+  interference front clip at x=-75 vs tray: 0.000 mm3 OK
+  interference front clip at x=-75 vs key rod 0: 0.000 mm3 OK
+  interference front clip at x=-75 vs key rod 1: 0.000 mm3 OK
+  interference front clip at x=-50 vs lid: 0.000 mm3 OK
+  interference front clip at x=-50 vs tray: 0.000 mm3 OK
+  interference front clip at x=-50 vs key rod 0: 0.000 mm3 OK
+  interference front clip at x=-50 vs key rod 1: 0.000 mm3 OK
+  interference front clip at x=20 vs lid: 0.000 mm3 OK
+  interference front clip at x=20 vs tray: 0.000 mm3 OK
+  interference front clip at x=20 vs key rod 0: 0.000 mm3 OK
+  interference front clip at x=20 vs key rod 1: 0.000 mm3 OK
+  interference front clip at x=50 vs lid: 0.000 mm3 OK
+  interference front clip at x=50 vs tray: 0.000 mm3 OK
+  interference front clip at x=50 vs key rod 0: 0.000 mm3 OK
+  interference front clip at x=50 vs key rod 1: 0.000 mm3 OK
+  interference front clip at x=80 vs lid: 0.000 mm3 OK
+  interference front clip at x=80 vs tray: 0.000 mm3 OK
+  interference front clip at x=80 vs key rod 0: 0.000 mm3 OK
+  interference front clip at x=80 vs key rod 1: 0.000 mm3 OK
+  ridges: 5.75 mm3 of intended overlap (0.2 mm into the lid top and the tray bottom, the clip's spring preload)
 == hinge motion (lid + panel rotated about the real axis y=54.15, z=12.85; tray fixed)
   interference lid hinge cover 0 vs lid: 0.000 mm3 OK
   interference lid hinge cover 0 vs tray: 0.000 mm3 OK

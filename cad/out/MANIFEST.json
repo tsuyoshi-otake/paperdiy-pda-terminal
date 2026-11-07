@@ -48,6 +48,14 @@
    25572.36
   ]
  },
+ "3mf/plate4_front_clip.3mf": {
+  "objects": 2,
+  "sha256": "9e15357811d2119c74b7fad9d223bbc87a8a005160e2720b694c32bcb96d87ca",
+  "volumes": [
+   1716.82,
+   1716.82
+  ]
+ },
  "3mf/usb_variants/lid_A_left_usb16mm.3mf": {
   "objects": 1,
   "sha256": "479aea7c97c30fed7acb4e2ec693f51ce43cf405e8bb85c301b09a1fe552113d",
@@ -262,6 +270,23 @@
   "faces": 2110,
   "sha256": "bb17abd4d710144638a6006f70c1e8d17f623bdb211e053b3ff90b8cf65be59b",
   "volume": 32389.42
+ },
+ "out/front_clip.stl": {
+  "bbox": [
+   [
+    10.0,
+    -48.2,
+    -1.7
+   ],
+   [
+    30.0,
+    -34.5,
+    31.7
+   ]
+  ],
+  "faces": 292,
+  "sha256": "72600aa06f9bc5d7a2f7aad41ab8bc05e101802ca2111fe114e8bca6f28347af",
+  "volume": 1716.79
  },
  "out/hinge_cover_lid_x2.stl": {
   "bbox": [

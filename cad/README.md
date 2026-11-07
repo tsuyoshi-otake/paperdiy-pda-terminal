@@ -59,6 +59,7 @@ log is written to `out/build_log.txt`.
 | `out/key_pushrod_x2.stl` | 5.5 × 15.9 × 3.7 | print **2** (KEY1/KEY2) |
 | `out/power_pushrod.stl` | 41.5 × 5.5 × 3.6 | power button |
 | `out/top_plate_blank.stl` | 56.0 × 10.9 × 1.5 | optional plate for the lid-top recess (accent colour) |
+| `out/front_clip.stl` | 20.0 × 13.7 × 33.4 | optional push-on clip for the front edge: keeps the closed lid shut |
 | `out/hinge_cover_lid_x2.stl` / `hinge_cover_tray_x2.stl` | 23.5 × 1.0 × 10.3 / 23.5 × 1.0 × 8.9 | print 2 each (lid / tray colour) |
 | `out/split/lid_A_left.stl` / `lid_B_main.stl` | 35.0 × 93.0 × 22.0 / 173.0 × 99.5 × 22.0 | |
 | `out/split/tray_A_left.stl` / `tray_B_main.stl` | 35.0 × 93.0 × 12.8 / 173.0 × 99.5 × 12.8 | |
@@ -163,6 +164,16 @@ label recess (the bay is shifted to y = −4.5 for that reason). The original li
 onto the cell. Add a 0.5 mm foam pad on the cell.
 One original Palma corner rib in the lid flares to y = −30.2 near the ceiling, so the frame wall is notched there.
 
+### Front clip (optional accessory)
+The torque hinges hold any angle but do not latch, so a closed case can open in a bag. `out/front_clip.stl` is a U that is
+pushed onto the front edge of the closed case; nothing else changes. Its profile is the outline of the closed lid + tray at
+x = `CLIP_X` (front face and both 3 mm chamfers) with `CLIP_CLR` all round, the lips reach `CLIP_LIP` = 12 mm back over the
+lid top and the tray bottom, and a ridge 2 mm from each lip tip presses `CLIP_BUMP` = 0.2 mm into the case, so the clip stays
+on by its own spring. `build.py` checks it without the ridges at x = −75, −50, 20, 50 and 80 (0 mm³ against lid, tray and
+the key push-rods) and logs the ridges' intended overlap. Keep it off the two key push-rods (x −29 and −17), which stand
+1 mm proud of the front face. It prints standing on its U profile (layers across the width), so the bends flex along the
+extrusion lines rather than across layers.
+
 ## Changes vs. the original (for the licence "indicate changes")
 1. **Display Panel:** Palma window, Palma button slots and both vent grilles filled. New PaperDIY window, locating lip, strap
    posts, push-rod cradles, battery bay, USB-plug relief. Outline and the 4 corner screw holes are untouched (original mesh kept).
@@ -180,7 +191,7 @@ One original Palma corner rib in the lid flares to y = −30.2 near the ceiling,
    (`KB_CUTS_ENABLED = False`). The original right-wall (y 26.3–36.7) and
    rear-wall (x 72.9–89.1) openings are kept; they are probably the CACOE port/switch cut-outs of the original design (not
    verified). If the real keyboard's port/switch are elsewhere, set `KB_CUTS_ENABLED = True`, measure `KB_*` and rebuild.
-4. New parts: strap, 3 push-rods, 4 hinge covers, optional top plate, test coupons. Split versions of lid / tray / panel,
+4. New parts: strap, 3 push-rods, 4 hinge covers, optional top plate, optional front clip, test coupons. Split versions of lid / tray / panel,
    lid-A variants for other USB-C cables. The original knobs and label are not used.
 
 ## Splitting for the A1 mini
@@ -196,7 +207,8 @@ One original Palma corner rib in the lid flares to y = −30.2 near the ceiling,
 
 ## Print-ready 3MF (A1 mini)
 `3mf/plate0_test_coupons.3mf` (print first), `plate1_lid.3mf` (lid A+B, 2 lid hinge covers), `plate2_tray.3mf` (tray A+B,
-2 tray hinge covers) and `plate3_panel_parts.3mf` (panel A+B, strap, 3 push-rods, optional top plate): every part already
+2 tray hinge covers), `plate3_panel_parts.3mf` (panel A+B, strap, 3 push-rods, optional top plate) and the optional
+`plate4_front_clip.3mf` (two front clips, one is a spare): every part already
 in print orientation and laid out on a 180 x 180 mm plate, grouped by colour. `3mf/usb_variants/` holds lid A alone for
 the other USB-C hole spacings. No supports are needed. Regenerate with `python3 src/export_3mf.py` after `src/build.py`.
 
@@ -210,12 +222,14 @@ Standard + PLA profile, 3 walls, 15 % gyroid; Bambu Studio's own numbers will di
 | 2 tray | 1 h 31 min | 60 g |
 | 3 panel, strap, rods, top plate | 1 h 00 min | 34 g |
 | 1–3 together | 4 h 39 min | 175 g |
+| 4 front clips (optional) | 0 h 10 min | 4 g |
 
 With 2 wall loops (Bambu Studio's default) instead of 3, plates 1–3 come to ≈ 163 g and 4 h 32 min: the 3 mm walls then
 get a sparse core, and the screw pilots get 2 loops as well.
 
 The slicer's own stability check reports nothing for plates 1 and 2. On plate 3 it flags the thin push-rods for low bed
-adhesion (keep Bambu Studio's brim type on Auto, its default, or give them a brim); on plate 0 also the panel-corner coupon,
+adhesion (keep Bambu Studio's brim type on Auto, its default, or give them a brim), and on plate 4 the clips, which stand
+20 mm tall on a 1.6 mm U (same remedy); on plate 0 also the panel-corner coupon,
 whose 5 mm counterbore is bridged 1.5 mm above the bed, as in the real panel.
 
 ### Test coupons (`plate0_test_coupons.3mf`, ~30 min)
@@ -226,7 +240,8 @@ Cut from the real parts and printed in the same orientation, so they show how yo
 * `coupon_corner_lid` + `coupon_corner_panel`: a panel corner screw (counterbore, Ø1.8 pilot in the lid boss).
 * `coupon_keywall_lid` + a key push-rod: the rod must slide freely in the bore printed upside down in the lid wall.
 * One lid cover and one tray cover: they must lie flat on the leaves.
-If something is tight or loose, change `DOVETAIL["clr"]`, `HINGE_CLR`, `HINGE_BARREL_D`, `SCREW_PILOT_D` or `ROD_HOLE` and rebuild.
+If something is tight or loose, change `DOVETAIL["clr"]`, `HINGE_CLR`, `HINGE_BARREL_D`, `HINGE_PILOT_D`, `SCREW_PILOT_D` or
+`ROD_HOLE` and rebuild.
 
 ## Print orientation (suggested)
 * Lid pieces: **top face down** (the ceiling is flat at z = 30). No supports (the knuckle that needed them is gone).
@@ -420,6 +435,8 @@ published drawing and structure files.
 | `BACK_STYLE` | `"housings"` | design choice | 9.5 mm only behind the hinges (`"solid"`: whole back wall, v0.3) |
 | `HOUSING_HALF` / `HOUSING_GUSSET` | `13.5` / `5.5` | design choice | housing 27 mm wide; tapered rib 5.5 mm long each side |
 | `LID_RIBS` | `t 1.6, depth 7.0, drop 7.5`, 7 + 7 x positions | design choice | ribs between the long walls and the lid ceiling |
+| `CLIP_X` / `CLIP_W` / `CLIP_T` / `CLIP_LIP` | `20.0` / `20.0` / `1.6` / `12.0` | design choice | front clip: profile taken at x = 20; 20 mm wide, 1.6 mm thick, lips 12 mm deep |
+| `CLIP_CLR` / `CLIP_BUMP` / `CLIP_BUMP_R` | `0.1` / `0.2` / `0.8` | design choice | clip clearance; ridges 0.2 mm into the lid top and tray bottom (spring preload) |
 | `Z_PART` | `12.85` | measured | [M] parting line at the back |
 | `BACK_ZONE_X` | `62.0` | design choice | old hinge removed and back wall rebuilt for /x/ <= 62 |
 | `CORNER_C` | `(95.0, 40.5)` | measured | [M] centre of the r 6 back-corner arcs |

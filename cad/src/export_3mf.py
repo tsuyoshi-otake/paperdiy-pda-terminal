@@ -28,6 +28,7 @@ OUT_3MF = os.path.join(CAD_DIR, "3mf")
 FLIP_X = trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0])      # top face down
 ROT_Z90 = trimesh.transformations.rotation_matrix(np.pi / 2, [0, 0, 1])  # turn on the bed
 LAY_FLAT_Y = trimesh.transformations.rotation_matrix(-np.pi / 2, [1, 0, 0])  # hinge cover plates: visible face on the bed
+STAND_X = trimesh.transformations.rotation_matrix(np.pi / 2, [0, 1, 0])     # front clip: U profile flat on the bed
 # print orientation of everything cut from the three big parts
 ORIENT = {"lid": (FLIP_X,), "tray": (), "panel": ()}
 
@@ -123,6 +124,10 @@ def plates():
             [("panel_B_main", part(S("panel_B_main")))],
         ]),
     }
+    # any colour: optional front clip that keeps the closed lid shut (one is enough; the second is a spare)
+    p["plate4_front_clip.3mf"] = ("Front clip (optional, keeps the lid shut)", [
+        [("front_clip_1", part(O("front_clip"), STAND_X)), ("front_clip_2", part(O("front_clip"), STAND_X))],
+    ])
     # lid A for other USB-C panel-mount cables (only the small left lid piece depends on the cable)
     for s in USB_PM_VARIANTS:
         n = usb_name(s)
