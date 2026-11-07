@@ -65,9 +65,9 @@ PD_WIN_FROM_USB = 8.90        # [M:K159-B kit STL] window offset from USB end (F
 PD_ANTENNA_FROM_TOP = (70.0, 88.0)  # [M:K159 PDF] WROOM-1 antenna zone, on the long edge opposite the keys
 
 # ---------------------------------------------------------------- PaperDIY Complete Kit, left in its own case (K159-B)
-# PD_MOUNT = "kit":  the PaperDIY stays in the Complete Kit's 3D-printed case and drops into a pocket in a thin, solid
-#                    lid (one M2 screw from the top into its standoff). It runs on the kit's own 140 mAh LiPo (a power
-#                    bank on the USB-C when that is not enough). Lid and tray both reprint; a snap tab keeps it shut.
+# PD_MOUNT = "kit":  the PaperDIY stays in the Complete Kit's 3D-printed case, lies in a thin lid and is held by a
+#                    bezel panel (KIT_LID below). It runs on the kit's own 140 mAh LiPo (a power bank on the USB-C when
+#                    that is not enough). Lid and tray both reprint; a snap tab keeps it shut.
 # PD_MOUNT = "bare": the earlier design: bare Assembly Kit on a printed display panel, strap, push-rods, 2000 mAh cell.
 PD_MOUNT = os.environ.get("PD_MOUNT", "kit")
 # [M:K159-B STL] = m5stack/M5_Hardware Products/K159-B_PaperDIY_Complete_Kit/Structures/PaperDlY_Complete_Kit.stl
@@ -107,6 +107,25 @@ KIT_NOTCH = dict(out=7.0, depth=5.6, end=1.5, r=2.0)   # finger notches at the c
 USB_CH = dict(w=13.0, h=7.6)  # channel for a straight USB-C plug (overmold ~12 x 6.5) from the left end to the port
 KIT_SCREW_SEAT = 1.6          # lid skin under the countersunk M2x4 head -> 2.2 mm into the kit (M5Stack: < 3 mm)
 DOVETAIL_Y_KIT = (-37.0, 5.0, 36.0)   # lid keys clear of the USB channel (y -30.5..-17.5) and the power notch
+# KIT_LID = "shell": hollow lid (thin walls and ceiling) and a printed bezel panel that holds the kit from the screen side,
+#                   screwed to bosses in the lid (default). "solid": the solid deck lid with the kit in a pocket.
+KIT_LID = "shell"
+SHELL_WALL = 1.6              # 4 lines
+SHELL_CEIL = 1.2              # 6 layers
+USB_CEIL = 0.8                # ceiling left over the USB-C plug path (a relief from inside, 4 layers)
+PANEL_T = 1.6                 # bezel panel (countersunk M2x8 heads: 1.2 deep)
+PANEL_CLR = 0.2               # panel to the lid's walls / housings
+PANEL_WIN_CLR = 0.3           # window = the kit's window + 0.3 per side, 1.0 mm chamfer on the visible face
+PANEL_RIM = dict(h=2.0, w=1.2)   # locating rim on the panel's back around the kit (below the caps at 2.1 mm)
+PANEL_SLOT = dict(out=6.5, end=1.5, r=1.5)   # finger slots through the panel in front of the caps
+PANEL_SCREWS = ((-91.0, -37.5), (91.0, -37.5), (-91.0, 46.0), (91.0, 46.0), (-62.0, -39.5), (-62.0, 40.0))  # clear of the housings
+PANEL_DOVETAIL_Y = (-36.0, 0.0, 40.0)        # panel keys clear of the power slot (y 16.4..30.3)
+KIT_RIBS_X = (-50.0, 0.0, 40.0)              # ribs from the ceiling onto the kit's back (clear of the ESP32 window)
+USB_GUIDE_X = (-84.0, None)                  # USB-C guide ribs from x = -84 to the kit, either side of the plug path
+SPLIT_BLOCK = dict(dx=7.0, dy=7.0, h=3.4)    # thicker ceiling around the lid's dovetail keys
+# USB-C at the left end: "direct" = a straight cable into the kit's port through the end-wall opening (default);
+# lid A also comes for a screw-ear panel-mount female (USB_PM_*), at y = USB_PM_Y, so the end can be swapped later.
+USB_PM_Y_KIT = 20.0            # clear of the lid's split blocks (y 5, 36) and the power slot
 # Snap tab (no magnets): a tab in the middle of the lid's front skirt runs 3.6 mm below the parting into a recess in
 # the tray's front face; a bump on its inside drops into a groove in the recess. It bends outward (free air), so the
 # keyboard's position does not matter. Force ~ 3 E I delta / L^3; strain 1.5 t delta / L^2 (bent across the layers in

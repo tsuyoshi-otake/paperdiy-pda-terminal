@@ -23,6 +23,14 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 
 const params = new URLSearchParams(location.search);
 const VIEW = params.get('view') || 'open';
+// colour schemes for the filament mock-ups: lid / tray / bezel panel
+const PALETTES = {
+  default: { lid: '#2c3b6b', tray: '#ebe3cf', panel: '#ebe3cf', r: 0.5 },
+  black:   { lid: '#262629', tray: '#2c2c30', panel: '#1f1f22', r: 0.62 },
+  khaki:   { lid: '#7b7452', tray: '#7b7452', panel: '#857e5b', r: 0.6 },
+  mix:     { lid: '#7b7452', tray: '#2a2a2e', panel: '#1f1f22', r: 0.6 },
+};
+const PAL = PALETTES[params.get('palette') || 'default'] || PALETTES.default;
 const W = window.innerWidth, H = window.innerHeight;
 
 // ---------------------------------------------------------------- renderer / scene
@@ -69,8 +77,9 @@ scene.add(ground);
 // ---------------------------------------------------------------- materials
 const pla = (hex, rough = 0.62) => new THREE.MeshStandardMaterial({ color: hex, roughness: rough, metalness: 0.0 });
 const M = {
-  lid: pla('#2c3b6b'),
-  cream: pla('#ebe3cf'),
+  lid: pla(PAL.lid, PAL.r),
+  cream: pla(PAL.tray, PAL.r),
+  panel: pla(PAL.panel, PAL.r),
   red: pla('#c9392e', 0.5),
   kbBody: pla('#2b2b2e', 0.55),
   key: pla('#1d1d20', 0.5),
@@ -210,7 +219,7 @@ function legendMat(lab, kw, kd) {
 // hinge, cover and kit positions come from cad/out/assembly.json (written by cad/src/build.py)
 const A = await (await fetch('models/assembly.json')).json();
 const KITMODE = A.PD_MOUNT === 'kit';     // PaperDIY Complete Kit in its own case, in a pocket in a solid lid
-const NAMES = KITMODE ? ['display_lid_usbc', 'paperdiy_kit_envelope', 'keyboard_tray']
+const NAMES = KITMODE ? ['display_lid_usbc', 'paperdiy_kit_envelope', 'keyboard_tray'].concat(A.PANEL ? ['display_panel_kit'] : [])
   : ['display_lid_usbc', 'display_panel_paperdiy', 'paperdiy_strap', 'key_pushrod_x2', 'power_pushrod', 'keyboard_tray'];
 const G = {};
 (await Promise.all(NAMES.map(n => loadSTL(`models/${n}.stl`)))).forEach((g, i) => { G[NAMES[i]] = g; });
@@ -236,6 +245,7 @@ if (KITMODE) {
   const K = A.KIT;
   P.paperdiy = new THREE.Group(); lid.add(P.paperdiy);
   P.paperdiy.add(mesh(G.paperdiy_kit_envelope, pla('#dcdcde', 0.55)));
+  if (A.PANEL) { P.panel = mesh(G.display_panel_kit, M.panel); lid.add(P.panel); }
   const scr = new THREE.Mesh(new THREE.PlaneGeometry(K.win[0], K.win[1]),
     new THREE.MeshStandardMaterial({ map: screenTexture(), roughness: 0.85, emissive: 0xffffff, emissiveIntensity: 0.18 }));
   scr.material.emissiveMap = scr.material.map;
@@ -326,15 +336,16 @@ if (!KITMODE) {
 // each entry: [part or null, offset applied to the part, anchor point (closed frame, before the offset), number, label]
 const FIGURES = KITMODE ? {
   exploded: [
-    ['lid',      [0, 0, 120],   [-96, -40, 24],   1,  '蓋 A + B'],
-    ['paperdiy', [0, 0, 70],    [-62, -30, 18],   2,  'PaperDIY Complete Kit'],
-    ['kb',       [0, 0, 30],    [-97, -43, 12],   5,  'キーボード'],
-    ['tray',     [0, 0, 0],     [-100, -46, 6],   6,  'トレイ A + B'],
+    ['lid',      [0, 0, 150],   [-96, -40, 24],   1,  '蓋 A + B'],
+    ['paperdiy', [0, 0, 100],   [-62, -30, 20],   3,  'PaperDIY Complete Kit'],
+    ['panel',    [0, 0, 62],    [-97, -40, 15.8], 2,  '化粧パネル A + B'],
+    ['kb',       [0, 0, 26],    [-97, -43, 12],   6,  'キーボード'],
+    ['tray',     [0, 0, 0],     [-100, -46, 6],   7,  'トレイ A + B'],
   ],
   hinge: [
-    ['hinges',     [0, 0, 0],  [56, 53, 20],    3,  'トルクヒンジ'],
-    ['lidCovers',  [0, 30, 0], [44, 54, 24],    4,  'カバー（蓋側）'],
-    ['trayCovers', [0, 30, 0], [44, 54, 3],     4,  'カバー（トレイ側）'],
+    ['hinges',     [0, 0, 0],  [56, 53, 20],    4,  'トルクヒンジ'],
+    ['lidCovers',  [0, 30, 0], [44, 54, 24],    5,  'カバー（蓋側）'],
+    ['trayCovers', [0, 30, 0], [44, 54, 3],     5,  'カバー（トレイ側）'],
     [null,         [0, 0, 0],  [81, 46.6, 9.5], 0,  'キーボードの充電口'],
   ],
 } : {

@@ -1,38 +1,89 @@
 == layout (PD_MOUNT = 'kit': the PaperDIY Complete Kit in its own case, front face down in a pocket in the lid)
   kit pocket x -64.2..56.2, y -33.7..33.7; window centre x = 0.0
-  kit front face = lid inner face z = 15.00 (keyboard top 14.5 + 0.5; MEASURE the keyboard), pocket floor z = 21.50
-  lid top plane z = 25.042 + 0.04072 y, set by the hinge at the back and the USB-C channel
-  lid 15.2 mm thick at the front face, 14.1 at the back; closed case 23.1 mm tall at the front, 27.2 at the back (was 30.0 / 30.0)
+  shell lid (walls 1.6, ceiling 1.2); bezel panel z 15.00..16.60 (keyboard top 14.5 + 0.5; MEASURE the keyboard); kit front z = 16.60, back + gap z = 23.10
+  lid top plane z = 25.804 + 0.02635 y, set by the hinge at the back and the USB-C channel
+  lid 16.6 mm thick at the front face, 14.2 at the back; closed case 24.6 mm tall at the front, 27.2 at the back (was 30.0 / 30.0)
 == building
 == exports (bounding boxes are axis-aligned in the assembly frame)
-  out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=154565 mm3
+  out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=44241 mm3
   out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=79710 mm3
   out/paperdiy_kit_envelope.stl: bbox 121.3 x 68.2 x 6.3 mm, watertight=True, winding_ok=True, bodies=1, vol=50716 mm3
+  out/display_panel_kit.stl: bbox 198.4 x 95.9 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=19435 mm3
   out/hinge_cover_lid_x2.stl: bbox 23.5 x 1.0 x 9.9 mm, watertight=True, winding_ok=True, bodies=1, vol=233 mm3
   out/hinge_cover_tray_x2.stl: bbox 23.5 x 1.0 x 8.9 mm, watertight=True, winding_ok=True, bodies=1, vol=209 mm3
 == split pieces for A1 mini (limit 175 mm)
-  out/split/lid_A_left.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=29989 mm3
-  out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=124436 mm3
+  out/split/lid_A_left.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=8050 mm3
+  out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=36157 mm3
   out/split/tray_A_left.stl: bbox 35.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=13254 mm3
   out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=66414 mm3
+  out/split/panel_A_left.stl: bbox 33.2 x 95.9 x 1.6 mm, watertight=True, winding_ok=True, bodies=1, vol=4369 mm3
+  out/split/panel_B_main.stl: bbox 171.2 x 95.9 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=15043 mm3
+== lid A for a screw-ear panel-mount female USB-C (swap only lid A; room inside the end wall 8.0 mm)
+  out/split/usb_variants/lid_A_left_usb_noscrew.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=7873 mm3
+    lid_A_left_usb_noscrew: opening 13.0 x 7.0 mm at y = 20, z = 20.6, no screw holes (glue)
+  out/split/usb_variants/lid_A_left_usb16mm.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=7875 mm3
+    lid_A_left_usb16mm: opening 10.2 x 7.0 mm at y = 20, z = 20.6, M3 holes 16 mm apart
+  out/split/usb_variants/lid_A_left_usb18mm.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=7853 mm3
+    lid_A_left_usb18mm: opening 12.2 x 7.0 mm at y = 20, z = 20.6, M3 holes 18 mm apart
+  out/split/usb_variants/lid_A_left_usb20mm.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=7844 mm3
+    lid_A_left_usb20mm: opening 13.0 x 7.0 mm at y = 20, z = 20.6, M3 holes 20 mm apart
+  out/split/usb_variants/lid_A_left_usb22mm.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=7844 mm3
+    lid_A_left_usb22mm: opening 13.0 x 7.0 mm at y = 20, z = 20.6, M3 holes 22 mm apart
+  out/split/usb_variants/lid_A_left_usb25mm.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=7844 mm3
+    lid_A_left_usb25mm: opening 13.0 x 7.0 mm at y = 20, z = 20.6, M3 holes 25 mm apart
+  out/split/usb_variants/lid_A_left_usb28mm.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=7844 mm3
+    lid_A_left_usb28mm: opening 13.0 x 7.0 mm at y = 20, z = 20.6, M3 holes 28 mm apart
+  out/split/usb_variants/lid_A_left_usb30mm.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=7844 mm3
+    lid_A_left_usb30mm: opening 13.0 x 7.0 mm at y = 20, z = 20.6, M3 holes 30 mm apart
 == test coupons (cut from the real parts; print these first)
   out/coupons/coupon_hinge_tray.stl: bbox 27.0 x 17.0 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=3196 mm3
-  out/coupons/coupon_hinge_lid.stl: bbox 27.0 x 17.0 x 14.4 mm, watertight=True, winding_ok=True, bodies=1, vol=5340 mm3
+  out/coupons/coupon_hinge_lid.stl: bbox 27.0 x 17.0 x 14.4 mm, watertight=True, winding_ok=True, bodies=1, vol=3239 mm3
   out/coupons/coupon_dovetail_A.stl: bbox 18.0 x 18.0 x 3.0 mm, watertight=True, winding_ok=True, bodies=1, vol=792 mm3
   out/coupons/coupon_dovetail_B.stl: bbox 14.0 x 18.0 x 3.0 mm, watertight=True, winding_ok=True, bodies=1, vol=598 mm3
-  out/coupons/coupon_latch_lid.stl: bbox 26.0 x 8.0 x 19.1 mm, watertight=True, winding_ok=True, bodies=1, vol=1960 mm3
+  out/coupons/coupon_latch_lid.stl: bbox 26.0 x 8.0 x 20.4 mm, watertight=True, winding_ok=True, bodies=1, vol=829 mm3
   out/coupons/coupon_latch_tray.stl: bbox 26.0 x 8.0 x 8.0 mm, watertight=True, winding_ok=True, bodies=1, vol=793 mm3
 == interference checks (closed)
   interference kit (case + caps) vs lid: 0.000 mm3 OK
-  interference USB-C plug in the kit's port vs lid: 0.000 mm3 OK
-  interference lid vs tray: 0.002 mm3 OK
+  interference USB-C plug in the kit's port vs lid: 0.012 mm3 OK
+  interference lid vs tray: 0.001 mm3 OK
   interference keyboard space (tray floor to z 14.5) vs lid: 0.000 mm3 OK
-  interference lid A vs B (dovetail): 0.000 mm3 OK
+  interference kit vs bezel panel: -0.000 mm3 OK
+  interference bezel panel vs lid: 0.000 mm3 OK
+  interference bezel panel vs tray: 0.000 mm3 OK
+  interference USB-C plug vs bezel panel: 0.000 mm3 OK
+  interference keyboard space vs bezel panel: 0.000 mm3 OK
+  interference panel A vs B (dovetail): 0.000 mm3 OK
+  interference lid_A_left_usb_noscrew: panel-mount female vs lid: 0.000 mm3 OK
+  interference lid_A_left_usb_noscrew: panel-mount female vs panel: 0.000 mm3 OK
+  interference lid_A_left_usb_noscrew: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb16mm: panel-mount female vs lid: 0.000 mm3 OK
+  interference lid_A_left_usb16mm: panel-mount female vs panel: 0.000 mm3 OK
+  interference lid_A_left_usb16mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb18mm: panel-mount female vs lid: 0.000 mm3 OK
+  interference lid_A_left_usb18mm: panel-mount female vs panel: 0.000 mm3 OK
+  interference lid_A_left_usb18mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb20mm: panel-mount female vs lid: 0.000 mm3 OK
+  interference lid_A_left_usb20mm: panel-mount female vs panel: 0.000 mm3 OK
+  interference lid_A_left_usb20mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb22mm: panel-mount female vs lid: 0.000 mm3 OK
+  interference lid_A_left_usb22mm: panel-mount female vs panel: 0.000 mm3 OK
+  interference lid_A_left_usb22mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb25mm: panel-mount female vs lid: 0.000 mm3 OK
+  interference lid_A_left_usb25mm: panel-mount female vs panel: 0.000 mm3 OK
+  interference lid_A_left_usb25mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb28mm: panel-mount female vs lid: 0.000 mm3 OK
+  interference lid_A_left_usb28mm: panel-mount female vs panel: 0.000 mm3 OK
+  interference lid_A_left_usb28mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb30mm: panel-mount female vs lid: 0.000 mm3 OK
+  interference lid_A_left_usb30mm: panel-mount female vs panel: 0.000 mm3 OK
+  interference lid_A_left_usb30mm: panel-mount female vs kit: 0.000 mm3 OK
+  panel-mount female: ears and body up to 7.8 mm tall fit between the panel and the ceiling
+  interference lid A vs B (dovetail): -0.000 mm3 OK
   interference tray A vs B (dovetail): 0.000 mm3 OK
   interference hinge (tray leaf + barrel) vs tray: 0.000 mm3 OK
   interference hinge (lid leaf) vs lid: -0.000 mm3 OK
   interference hinge barrel vs lid: 0.000 mm3 OK
-  interference lid hinge cover 0 vs lid: 0.000 mm3 OK
+  interference lid hinge cover 0 vs lid: -0.000 mm3 OK
   interference lid hinge cover 0 vs tray: 0.000 mm3 OK
   interference lid hinge cover 1 vs lid: 0.000 mm3 OK
   interference lid hinge cover 1 vs tray: 0.000 mm3 OK
@@ -40,15 +91,15 @@
   interference tray hinge cover 0 vs lid: 0.000 mm3 OK
   interference tray hinge cover 1 vs tray: -0.000 mm3 OK
   interference tray hinge cover 1 vs lid: 0.000 mm3 OK
-  kit screw at x = -24.0: M2x4 countersunk, 1.6 mm of lid under the head + 0.2 gap -> 2.2 mm into the kit (M5Stack: under 3 mm)
-  skin over the kit 2.17..4.91 mm, over the USB-C channel 1.20 mm
+  the panel holds the kit: rim 2.0 mm around it (0.2 clear), ribs 0.1 mm above its back; 6 x M2x8 countersunk through the 1.6 mm panel, 6.4 mm into the bosses
+  skin over the kit 1.82..3.59 mm, over the USB-C channel 0.80 mm
 == snap tab (latch)
   tab 18 x 1 mm, free length 11.0 mm -> 11.8 N/mm; bump 0.45 - clearance 0.15 = 0.30 mm; on the real opening arc the tab bends at most 0.29 mm (at 0.1 deg)
   strain 0.37 % (bent across the print layers: keep < 0.5 %); to open ~4.5 N at the tab (+ the hinges' friction), to close ~6.3 N
   tray front wall left behind the recess 1.85 mm, behind the groove 1.50 mm
-== hinge motion (lid + kit + covers rotated about the real axis y=54.15, z=12.85; tray fixed)
+== hinge motion (lid + kit + panel + covers rotated about the real axis y=54.15, z=12.85; tray fixed)
   no collision with the tray from 0 to 180 deg
-  on a table the lid reaches the table at 160.6 deg (opening limit)
+  on a table the lid reaches the table at 160.5 deg (opening limit)
 == keyboard charge port (straight plug, overmold 12 x 6.5 mm, centred at x=81 z=9.4)
   interference charge plug vs tray: 0.000 mm3 OK
   interference charge plug vs lid (closed): 0.000 mm3 OK

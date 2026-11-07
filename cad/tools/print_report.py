@@ -46,6 +46,8 @@ KNOWN = {
                          "Auto (its default) or give them a brim" if PD_MOUNT == "kit" else
                          "the push-rods are 3-4 mm thin bars and the front clips stand 20 mm tall on a 1.6 mm U: keep "
                          "Bambu Studio's brim type on Auto (its default) or give them a brim"),
+    "Floating bridge anchors": "the lid's 1.2 mm ceiling is bridged over the sparse infill of the two hinge housings "
+                               "(internal bridges inside solid blocks; checked in the sliced layers)",
     "Loose extrusions": "the 5 mm counterbore at the panel's screen face is bridged 1.5 mm above the bed "
                         "(same in the real panel, a short bridge that prints fine)",
 }
@@ -53,11 +55,16 @@ ROD_NOTE = ("the snap tip: each half of the split end is one 1 mm perimeter loop
             "its outline, which the sliced G-code traces")
 THIN_NOTE = {"panel_B_main": "the screen-window bevel ends in a sharp edge (as in the original panel)",
              "key_pushrod_x2": ROD_NOTE, "power_pushrod": ROD_NOTE}
+if PD_MOUNT == "kit":
+    THIN_NOTE["lid_A_left"] = ("the ceiling over the USB-C channel is 0.8 mm (USB_CEIL), printed as the first four "
+                               "layers on the bed")
 
 LID_PARTS = [("lid_A_left", 1), ("lid_B_main", 1), ("panel_A_left", 1), ("panel_B_main", 1), ("paperdiy_strap", 1),
              ("key_pushrod_x2", 2), ("power_pushrod", 1), ("hinge_cover_lid_x2", 2), ("top_plate_blank", 1)]
 if PD_MOUNT == "kit":
     LID_PARTS = [("lid_A_left", 1), ("lid_B_main", 1), ("hinge_cover_lid_x2", 2)]
+    if os.path.exists(os.path.join(SPLIT_DIR, "panel_B_main.stl")):
+        LID_PARTS += [("panel_A_left", 1), ("panel_B_main", 1)]
 BASE_PARTS = [("tray_A_left", 1), ("tray_B_main", 1), ("hinge_cover_tray_x2", 2)]
 
 
@@ -153,12 +160,13 @@ def main():
             if not r["ok"]:
                 lines.append(f"| {os.path.basename(p)} | slicing failed | | {r.get('error', '')[:80]} |")
                 continue
-            if os.path.basename(p)[:6] in (("plate1", "plate2") if PD_MOUNT == "kit" else ("plate1", "plate2", "plate3")):
+            if os.path.basename(p)[:6] in ("plate1", "plate2", "plate3"):
                 total_g += r["grams"]; total_min += minutes(r["time"])
             lines.append(f"| `{os.path.basename(p)}` | {r['time']} | {r['grams']:.0f} g ({r['metres']:.1f} m) | "
                          f"{'; '.join(r['warnings']) if r['warnings'] else 'none'} |")
         if PD_MOUNT == "kit":
-            lines += ["", f"Plates 1-2 together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
+            n = len([p for p in plates if os.path.basename(p)[:6] in ("plate1", "plate2", "plate3")])
+            lines += ["", f"Plates 1-{n} together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
                       "of printing (plate 0, the test coupons, comes on top).", ""]
         else:
             lines += ["", f"Plates 1-3 together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "

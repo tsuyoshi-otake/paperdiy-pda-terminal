@@ -131,7 +131,18 @@ def plates():
                  ("hinge_cover_tray_2", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y))],
                 [("tray_B_main", part(S("tray_B_main")))],
             ]),
-        }
+        } | ({
+            # bezel panel pieces, visible face on the bed (the locating rim grows upward)
+            "plate3_panel.3mf": ("Bezel panel (A + B)", [
+                [("panel_A_left", part(S("panel_A_left"), ROT_Z90))],
+                [("panel_B_main", part(S("panel_B_main")))],
+            ]),
+        } if os.path.exists(S("panel_B_main")) else {}) | {
+            f"usb_variants/{usb_name(sp)}.3mf": (
+                f"Lid A for a USB-C panel mount with {sp:g} mm hole spacing" if sp > 0
+                else "Lid A, USB-C panel-mount opening only (glue the connector in)",
+                [[(usb_name(sp), part(os.path.join(SPLIT_DIR, "usb_variants", f"{usb_name(sp)}.stl"), LAY_TOP, FLIP_X, ROT_Z90))]])
+            for sp in USB_PM_VARIANTS if os.path.exists(os.path.join(SPLIT_DIR, "usb_variants", f"{usb_name(sp)}.stl"))}
     p = {
         # test coupons: hinge seat, dovetail key, panel corner screw, push-rod bore, plus a rod and two covers
         "plate0_test_coupons.3mf": ("Test coupons (print first)", [

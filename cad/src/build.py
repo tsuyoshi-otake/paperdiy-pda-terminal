@@ -521,7 +521,7 @@ def write_assembly_json():
                 BATT=dict(cx=BATT_CX, cy=BATT_CY, z0=PANEL_Z_BACK - BATT_POCKET, L=BATT_L, W=BATT_W, T=BATT_T),
                 STRAP=dict(x=STRAP_X, w=STRAP_W, y=STRAP_POST_Y, top=STRAP_TOP), PD_MOUNT=PD_MOUNT)
     if PD_MOUNT == "kit":
-        data.update(LID_TOP=[LID_TOP[0], LID_TOP[1]], LID_UNDER=list(LID_UNDER),
+        data.update(LID_TOP=[LID_TOP[0], LID_TOP[1]], LID_UNDER=list(LID_UNDER), PANEL=SHELL,
                     COVER_LID_Z1=min(Z_PART + HINGE_WIDTH / 2 + HINGE_CLR + COVER_TOP_RIM, top_z(Y_BACK) - LID_CHAMFER),
                     KIT=dict(cx=KIT_CX, z0=KIT_Z0, L=KIT_L, W=KIT_W, T=KIT_T, R=KIT_R, win=list(KIT_WIN), win_off=KIT_WIN_OFF,
                              usb_y=KIT_USB_Y, usb_z=list(KIT_USB_Z)))
@@ -710,16 +710,20 @@ def kit_x(d):
 
 KIT_X0, KIT_X1 = KIT_CX - KIT_L / 2 - KIT_FIT, KIT_CX + KIT_L / 2 + KIT_FIT      # pocket (USB end at x0)
 KIT_Y0, KIT_Y1 = -(KIT_W / 2 + KIT_FIT), KIT_W / 2 + KIT_FIT                      # KEY edge at y0
-KIT_Z0 = max(KB_TOP_Z + KB_CLR, under_z(KIT_Y1) + 0.3)     # the kit's front face = the lid's inner face over the keyboard
-KIT_Z1 = KIT_Z0 + KIT_T + KIT_GAP                          # pocket floor
+SHELL = KIT_LID == "shell"
+PANEL_Z0 = max(KB_TOP_Z + KB_CLR, Z_PART + 0.3)          # bezel panel's visible face (shell lid)
+PANEL_Z1 = PANEL_Z0 + PANEL_T
+KIT_Z0 = PANEL_Z1 if SHELL else max(KB_TOP_Z + KB_CLR, under_z(KIT_Y1) + 0.3)   # the kit's front face
+KIT_Z1 = KIT_Z0 + KIT_T + KIT_GAP                          # pocket floor / ceiling inside over the kit
+SKIN = SHELL_CEIL if SHELL else LID_SKIN
 
 
 def kit_lid_top():
     """Top plane z = a + b * y, as low as possible: it passes through what the hinge needs at the back face (leaf +
     cover rim + chamfer) and through the most demanding of the kit pocket, the USB-C channel and the latch root."""
     z_back = Z_PART + HINGE_WIDTH / 2 + HINGE_CLR + COVER_TOP_RIM + LID_CHAMFER
-    ch = KIT_Z0 + USB_CH["h"] + LID_SKIN
-    need = [(KIT_Y0, KIT_Z1 + LID_SKIN, "kit pocket (front edge)"), (KIT_Y1, KIT_Z1 + LID_SKIN, "kit pocket (back edge)"),
+    ch = KIT_Z0 + USB_CH["h"] + (USB_CEIL if SHELL else SKIN)
+    need = [(KIT_Y0, KIT_Z1 + SKIN, "kit pocket (front edge)"), (KIT_Y1, KIT_Z1 + SKIN, "kit pocket (back edge)"),
             (KIT_USB_Y - USB_CH["w"] / 2, ch, "USB-C channel"), (KIT_USB_Y + USB_CH["w"] / 2, ch, "USB-C channel"),
             (-BACK_OLD_Y, under_z(-BACK_OLD_Y) + LATCH["root"] + 1.5 + LID_CHAMFER, "latch root")]
     b, why = min(((z_back - z) / (Y_BACK - y), w) for y, z, w in need)
@@ -823,7 +827,110 @@ def latch_tray_cut():
     return recess + prism_x(latch_bump_cs(0.05), x0, x1)
 
 
+def shell_inner():
+    """The shell lid's inside outline: the plan offset inward by the wall."""
+    return CS.batch_boolean(lid_plan_pieces(), m3.OpType.Add).offset(-SHELL_WALL, m3.JoinType.Round, 2.0, SEG)
+
+
+def usb_pm_low_y():
+    """Lowest y the widest ears reach (the ceiling slopes down toward the front)."""
+    return USB_PM_Y_KIT - (max(USB_PM_VARIANTS) / 2 + USB_PM_EAR["beyond_hole"])
+
+
+def usb_pm_zc():
+    """Centre height for a panel-mount female at the left end: halfway between the panel's back and the ceiling."""
+    return (PANEL_Z1 + top_z(usb_pm_low_y()) - SHELL_CEIL) / 2
+
+
+def usb_end_cuts(usb):
+    """Left end wall of the shell lid. "direct": an opening for a straight plug in line with the kit's port.
+    A number: opening (+ M3 holes that far apart, 0 = none) for a screw-ear panel-mount female at y = USB_PM_Y_KIT."""
+    xo = -101.0
+    if usb == "direct":
+        w = USB_CH["w"]
+        return [box(xo - 1.0, xo + SHELL_WALL + 0.5, KIT_USB_Y - w / 2, KIT_USB_Y + w / 2, KIT_Z0 - 0.01, KIT_Z0 + USB_CH["h"])]
+    zc = usb_pm_zc()
+    cuts = [prism_x(rrect(USB_PM_Y_KIT, zc, usb_pm_opening_w(usb), USB_PM_H, USB_PM_R), xo - 1.0, xo + SHELL_WALL + 0.5)]
+    if usb > 0:
+        for dy in (-usb / 2, usb / 2):
+            cuts.append(cyl_x(USB_PM_SCREW_D / 2, xo - 1.0, xo + SHELL_WALL + 0.5, USB_PM_Y_KIT + dy, zc))
+    return cuts
+
+
+def usb_pm_envelope_kit(spacing):
+    """Screw-ear female USB-C against the inside of the left end wall (rough, for the fit check)."""
+    e, b = USB_PM_EAR, USB_PM_BODY
+    zc, x0 = usb_pm_zc(), -101.0 + SHELL_WALL
+    half = (spacing / 2 + e["beyond_hole"]) if spacing > 0 else b["w"] / 2
+    h = min(e["h"], usb_pm_room() - 0.2)
+    ears = box(x0, x0 + e["t"], USB_PM_Y_KIT - half, USB_PM_Y_KIT + half, zc - h / 2, zc + h / 2)
+    body = box(x0 + e["t"], x0 + e["t"] + b["len"], USB_PM_Y_KIT - b["w"] / 2, USB_PM_Y_KIT + b["w"] / 2, zc - b["h"] / 2, zc + b["h"] / 2)
+    return ears + body
+
+
+def usb_pm_room():
+    return top_z(usb_pm_low_y()) - SHELL_CEIL - PANEL_Z1
+
+
+def build_kit_lid_shell(usb="direct"):
+    bottom, top = LID_UNDER, LID_TOP[:2]
+    plan = lid_plan_pieces()
+    outer = union(chamfered_slab(cs, bottom, top, LID_CHAMFER) for cs in plan)
+    y_flat = (Z_PART - bottom[0]) / bottom[1]
+    outer = outer + (prism_z(CS.batch_boolean(plan, m3.OpType.Add), Z_PART, 20.0) ^ box(-BIG, BIG, y_flat, BIG, -BIG, BIG)
+                     ^ half_space(bottom[0] + 0.01, bottom[1], False))
+    L = outer - (prism_z(shell_inner(), -10.0, 60.0) ^ half_space(top[0] - SHELL_CEIL, top[1], False))
+    adds = [box(c - HOUSING_HALF, c + HOUSING_HALF, Y_BACK - BACK_EXTRA - 3.0, Y_BACK, -10.0, 60.0)   # hinge screws
+            for c in hinge_centres()]
+    adds += [cyl_z(3.0, PANEL_Z1, 60.0, x, y) for x, y in PANEL_SCREWS]                              # panel bosses
+    adds += [box(x - 0.8, x + 0.8, -30.0, 30.0, KIT_Z0 + KIT_T + 0.1, 60.0) for x in KIT_RIBS_X]      # on the kit's back
+    gx0 = USB_GUIDE_X[0] if usb == "direct" else SPLIT_X_LID       # guides stay in lid B for a panel-mount lid A
+    w = USB_CH["w"] / 2 + 0.6
+    for sy in (-1.0, 1.0):
+        y0, y1 = sorted((KIT_USB_Y + sy * w, KIT_USB_Y + sy * (w + 1.2)))
+        adds.append(box(gx0, KIT_X0 - PANEL_RIM["w"] - 0.3, y0, y1, PANEL_Z1 + 0.1, 60.0))   # stop short of the rim
+    g = SPLIT_BLOCK
+    adds += [box(SPLIT_X_LID - g["dx"], SPLIT_X_LID + g["dx"], y - g["dy"], y + g["dy"], -10.0, 60.0)
+             ^ half_space(top[0] - g["h"], top[1]) for y in DOVETAIL_Y_KIT]
+    L = L + (union(adds) ^ outer)
+    cut, tab = latch_lid_parts()
+    L = (L - cut) + tab
+    cuts = usb_end_cuts(usb) + hinge_pocket_cuts() + hinge_pilots(True)
+    cuts.append(box(-101.0 + SHELL_WALL, KIT_X0, KIT_USB_Y - USB_CH["w"] / 2, KIT_USB_Y + USB_CH["w"] / 2, -10.0, 60.0)
+                ^ half_space(top[0] - USB_CEIL, top[1], False))           # thinner ceiling over the plug path
+    cuts += [cyl_z(SCREW_PILOT_D / 2, PANEL_Z1 - 0.1, PANEL_Z1 + TAP_SCREW_LEN - PANEL_T + 0.5, x, y) for x, y in PANEL_SCREWS]
+    return L - union(cuts)
+
+
+def build_kit_panel():
+    """Bezel panel: fills the lid's opening, holds the kit from the screen side, window over the e-paper."""
+    P = prism_z(shell_inner().offset(-PANEL_CLR, m3.JoinType.Round, 2.0, SEG), PANEL_Z0, PANEL_Z1)
+    r = PANEL_RIM
+    kit_cs = lambda grow: rrect(KIT_CX, 0.0, KIT_L + 2 * grow, KIT_W + 2 * grow, KIT_R + grow)
+    P = P + prism_z(kit_cs(KIT_FIT + r["w"]) - kit_cs(KIT_FIT), PANEL_Z1 - 0.01, PANEL_Z1 + r["h"])
+    cuts = [box(c - HOUSING_HALF - PANEL_CLR, c + HOUSING_HALF + PANEL_CLR, Y_BACK - BACK_EXTRA - 3.0 - PANEL_CLR, BIG,
+                -BIG, BIG) for c in hinge_centres()]
+    wx = KIT_CX + KIT_WIN_OFF
+    ww, wh = KIT_WIN[0] + 2 * PANEL_WIN_CLR, KIT_WIN[1] + 2 * PANEL_WIN_CLR
+    cuts.append(M.batch_hull([prism_z(rrect(wx, 0.0, ww, wh, 1.0), PANEL_Z0 + 1.0, PANEL_Z1 + 1.0),
+                              prism_z(rrect(wx, 0.0, ww + 2.0, wh + 2.0, 2.0), PANEL_Z0 - 1.0, PANEL_Z0)]))
+    g = PANEL_SLOT
+    z0, z1 = PANEL_Z0 - 1.0, PANEL_Z1 + r["h"] + 1.0
+    xs = [kit_x(d) for cap in KIT_KEY_CAPS for d in cap]
+    xa, xb, ya, yb = min(xs) - g["end"], max(xs) + g["end"], -KIT_W / 2 - g["out"], -KIT_W / 2 + 0.5
+    cuts.append(prism_z(rrect((xa + xb) / 2, (ya + yb) / 2, xb - xa, yb - ya, g["r"]), z0, z1))
+    xe = KIT_CX - KIT_L / 2
+    xa, xb, ya, yb = xe - g["out"], xe + 0.5, KIT_PWR_CAP_Y[0] - g["end"], KIT_PWR_CAP_Y[1] + g["end"]
+    cuts.append(prism_z(rrect((xa + xb) / 2, (ya + yb) / 2, xb - xa, yb - ya, g["r"]), z0, z1))
+    cuts.append(box(KIT_X0 - r["w"] - 1.0, KIT_X0 + 0.01, KIT_USB_Y - 6.6, KIT_USB_Y + 6.6, PANEL_Z1, z1))  # plug
+    for x, y in PANEL_SCREWS:
+        cuts += [cyl_z(M2_CLEAR / 2, z0, z1, x, y), cyl_z(CSK_D / 2, PANEL_Z0 - 0.01, PANEL_Z0 + 1.2, x, y, M2_CLEAR / 2 - 0.2)]
+    return P - union(cuts)
+
+
 def build_kit_lid():
+    if SHELL:
+        return build_kit_lid_shell()
     bottom = LID_UNDER
     top = LID_TOP[:2]
     L = union(chamfered_slab(cs, bottom, top, LID_CHAMFER) for cs in lid_plan_pieces())
@@ -977,28 +1084,52 @@ def main_kit():
     zf = under_z(-BACK_OLD_Y)
     log("== layout (PD_MOUNT = 'kit': the PaperDIY Complete Kit in its own case, front face down in a pocket in the lid)")
     log(f"  kit pocket x {KIT_X0:.1f}..{KIT_X1:.1f}, y {KIT_Y0:.1f}..{KIT_Y1:.1f}; window centre x = {KIT_CX + KIT_WIN_OFF:.1f}")
-    log(f"  kit front face = lid inner face z = {KIT_Z0:.2f} (keyboard top {KB_TOP_Z} + {KB_CLR}; MEASURE the keyboard), pocket floor z = {KIT_Z1:.2f}")
+    if SHELL:
+        log(f"  shell lid (walls {SHELL_WALL}, ceiling {SHELL_CEIL}); bezel panel z {PANEL_Z0:.2f}..{PANEL_Z1:.2f} (keyboard top "
+            f"{KB_TOP_Z} + {KB_CLR}; MEASURE the keyboard); kit front z = {KIT_Z0:.2f}, back + gap z = {KIT_Z1:.2f}")
+    else:
+        log(f"  kit front face = lid inner face z = {KIT_Z0:.2f} (keyboard top {KB_TOP_Z} + {KB_CLR}; MEASURE the keyboard), pocket floor z = {KIT_Z1:.2f}")
     log(f"  lid top plane z = {a:.3f} + {b:.5f} y, set by the hinge at the back and the {why}")
     log(f"  lid {top_z(-BACK_OLD_Y) - zf:.1f} mm thick at the front face, {top_z(BACK_OLD_Y) - Z_PART:.1f} at the back; "
         f"closed case {top_z(-BACK_OLD_Y):.1f} mm tall at the front, {top_z(Y_BACK):.1f} at the back (was 30.0 / 30.0)")
     log("== building")
     lid = build_kit_lid()
     tray = build_tray()
+    panel = build_kit_panel() if SHELL else None
     kit, plug = kit_envelope(), kit_plug_envelope()
     log("== exports (bounding boxes are axis-aligned in the assembly frame)")
     export(lid, f"{OUT_DIR}/display_lid_usbc.stl")
     export(tray, f"{OUT_DIR}/keyboard_tray.stl")
     export(kit, f"{OUT_DIR}/paperdiy_kit_envelope.stl")
+    if SHELL:
+        export(panel, f"{OUT_DIR}/display_panel_kit.stl")
     lid_cov, tray_cov = hinge_covers()
     export(lid_cov[0], f"{OUT_DIR}/hinge_cover_lid_x2.stl")
     export(tray_cov[0], f"{OUT_DIR}/hinge_cover_tray_x2.stl")
     write_assembly_json()
     log("== split pieces for A1 mini (limit %.0f mm)" % MAX_PIECE)
-    la, lb = split_dovetail(lid, SPLIT_X_LID, DOVETAIL_Y_KIT, KIT_Z0 + 0.3, 60.0)
+    kz0 = top_z(max(DOVETAIL_Y_KIT) + SPLIT_BLOCK["dy"]) - SPLIT_BLOCK["h"] + 0.3 if SHELL else KIT_Z0 + 0.3
+    la, lb = split_dovetail(lid, SPLIT_X_LID, DOVETAIL_Y_KIT, kz0, 60.0)
     ta, tb = split_dovetail(tray, SPLIT_X_TRAY, DOVETAIL_Y, 0.0, 3.0)
-    for k, v in {"lid_A_left": la, "lid_B_main": lb, "tray_A_left": ta, "tray_B_main": tb}.items():
+    pieces = {"lid_A_left": la, "lid_B_main": lb, "tray_A_left": ta, "tray_B_main": tb}
+    if SHELL:
+        pa, pb = split_dovetail(panel, SPLIT_X_PANEL, PANEL_DOVETAIL_Y, PANEL_Z0, PANEL_Z1)
+        pieces.update(panel_A_left=pa, panel_B_main=pb)
+    for k, v in pieces.items():
         tm = export(v, f"{SPLIT_DIR}/{k}.stl")
         assert max(tm.extents) <= MAX_PIECE, (k, tm.extents)
+    usb_variants = {}
+    if SHELL:
+        log(f"== lid A for a screw-ear panel-mount female USB-C (swap only lid A; room inside the end wall {usb_pm_room():.1f} mm)")
+        for sp in USB_PM_VARIANTS:
+            va, vb = split_dovetail(build_kit_lid_shell(usb=sp), SPLIT_X_LID, DOVETAIL_Y_KIT, kz0, 60.0)
+            assert abs(vb.volume() - lb.volume()) < 0.01, ("lid B must not depend on the USB-C end", sp)
+            name = usb_variant_name(sp)
+            tm = export(va, f"{SPLIT_DIR}/usb_variants/{name}.stl")
+            assert max(tm.extents) <= MAX_PIECE
+            usb_variants[sp] = va + lb
+            log(f"    {name}: opening {usb_pm_opening_w(sp):.1f} x {USB_PM_H:.1f} mm at y = {USB_PM_Y_KIT:g}, z = {usb_pm_zc():.1f}"
+                + (f", M3 holes {sp:g} mm apart" if sp > 0 else ", no screw holes (glue)"))
     log("== test coupons (cut from the real parts; print these first)")
     coupon_src = {}
     for k, (v, src) in build_kit_coupons(lid, tray, ta, tb).items():
@@ -1013,6 +1144,16 @@ def main_kit():
     interference(lid, tray, "lid vs tray")
     kb = prism_z(rrect(0.0, 0.0, 2 * LID_INNER_X - 0.6, 2 * LID_INNER_Y - 0.6, 2.7), 3.0, KB_TOP_Z)
     interference(kb, lid, f"keyboard space (tray floor to z {KB_TOP_Z}) vs lid")
+    if SHELL:
+        interference(kit, panel, "kit vs bezel panel"); interference(panel, lid, "bezel panel vs lid")
+        interference(panel, tray, "bezel panel vs tray"); interference(plug, panel, "USB-C plug vs bezel panel")
+        interference(kb, panel, "keyboard space vs bezel panel"); interference(pa, pb, "panel A vs B (dovetail)")
+        for sp, full in usb_variants.items():
+            env = usb_pm_envelope_kit(sp)
+            interference(env, full, f"{usb_variant_name(sp)}: panel-mount female vs lid", tol=0.05)
+            interference(env, panel, f"{usb_variant_name(sp)}: panel-mount female vs panel", tol=0.05)
+            interference(env, kit, f"{usb_variant_name(sp)}: panel-mount female vs kit", tol=0.05)
+        log(f"  panel-mount female: ears and body up to {usb_pm_room() - 0.2:.1f} mm tall fit between the panel and the ceiling")
     interference(la, lb, "lid A vs B (dovetail)"); interference(ta, tb, "tray A vs B (dovetail)")
     h_fixed, h_moving = hinge_envelope(0.0)
     interference(h_fixed, tray, "hinge (tray leaf + barrel) vs tray"); interference(h_moving, lid, "hinge (lid leaf) vs lid")
@@ -1021,10 +1162,14 @@ def main_kit():
         interference(cv, lid, f"lid hinge cover {i} vs lid"); interference(cv, tray, f"lid hinge cover {i} vs tray")
     for i, cv in enumerate(tray_cov):
         interference(cv, tray, f"tray hinge cover {i} vs tray"); interference(cv, lid, f"tray hinge cover {i} vs lid")
-    sx = kit_x(KIT_SCREW_D)
-    seat = min(KIT_Z1 + KIT_SCREW_SEAT, top_z(0.0))
-    log(f"  kit screw at x = {sx:.1f}: M2x4 countersunk, {seat - KIT_Z1:.1f} mm of lid under the head + {KIT_GAP} gap -> "
-        f"{STRAP_SCREW_LEN - (seat - KIT_Z1) - KIT_GAP:.1f} mm into the kit (M5Stack: under 3 mm)")
+    if not SHELL:
+        sx = kit_x(KIT_SCREW_D)
+        seat = min(KIT_Z1 + KIT_SCREW_SEAT, top_z(0.0))
+        log(f"  kit screw at x = {sx:.1f}: M2x4 countersunk, {seat - KIT_Z1:.1f} mm of lid under the head + {KIT_GAP} gap -> "
+            f"{STRAP_SCREW_LEN - (seat - KIT_Z1) - KIT_GAP:.1f} mm into the kit (M5Stack: under 3 mm)")
+    else:
+        log(f"  the panel holds the kit: rim {PANEL_RIM['h']} mm around it (0.2 clear), ribs 0.1 mm above its back; "
+            f"{len(PANEL_SCREWS)} x M2x8 countersunk through the {PANEL_T} mm panel, {TAP_SCREW_LEN - PANEL_T:.1f} mm into the bosses")
     skin = min(top_z(y) - KIT_Z1 for y in (KIT_Y0, KIT_Y1))
     log(f"  skin over the kit {skin:.2f}..{max(top_z(y) - KIT_Z1 for y in (KIT_Y0, KIT_Y1)):.2f} mm, over the USB-C channel "
         f"{min(top_z(KIT_USB_Y + s * USB_CH['w'] / 2) for s in (-1, 1)) - KIT_Z0 - USB_CH['h']:.2f} mm")
@@ -1048,8 +1193,8 @@ def main_kit():
     log(f"  tray front wall left behind the recess {-LID_INNER_Y - recess_back:.2f} mm, behind the groove "
         f"{-LID_INNER_Y - recess_back - (l['bump'] - l['clr'] + 0.05):.2f} mm")
 
-    log(f"== hinge motion (lid + kit + covers rotated about the real axis y={HINGE_AXIS_Y:.2f}, z={Z_PART}; tray fixed)")
-    lidset = lid + kit + union(lid_cov)
+    log(f"== hinge motion (lid + kit + {'panel + ' if SHELL else ''}covers rotated about the real axis y={HINGE_AXIS_Y:.2f}, z={Z_PART}; tray fixed)")
+    lidset = lid + kit + union(lid_cov) + (panel if SHELL else M())
     traset = tray + union(tray_cov)
     hits = []
     for deg in range(0, 181, 5):
@@ -1076,7 +1221,9 @@ def main_kit():
         R.render([(to_t(m) if isinstance(m, M) else m, c) for m, c in items], f"{RENDER_DIR}/{name}.png", view=view, title=name)
     rend("display_lid_inside", [(lid, C["lid"])], (-60, -45))
     rend("display_lid_outside", [(lid, C["lid"])], (-130, 30))
-    rend("display_lid_with_kit", [(lid, C["lid"]), (kit, C["kit"])], (-60, -45))
+    rend("display_lid_with_kit", [(lid, C["lid"]), (kit, C["kit"])] + ([(panel, (225, 215, 185))] if SHELL else []), (-60, -45))
+    if SHELL:
+        rend("display_panel_kit_back", [(panel, (225, 215, 185))], (-60, 45))
     rend("keyboard_tray", [(tray, C["tray"])], (-130, 40))
     rend("split_lid", [(la.translate([-12, 0, 0]), C["lid"]), (lb, (90, 110, 180))], (-60, -45))
     rend("split_tray", [(ta.translate([-12, 0, 0]), C["tray"]), (tb, (200, 190, 160))], (-60, 45))

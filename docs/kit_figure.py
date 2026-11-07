@@ -1,6 +1,6 @@
-"""Draw docs/images/kit_mount.png: how the PaperDIY Complete Kit sits in the lid. Left: the lid's inner face as you
-see it with the lid open (front edge up), cut through the pocket, with the finger notches and the USB-C channel.
-Right: a section through the kit's screw, closed on the tray. Cut from the built STLs.
+"""Draw docs/images/kit_mount.png: how the PaperDIY Complete Kit sits in the lid. Left: the bezel panel as you see it
+with the lid open (front edge up), with the finger slots, the screws and where the USB-C goes in. Right: a section
+through the closed case (lid shell, kit, panel, tray). Cut from the built STLs.
 
 Usage: python3 docs/kit_figure.py [out.png]   (needs matplotlib and a Japanese font such as Noto Sans CJK JP)
 """
@@ -16,7 +16,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt                       # noqa: E402
 from matplotlib import font_manager                   # noqa: E402
-from matplotlib.patches import Circle, PathPatch, Polygon as MPoly, Rectangle  # noqa: E402
+from matplotlib.patches import Circle, FancyArrowPatch, PathPatch, Polygon as MPoly, Rectangle  # noqa: E402
 from matplotlib.path import Path                      # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -28,6 +28,7 @@ with contextlib.redirect_stdout(io.StringIO()):
 LID_C, LID_E = "#33508f", "#1d2f57"
 TRAY_C, TRAY_E = "#ece6d6", "#8f8770"
 KIT_C, KIT_E = "#c9ccd1", "#5f646b"
+PANEL_C, PANEL_E = "#ece6d6", "#8f8770"
 SCR_C = "#5a5f66"
 RED = "#c0392b"
 INK = "#222222"
@@ -76,52 +77,50 @@ def finish(ax, xlim, ylim, title):
     ax.set_title(title, fontsize=12, color=INK, loc="left")
 
 
-def inner_view(ax, lid, kit):
-    z = B.KIT_Z0 + 0.6                                   # just inside the pocket, notches and channel
-    for p in cut(lid, [0, 0, z], [0, 0, 1], XY_OPEN):
+def inner_view(ax, lid, panel, kit):
+    for p in cut(lid, [0, 0, B.PANEL_Z0 + 0.8], [0, 0, 1], XY_OPEN):            # the lid's walls around the panel
         add_polygon(ax, p, LID_C, LID_E)
-    for p in cut(kit, [0, 0, z + 2.0], [0, 0, 1], XY_OPEN):
-        add_polygon(ax, p, KIT_C, KIT_E, lw=0.9, z=2)
+    for p in cut(kit, [0, 0, B.KIT_Z0 + 3.0], [0, 0, 1], XY_OPEN):             # the kit, seen through the slots
+        add_polygon(ax, p, KIT_C, KIT_E, lw=0.6, z=1)
+    for p in cut(panel, [0, 0, B.PANEL_Z0 + 0.8], [0, 0, 1], XY_OPEN):
+        add_polygon(ax, p, PANEL_C, PANEL_E, lw=0.9, z=2)
     w, h = B.KIT_WIN
     wx = B.KIT_CX + B.KIT_WIN_OFF
     ax.add_patch(Rectangle((wx - w / 2, -h / 2), w, h, fc="#eef0f2", ec=KIT_E, lw=0.6, zorder=3))
     ax.text(wx, 0, "画面", fontsize=12, color="#777", ha="center", va="center", zorder=4)
-    sx = B.kit_x(B.KIT_SCREW_D)
-    ax.add_patch(Circle((sx, 0.0), 1.2, fc="none", ec=RED, lw=1.0, ls=(0, (2, 1.5)), zorder=5))
-    note(ax, (sx + 1.0, -1.0), "ねじ 1 本（裏から M2×4）", (-30.0, -22.0), color=RED)
+    for x, y in B.PANEL_SCREWS:
+        ax.add_patch(Circle((x, -y), 1.6, fc="white", ec=INK, lw=0.8, zorder=5))
+    note(ax, (B.PANEL_SCREWS[1][0] - 1.5, -B.PANEL_SCREWS[1][1] + 1.0), "M2×8 皿タッピングねじ（6 本）", (60.0, 57.0))
     xs = [B.kit_x(d) for cap in B.KIT_KEY_CAPS for d in cap]
-    note(ax, ((min(xs) + max(xs)) / 2, -B.KIT_Y0 + 3.5), "KEY1・KEY2 の切り欠き", (-26.0, 57.0))
-    note(ax, (B.KIT_X0 - 3.5, -sum(B.KIT_PWR_CAP_Y) / 2), "電源ボタンの切り欠き", (-104.0, -61.0))
-    note(ax, (-92.0, -B.KIT_USB_Y), "USB-C ケーブルの溝（左端から挿す）", (-104.0, 57.0))
-    note(ax, (B.LATCH["x"] + 2.0, B.BACK_OLD_Y - 1.0), "留めツメ（閉じるとパチンと留まる）", (24.0, 57.0))
-    ax.text(60.0, -63.0, "↓ ヒンジ側", fontsize=9.5, color="#666")
-    finish(ax, (-106, 104), (-67, 62), "① 蓋の内側（開いて画面側から見たところ）")
+    note(ax, ((min(xs) + max(xs)) / 2, B.KIT_W / 2 + 3.0), "KEY1・KEY2 を押す切り欠き", (-40.0, 57.0))
+    note(ax, (B.KIT_CX - B.KIT_L / 2 - 2.5, -sum(B.KIT_PWR_CAP_Y) / 2), "電源ボタンを押す切り欠き", (-40.0, -61.0))
+    ax.add_patch(FancyArrowPatch((-112.0, -B.KIT_USB_Y), (-101.5, -B.KIT_USB_Y), arrowstyle="-|>", mutation_scale=12,
+                                 color=RED, lw=1.4, zorder=8))
+    ax.text(-113.0, 52.0, "USB-C：左端の穴から挿す\n（端子まで溝が案内する）", fontsize=10, color=RED, va="bottom")
+    ax.text(75.0, -63.0, "↓ ヒンジ側", fontsize=9.5, color="#666")
+    finish(ax, (-114, 104), (-67, 62), "① 化粧パネル（開いて画面側から見たところ）")
 
 
-def section_view(ax, lid, tray, kit):
-    x = B.kit_x(B.KIT_SCREW_D)
+def section_view(ax, lid, panel, tray, kit):
+    x = 20.0
     for p in cut(tray, [x, 0, 0], [1, 0, 0], YZ):
         add_polygon(ax, p, TRAY_C, TRAY_E)
     for p in cut(lid, [x, 0, 0], [1, 0, 0], YZ):
         add_polygon(ax, p, LID_C, LID_E)
     for p in cut(kit, [x, 0, 0], [1, 0, 0], YZ):
         add_polygon(ax, p, KIT_C, KIT_E, lw=0.9, z=2)
-    z1 = B.KIT_Z1
-    seat = min(z1 + B.KIT_SCREW_SEAT, B.top_z(0.0))
-    tip = seat + 1.2 - B.STRAP_SCREW_LEN
-    ax.add_patch(MPoly([(-1.9, seat), (1.9, seat), (1.0, seat - 1.2), (-1.0, seat - 1.2)], closed=True,
-                       fc=SCR_C, ec="#2b2e33", lw=0.8, zorder=6))
-    ax.add_patch(Rectangle((-1.0, tip), 2.0, seat - 1.2 - tip, fc=SCR_C, ec="#2b2e33", lw=0.8, zorder=6))
+    for p in cut(panel, [x, 0, 0], [1, 0, 0], YZ):
+        add_polygon(ax, p, PANEL_C, PANEL_E, lw=0.9, z=3)
     kb = B.KB_TOP_Z
     ax.add_patch(Rectangle((-40.0, 3.0), 80.0, kb - 3.0, fc="none", ec="#999", lw=0.8, ls=(0, (4, 3)), zorder=1))
-    ax.text(0.0, (3.0 + kb) / 2, f"キーボード（高さ {kb - 3.0:g} mm と仮定）", fontsize=9.5, color="#777", ha="center", va="center")
-    note(ax, (1.9, seat - 0.4), f"M2×4 皿小ねじ（キットに {B.STRAP_SCREW_LEN - (seat - z1) - B.KIT_GAP:.1f} mm 入る）", (-30.0, 31.0))
-    ax.text(14.0, B.KIT_Z0 + B.KIT_T / 2, "PaperDIY（ケースごと）", fontsize=9.5, color=INK, ha="center", va="center", zorder=7)
-    note(ax, (-45.0, B.top_z(-45.0) - 2.0), "蓋", (-62.0, 27.0))
+    ax.text(0.0, (3.0 + kb) / 2, f"キーボード（厚さ {kb - 3.0:g} mm と仮定）", fontsize=9.5, color="#777", ha="center", va="center")
+    ax.text(10.0, B.KIT_Z0 + B.KIT_T / 2, "PaperDIY（ケースごと）", fontsize=9.5, color=INK, ha="center", va="center", zorder=7)
+    note(ax, (40.0, B.PANEL_Z0 + B.PANEL_T / 2), f"化粧パネル（{B.PANEL_T:g} mm）", (22.0, 31.5))
+    note(ax, (-30.0, B.top_z(-30.0) - B.SHELL_CEIL / 2), f"蓋（壁 {B.SHELL_WALL:g}・天板 {B.SHELL_CEIL:g} mm の中空）", (-64.0, 31.5))
     note(ax, (-45.5, 4.0), "トレイ", (-62.0, -2.0))
     ax.text(-48.0, -6.0, "← 手前", fontsize=9.5, color="#666")
     ax.text(48.0, -6.0, "ヒンジ側 →", fontsize=9.5, color="#666", ha="right")
-    finish(ax, (-66, 62), (-8, 33), "② 閉じたときの断面（ねじの位置）")
+    finish(ax, (-66, 62), (-8, 35), "② 閉じたときの断面")
 
 
 def main(out):
@@ -129,9 +128,10 @@ def main(out):
     lid = trimesh.load(os.path.join(CAD, "out", "display_lid_usbc.stl"))
     tray = trimesh.load(os.path.join(CAD, "out", "keyboard_tray.stl"))
     kit = trimesh.load(os.path.join(CAD, "out", "paperdiy_kit_envelope.stl"))
+    panel = trimesh.load(os.path.join(CAD, "out", "display_panel_kit.stl"))
     fig = plt.figure(figsize=(14.0, 5.4))
-    inner_view(fig.add_axes([0.0, 0.02, 0.52, 0.9]), lid, kit)
-    section_view(fig.add_axes([0.53, 0.02, 0.47, 0.9]), lid, tray, kit)
+    inner_view(fig.add_axes([0.0, 0.02, 0.52, 0.9]), lid, panel, kit)
+    section_view(fig.add_axes([0.53, 0.02, 0.47, 0.9]), lid, panel, tray, kit)
     fig.savefig(out, dpi=170, facecolor="white", metadata={"Software": None})
     print("wrote", out)
 
