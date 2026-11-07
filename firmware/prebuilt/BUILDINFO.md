@@ -7,8 +7,8 @@
 
 | | |
 | --- | --- |
-| SHA-256 | merged `2a23f0a2efa21b26b4bba16ab16d69b0ba55fe270663f61c666f9733bafa3383`, app `cb743d5ca8b69cbb90721a88c5bea60df5af3c59f933bddec8bb0b3405b9ffb7` (also in `SHA256SUMS`) |
-| Firmware version | 0.3.1 (`firmware/version.txt`) |
+| SHA-256 | merged `17ee35a5b24f22c1e112a1857fa19abb6f0e11bf580fd5e4a6640bacebd20fa6`, app `a6f6e4138af6b66a2859627178787b6fa18f45152867e789fb290a8748a93311` (also in `SHA256SUMS`) |
+| Firmware version | 0.3.2 (`firmware/version.txt`) |
 | ESP-IDF | **v5.5.6** (tag, commit `880a203a`), target esp32s3 |
 | Toolchain | xtensa-esp-elf `esp-14.2.0_20260121` (the one v5.5.6 installs) |
 | Dependencies | `fetch_deps.sh`: M5GFX `7cb26b44` (0.2.36), M5Unified `44952cb8` (0.2.29), libssh2 `a312b433` (1.11.1) |
@@ -23,4 +23,6 @@ On a PaperDIY: 0.2.0 booted and drew its screen, but upside down with the USB-C 
 the enclosure); 0.2.1 turns the landscape screen the other way round. 0.3.0 pairs on its own with a keyboard waiting to
 be paired when none is connected. With 0.3.0 an SSH login ended in "out of memory"; 0.3.1 keeps one SSH I/O task
 with its stack in PSRAM, moves mbedTLS and small mallocs to PSRAM, and gives Wi-Fi fewer internal buffers: free internal RAM
-after start went from 24 KB (largest block 16 KB) to 57 KB (31 KB), measured on the PaperDIY.
+after start went from 24 KB (largest block 16 KB) to 57 KB (31 KB), measured on the PaperDIY. 0.3.2 names the address
+it connects to, this device's IP and each step of an SSH login on the screen and in the log; written over 0.3.1 as the
+app alone at 0x20000, the settings stayed.

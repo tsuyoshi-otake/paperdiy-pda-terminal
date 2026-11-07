@@ -19,6 +19,7 @@
 #include "lwip/netdb.h"
 #include "lwip/sockets.h"
 #include "mbedtls/base64.h"
+#include "net/wifi_mgr.h"
 #include "storage/sdcard.h"
 
 namespace ssh {
@@ -94,7 +95,16 @@ int openSocket(const char* host, uint16_t port, std::string& err)
     }
     int sock = -1;
     int last_errno = 0;
+    std::string last_addr;
     for (addrinfo* ai = res; ai; ai = ai->ai_next) {
+        char ipbuf[48] = "?";
+        if (ai->ai_family == AF_INET) {
+            inet_ntop(AF_INET, &reinterpret_cast<sockaddr_in*>(ai->ai_addr)->sin_addr, ipbuf, sizeof(ipbuf));
+        } else if (ai->ai_family == AF_INET6) {
+            inet_ntop(AF_INET6, &reinterpret_cast<sockaddr_in6*>(ai->ai_addr)->sin6_addr, ipbuf, sizeof(ipbuf));
+        }
+        last_addr = std::string(ipbuf) + ":" + port_str;
+        ESP_LOGI(kTag, "tcp connect %s (this device %s)", last_addr.c_str(), wifi::ip().c_str());
         sock = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
         if (sock < 0) continue;
         const int flags = fcntl(sock, F_GETFL, 0);
@@ -122,14 +132,27 @@ int openSocket(const char* host, uint16_t port, std::string& err)
             break;
         }
         last_errno = errno;
+        ESP_LOGW(kTag, "tcp connect %s failed: errno %d (%s)", last_addr.c_str(), last_errno, strerror(last_errno));
         ::close(sock);
         sock = -1;
     }
     freeaddrinfo(res);
     if (sock < 0) {
-        err = std::string("サーバーに接続できません (") + strerror(last_errno) + ")";
+        // lwIP reports a refused connection (RST in answer to the SYN) as ECONNRESET.
+        const std::string where = last_addr + "、この端末 " + wifi::ip();
+        if (last_errno == ECONNRESET || last_errno == ECONNREFUSED) {
+            err = "サーバーが TCP の接続を拒否しました（" + where + "）。そのポートで SSH が待ち受けていないか、"
+                  "この端末からの接続を拒否しています";
+        } else if (last_errno == ETIMEDOUT) {
+            err = "サーバーから応答がありません（" + where + "）";
+        } else if (last_errno == EHOSTUNREACH || last_errno == ENETUNREACH) {
+            err = "サーバーへの経路がありません（" + where + "）";
+        } else {
+            err = "サーバーに接続できません（" + where + "、" + strerror(last_errno) + "）";
+        }
         return -1;
     }
+    ESP_LOGI(kTag, "tcp connected %s", last_addr.c_str());
     int one = 1;
     setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one));
     setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &one, sizeof(one));
@@ -309,6 +332,7 @@ bool ensureIoTask()
 
 bool fail(std::string& error, const std::string& msg)
 {
+    ESP_LOGW(kTag, "connect failed: %s (libssh2 %d)", msg.c_str(), s_session ? libssh2_session_last_errno(s_session) : 0);
     error = msg;
     cleanup(true);
     s_state = State::Idle;
@@ -342,7 +366,7 @@ bool connect(const settings::SshProfile& p, int cols, int rows, Prompter& ui, st
     char where[120];
     snprintf(where, sizeof(where), "%s@%s:%u", p.user, p.host, port);
 
-    ui.status(std::string("接続しています: ") + where);
+    ui.status(std::string("接続しています: ") + where + "（この端末: " + wifi::ip() + "）");
     std::string err;
     s_sock = openSocket(p.host, port, err);
     if (s_sock < 0) return fail(error, err);
@@ -419,6 +443,7 @@ bool connect(const settings::SshProfile& p, int cols, int rows, Prompter& ui, st
         s_kbd = nullptr;
     }
     if (!authed) return fail(error, "認証に失敗しました（サーバーの方式: " + methods + "）");
+    ESP_LOGI(kTag, "authenticated as %s", p.user);
 
     ui.status("シェルを開いています…");
     s_channel = libssh2_channel_open_session(s_session);
