@@ -64,6 +64,56 @@ PD_WIN_FROM_TOP = 1.39        # [M:K159-B kit STL] window offset from non-USB en
 PD_WIN_FROM_USB = 8.90        # [M:K159-B kit STL] window offset from USB end (FPC/bond area hidden)
 PD_ANTENNA_FROM_TOP = (70.0, 88.0)  # [M:K159 PDF] WROOM-1 antenna zone, on the long edge opposite the keys
 
+# ---------------------------------------------------------------- PaperDIY Complete Kit, left in its own case (K159-B)
+# PD_MOUNT = "kit":  the PaperDIY stays in the Complete Kit's 3D-printed case and drops into a pocket in a thin, solid
+#                    lid (one M2 screw from the top into its standoff). It runs on the kit's own 140 mAh LiPo (a power
+#                    bank on the USB-C when that is not enough). Lid and tray both reprint; a snap tab keeps it shut.
+# PD_MOUNT = "bare": the earlier design: bare Assembly Kit on a printed display panel, strap, push-rods, 2000 mAh cell.
+PD_MOUNT = os.environ.get("PD_MOUNT", "kit")
+# [M:K159-B STL] = m5stack/M5_Hardware Products/K159-B_PaperDIY_Complete_Kit/Structures/PaperDlY_Complete_Kit.stl
+# (sha256 9258e3e2...3e58). Kit frame: front (window) up, USB end +x, KEY edge -y. Below, distances "toward the USB
+# end" are from the case centre; in the lid the kit lies front down with its USB end at -x and the KEY edge at -y.
+KIT_L, KIT_W, KIT_T = 120.0, 67.0, 6.3    # [M:K159-B STL] case outline without the button caps (docs: 120.0 x 68.2 x 6.3)
+KIT_R = 3.0                   # [M:K159-B STL] plan corner radius
+KIT_WIN = (105.0, 59.7)       # [M:K159-B STL] window at the front face
+KIT_WIN_OFF = 4.0             # [M:K159-B STL] window centre from the case centre, away from the USB end
+KIT_KEY_CAPS = ((9.6, 20.4), (21.6, 32.4))   # [M:K159-B STL] KEY1/2 caps on the -y long edge, toward the USB end
+KIT_CAP_OUT = 1.2             # [M:K159-B STL] caps stand 1.2 proud of the case edge
+KIT_CAP_Z = (2.1, 4.95)       # [M:K159-B STL] cap depth behind the front face
+KIT_PWR_CAP_Y = (17.9, 28.8)  # [M:K159-B STL] power cap on the USB end (+y = away from the KEY edge)
+KIT_PWR_CAP_OUT = 1.27        # [M:K159-B STL]
+KIT_USB_Y = -24.0             # [M:K159-B STL] USB-C centre on the USB end (8.94 wide)
+KIT_USB_Z = (2.44, 5.6)       # [M:K159-B STL] port depth behind the front face
+KIT_SCREW_D = 20.0            # [M:K159-B STL] back-plate hole (4.2) over the M2 standoff, toward the USB end, centred
+KIT_MASS_G = 43.1             # [M: docs.m5stack.com K159-B] with case, acrylic and 140 mAh cell
+KIT_CX = -KIT_WIN_OFF         # [D] case centre x in the lid: puts the window centre at x = 0
+KIT_FIT = 0.2                 # pocket clearance per side
+KIT_GAP = 0.2                 # behind the kit (its back plate is flat; the ESP32 module sits in a window in it)
+# Keyboard: the CACOE stands above the tray rim (the original lid's panel face was at z = 15). The lid's inner face
+# (and the kit's front face) is KB_CLR above the keyboard's highest point. MEASURE: KB_TOP_Z = 3.0 (tray floor top)
+# + the keyboard's thickness over the keycaps.
+KB_TOP_Z = 14.5               # [A] from the original lid (panel face 15.0) -> MEASURE
+KB_CLR = 0.5
+# The CACOE sits loose in the tray (reported): pads on the inner walls take up the play. KB_SIZE = (width x, depth y)
+# of the keyboard body, measured; None = no pads. Each pad stands (inner size - keyboard) / 2 - KB_PAD["clr"] off the wall.
+KB_SIZE = None                # [A] -> MEASURE, e.g. (194.0, 85.0)
+KB_PAD = dict(clr=0.15, w=6.0, z0=3.0, top_below_rim=1.0, lead=1.5, front_x=(-60.0, -22.0, 22.0, 60.0),
+              back_x=(-60.0, -22.0, 22.0, 60.0), end_y=(-20.0, 8.0))
+LID_UNDER = (10.4417, 0.05376)  # [M] lid underside (parting) plane z = a + b * y, fitted to the original (resid < 0.001)
+LID_SKIN = 1.2                # least skin over a pocket or channel
+LID_CHAMFER = 0.8             # top edge and seam chamfer
+COVER_TOP_RIM = 0.8           # lid hinge covers: glue land above the leaf mortise (sides keep COVER_RIM)
+KIT_NOTCH = dict(out=7.0, depth=5.6, end=1.5, r=2.0)   # finger notches at the caps: 7 mm out from the pocket, 5.6 deep
+USB_CH = dict(w=13.0, h=7.6)  # channel for a straight USB-C plug (overmold ~12 x 6.5) from the left end to the port
+KIT_SCREW_SEAT = 1.6          # lid skin under the countersunk M2x4 head -> 2.2 mm into the kit (M5Stack: < 3 mm)
+DOVETAIL_Y_KIT = (-37.0, 5.0, 36.0)   # lid keys clear of the USB channel (y -30.5..-17.5) and the power notch
+# Snap tab (no magnets): a tab in the middle of the lid's front skirt runs 3.6 mm below the parting into a recess in
+# the tray's front face; a bump on its inside drops into a groove in the recess. It bends outward (free air), so the
+# keyboard's position does not matter. Force ~ 3 E I delta / L^3; strain 1.5 t delta / L^2 (bent across the layers in
+# print: keep it under ~0.5 %).
+LATCH = dict(x=0.0, w=18.0, t=1.0, slot=0.8, root=9.0, below=3.6, bump=0.45, bump_at=2.0, clr=0.15,
+             close_deg=45.0, open_deg=35.0, tray_wall_min=1.2)
+
 # ---------------------------------------------------------------- layout choices (lid frame)
 # PaperDIY: screen faces -z, USB end at -x, key edge toward the front wall (-y), antenna edge toward hinge (+y).
 PD_TOP_X = 55.8               # [D] x of the non-USB end; USB end = 55.8-115.3 = -59.5
@@ -233,7 +283,10 @@ Z_PART = 12.85                # [M] parting line at the back (lid underside 12.7
 # 3 mm back wall everywhere else and puts a 9.5 mm deep housing behind each hinge, blended into the wall by a tapered
 # rib on each side; "solid" is the v0.3 design (whole back wall 9.5 mm). The slicer fills thick walls with 15 % infill,
 # so hollowing them would not save material: the saving comes from the smaller outer shape.
-BACK_STYLE = "housings" if HINGE_MOUNT == "face" else "solid"
+# The kit design uses "solid" for lid and tray: with the back face only at the housings, the lid's back edge between the
+# hinges sat 7.65 mm in front of the hinge axis and swung up ~11 mm off the tray when opened, leaving a slot between screen
+# and keyboard. With the whole back at the hinge plane the edge is 1.15 mm from the axis and the seam stays ~2 mm.
+BACK_STYLE = ("solid" if PD_MOUNT == "kit" else "housings") if HINGE_MOUNT == "face" else "solid"
 HOUSING_HALF = 13.5           # housing half-length along x: cover 23.5 mm + 1.75 mm of glue land each side
 HOUSING_GUSSET = 5.5          # tapered rib each side of a housing (plan view 5.5 mm long, 6.5 mm deep at the housing)
 # triangular ribs (gussets) inside the lid between the long walls and the ceiling, 1.6 mm thick (4 lines);

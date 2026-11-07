@@ -44,10 +44,8 @@ render:
 	cd docs/render && npm ci && npx playwright install chromium && npm run render
 	$(PYTHON) docs/hinge_figure.py docs/images/hinge_screws.png
 	$(PYTHON) docs/coupons_figure.py docs/images/plate0_coupons.png
-	$(PYTHON) docs/paperdiy_figure.py docs/images/paperdiy_mount.png
-	$(PYTHON) docs/clip_figure.py docs/images/front_clip.png
-	$(PYTHON) docs/magnet_figure.py docs/images/magnet_catch.png
-	$(PYTHON) docs/pushrod_figure.py docs/images/pushrod_snap.png
+	$(PYTHON) docs/kit_figure.py docs/images/kit_mount.png
+	$(PYTHON) docs/latch_figure.py docs/images/latch.png
 
 test:
 	$(MAKE) -C firmware/test/host test PYTHON=$(PYTHON)

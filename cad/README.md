@@ -1,17 +1,19 @@
 # PaperDIY PDA clamshell — printable CAD (derivative of unkyulee/phone-enclosure)
 
-A Boox-Palma-free version of Un Kyu Lee's "PDA Terminal": the lid holds an **M5Stack PaperDIY** (4.7" e-paper, ESP32-S3)
-behind a new bezel panel, plus a 1S LiPo, and gets a panel-mount USB-C. The original knob-and-pin hinge is replaced by
-**two free-stop torque hinges (Sugatsune HG-MF08) recessed flush into the back face, under printed cover plates**, so only
-the hinge barrels show. The back wall keeps the original 3 mm except for a 9.5 mm deep housing behind each hinge (for the
-screws), blended in by tapered ribs; ribs inside the lid tie the long walls to the ceiling. The keyboard tray (CACOE mini
-BT keyboard) keeps the original openings. Every part is
-also split for a **Bambu Lab A1 mini (180 mm bed)** and joined with glued dovetail keys; nothing needs supports. All case
-fasteners are **M2×8 countersunk tapping screws into printed pilot holes** (14), plus one M2×4 machine screw into the
-PaperDIY standoff: no heat-set inserts, dowels or socket screws. Only the small lid piece A depends on the USB-C cable you
-buy, and it comes pre-built for eight hole spacings. A **test-coupon plate** checks the fits on your printer in ~30 min
-before the long prints. Bill of materials, print settings and assembly order (Japanese): [ASSEMBLY_ja.md](ASSEMBLY_ja.md);
-parts list as CSV: [bom.csv](bom.csv).
+A Boox-Palma-free version of Un Kyu Lee's "PDA Terminal". The screen is an **M5Stack PaperDIY Complete Kit** (4.7"
+e-paper, ESP32-S3) **left in its own printed case**: it drops into a pocket in a thin, solid lid and is held by one M2×4
+countersunk screw from the top into its standoff. It runs on the kit's own 140 mAh LiPo (a power bank on the USB-C when
+that is not enough). A snap tab moulded into the lid's front clicks into a recess in the tray, so the closed lid stays
+shut without magnets or extra parts. The original knob-and-pin hinge is replaced by **two free-stop torque hinges
+(Sugatsune HG-MF08) recessed flush into the back face, under printed cover plates**, so only the hinge barrels show. Lid
+and tray are split for a **Bambu Lab A1 mini (180 mm bed)** and joined with glued dovetail keys; nothing needs supports.
+Fasteners: 8 × M2×8 countersunk tapping screws (hinges) and 1 × M2×4 machine screw (the kit). A **test-coupon plate**
+checks the hinge, dovetail and snap-tab fits in ~25 min. Bill of materials, print settings and assembly order
+(Japanese): [ASSEMBLY_ja.md](ASSEMBLY_ja.md); parts list as CSV: [bom.csv](bom.csv).
+
+`PD_MOUNT = "bare"` in `src/params.py` (or `PD_MOUNT=bare` in the environment) still builds the earlier design: the bare
+Assembly Kit on a printed bezel panel with a strap, snap-in push-rods, a 2000 mAh cell and a panel-mount USB-C. Its
+sections are kept below, after the kit design.
 
 ## Run
 
@@ -41,12 +43,89 @@ log is written to `out/build_log.txt`.
   (override: `PHONE_ENCLOSURE_ANY_VERSION=1`). `tools/fetch_original.sh` checks out that commit.
 * **Tools pinned:** `requirements.txt` (Python 3.13). The README images use `docs/render/package-lock.json`.
 * **Deterministic:** on one machine, two builds give byte-identical STL / 3MF files (also with one CPU); the 3MF zips carry
-  fixed timestamps. Another machine can round the last digit differently: on the GitHub Actions runner 32 of the 44
-  files were byte-identical and the other 12 matched in geometry only.
+  fixed timestamps. Another machine can round the last digit differently: on the GitHub Actions runner some files
+  are byte-identical and the rest match in geometry only.
 * **Recorded:** `out/MANIFEST.json` holds the SHA-256, volume, bounding box and triangle count of every output.
   `tools/manifest.py --check` accepts byte differences only when the geometry matches to 0.01 mm / 0.01 %.
 * **CI:** `.github/workflows/build.yml` runs `make verify`, the slicer report, the firmware build (compared byte for byte
   with `firmware/prebuilt/`) and the host tests.
+
+## Kit design (`PD_MOUNT = "kit"`, the default)
+
+### Outputs
+| File | Notes |
+|---|---|
+| `out/display_lid_usbc.stl` | lid, unsplit (solid deck with the kit pocket; 202.0 × 99.5 × 22.8) |
+| `out/keyboard_tray.stl` | tray, unsplit (the original tray with the hinge rework and the snap-tab recess) |
+| `out/paperdiy_kit_envelope.stl` | the kit as placed (case 120.0 × 67.0 × 6.3, r 3, KEY and power caps): checks and renders |
+| `out/hinge_cover_lid_x2.stl`, `out/hinge_cover_tray_x2.stl` | print 2 of each |
+| `out/split/lid_A_left.stl`, `lid_B_main.stl`, `tray_A_left.stl`, `tray_B_main.stl` | A1 mini pieces (≤ 175 mm) |
+| `out/coupons/*.stl` | hinge seat (lid, tray), dovetail key (A, B), snap tab (lid) + recess (tray) |
+| `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~25 min, 11 g |
+| `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers, ~2 h 45 min, 87 g |
+| `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers, ~1 h 38 min, 64 g |
+
+### The kit
+Measured from M5Stack's model of the Complete Kit (`m5stack/M5_Hardware`, `Products/K159-B_PaperDIY_Complete_Kit/Structures/PaperDlY_Complete_Kit.stl`,
+sha256 `9258e3e2…3e58`): case 120.0 × 67.0 × 6.3 mm with r 3 mm corners; window 105.0 × 59.7 at the front, 4.0 mm off
+centre away from the USB end; KEY1/KEY2 caps on one long edge (9.6–20.4 and 21.6–32.4 mm from the centre toward the USB
+end, 1.2 proud, 2.1–4.95 mm behind the front face); power cap on the USB end (+17.9…+28.8 mm across, 1.27 proud);
+USB-C at −24.0 across, 2.44–5.6 mm behind the front; a 4.2 mm hole in the back plate over the M2 standoff, 20.0 mm from
+the centre toward the USB end. M5Stack: screws into the back under 3 mm; 43.1 g.
+
+### Layout and lid shape
+* The kit lies front face down in a pocket in the lid (0.2 mm per side, 0.2 mm behind it), window centred on the lid
+  (`KIT_CX = −4.0`), USB end at −x, KEY edge toward the front (−y), as the bare board was.
+* **Inner face** (the kit's front face) at `KIT_Z0 = KB_TOP_Z + KB_CLR` = 15.0: the CACOE stands above the tray rim
+  (the original lid's panel face was at z = 15), and nobody has measured it yet. Measure the keyboard over the keycaps
+  and set `KB_TOP_Z = 3.0 + thickness`: every millimetre comes off the lid.
+* **Underside**: the original parting plane z = 10.4417 + 0.05376 y (fitted to the original lid, residual < 0.001 mm),
+  flat at `Z_PART` behind y = 44.7 (the hinge strip); inside the walls the lid is hollow up to the inner face
+  (the keyboard's room).
+* **Top**: a plane through the lowest point that the hinge allows at the back face (leaf 12.75 mm above the axis + cover
+  rim 0.8 + chamfer 0.8 → z 27.2 at y = 53) and the most demanding of: the kit pocket + 1.2 mm skin, the USB-C channel
+  + 1.2 mm, the snap tab's root. Now the USB-C channel sets it: z = 25.042 + 0.04072 y. The lid is 15.2 mm thick at the
+  front face and 14.1 at the back; the closed case is 23.1 mm tall at the front and 27.2 at the back (was 30 / 30). The
+  hinge (25 mm wide, face mounted) sets a floor of ~26 mm at the back whatever the keyboard.
+* **Plan**: the tray's outline (r 6 corners) as a prism between the two planes with 0.8 mm chamfers (hull of three
+  prisms per convex piece).
+* **Back**: `BACK_STYLE = "solid"` for lid and tray in the kit design: the whole back face is at the hinge plane
+  (y = 53, a 9.5 mm wall). With housings only behind the hinges, the lid's back edge between them was 7.65 mm in front of
+  the hinge axis and swung 11–15 mm off the tray when opened, a slot between screen and keyboard; now the edge is 1.15 mm
+  from the axis and the seam stays 2.3–2.6 mm (90–150°). Same hinges. The cost: with the keyboard's charge plug in, the
+  lid opens to 95°.
+* **Fixing**: one M2×4 countersunk machine screw from the top into the standoff, seated so 1.6 mm of lid is under the
+  head: it enters the kit 2.2 mm.
+* **Buttons**: finger notches 7 mm out from the pocket at the KEY caps (one notch for both) and the power cap, 5.6 mm
+  deep. No push-rods.
+* **USB-C**: a 13 × 7.6 mm channel from the left end face to the port, open toward the inner face: a straight plug
+  (overmold ≤ 12 × 6.5) goes in directly. No panel-mount extension, so no lid-A variants.
+* **Split**: at x = −72 like before, three dovetail keys in the deck at y −37, 5, 36 (clear of the channel and notches).
+* **Print**: lid pieces top face down; the 3MF export first tilts the top plane level (`LAY_TOP`, from `assembly.json`).
+
+### Snap tab (`LATCH`)
+An 18 × 1.0 mm tab is freed from the middle of the lid's front skirt by two 0.8 mm slots and runs 3.6 mm below the
+parting into a recess in the tray's front face (0.15 mm behind it, 0.3 mm each side). A 0.45 mm bump on its inside
+(45° closing ramp, 35° opening ramp) presses on the recess face, bending the tab 0.30 mm outward into free air, and drops
+into a groove 2 mm below the parting. Free length 11 mm → k = 3EI/L³ ≈ 11.8 N/mm (E = 3.5 GPa); ~4.5 N to open at the tab
+(μ = 0.3) plus the hinges' friction, ~6 N to close; strain 1.5 t δ / L² = 0.37 % (the tab bends across the print layers,
+so keep it under ~0.5 %). The build also rotates the rigid tab along the real opening arc: it bends at most 0.29 mm.
+The tray keeps 1.85 mm of front wall behind the recess, 1.50 behind the groove.
+
+### Checks run by `src/build.py` (kit)
+Kit envelope vs lid, a straight USB-C plug in the port vs lid, lid vs tray, the keyboard's room (tray floor to
+`KB_TOP_Z`) vs lid, dovetail halves, hinge leaves / barrels / covers vs both halves: all 0 mm³ (lid vs tray 0.002).
+Lid + kit + covers rotated 0–180° about the real hinge axis: no contact with the tray; the lid reaches the table at
+160.6°. With the keyboard's charge plug in, the lid opens to 95° (the full-width back face meets it; 119° before).
+
+### Tipping
+Lid side 136 g (printed parts as sliced + kit 43.1 g + half the hinges), centre of mass 46.6 mm in front of the hinge
+axis: a keyboard of **82 g** keeps the device on its feet up to the table contact at 161° (`out/print_report.md`).
+
+---
+
+The sections from here to "Changes vs. the original" describe the **earlier design** (`PD_MOUNT = "bare"`): the bare
+Assembly Kit on a printed panel. The hinge and keyboard-charge-port sections apply to both.
 
 ## Outputs (bounding boxes in the original assembly frame, mm)
 
@@ -201,6 +280,13 @@ with epoxy by letting them jump to a steel ruler laid on the land. Estimated hol
 `MAGNET_HOLES = True` prints the holes into lid and tray instead.
 
 ## Changes vs. the original (for the licence "indicate changes")
+**Kit design (default):** the original lid (`Display.stl`) and display panel are not used: the lid is a new solid part
+that follows the original's outline, parting surface, corner radii and back housings, with a pocket for the PaperDIY
+Complete Kit, finger notches, a USB-C channel, one screw hole, the hinge mortises and a snap tab. The tray is the original
+`Keyboard.stl` with the hinge rework below (item 3) and a recess + groove for the snap tab in its front face. New parts:
+4 hinge covers and the test coupons.
+
+**Earlier design (`PD_MOUNT = "bare"`):**
 1. **Display Panel:** Palma window, Palma button slots and both vent grilles filled. New PaperDIY window, locating lip, strap
    posts, push-rod cradles, battery bay, USB-plug relief. Outline and the 4 corner screw holes are untouched (original mesh kept).
 2. **Display (lid):** front-wall Palma side-button slot (incl. ceiling-edge notch) and right-wall Palma USB opening **closed**,
@@ -359,6 +445,23 @@ published drawing and structure files.
 ## Parameters (`src/params.py`, all of them)
 | Parameter | Value | Status | Note / source |
 |---|---|---|---|
+| `PD_MOUNT` | `"kit"` | design choice | `"kit"`: Complete Kit in its case in a solid lid; `"bare"`: the earlier design (env `PD_MOUNT` overrides) |
+| `KIT_L` / `KIT_W` / `KIT_T` / `KIT_R` | `120.0` / `67.0` / `6.3` / `3.0` | measured | [M:K159-B STL] case without the caps |
+| `KIT_WIN` / `KIT_WIN_OFF` | `(105.0, 59.7)` / `4.0` | measured | [M:K159-B STL] window, its offset away from the USB end |
+| `KIT_KEY_CAPS` / `KIT_CAP_OUT` / `KIT_CAP_Z` | `((9.6, 20.4), (21.6, 32.4))` / `1.2` / `(2.1, 4.95)` | measured | [M:K159-B STL] KEY caps toward the USB end |
+| `KIT_PWR_CAP_Y` / `KIT_PWR_CAP_OUT` | `(17.9, 28.8)` / `1.27` | measured | [M:K159-B STL] power cap on the USB end |
+| `KIT_USB_Y` / `KIT_USB_Z` | `-24.0` / `(2.44, 5.6)` | measured | [M:K159-B STL] USB-C on the USB end |
+| `KIT_SCREW_D` | `20.0` | measured | [M:K159-B STL] back-plate hole over the M2 standoff, toward the USB end |
+| `KIT_MASS_G` | `43.1` | measured | [M: docs.m5stack.com K159-B] |
+| `KIT_CX` / `KIT_FIT` / `KIT_GAP` | `-4.0` / `0.2` / `0.2` | design choice | window centred; pocket clearance per side / behind |
+| `KB_TOP_Z` / `KB_CLR` | `14.5` / `0.5` | ASSUMED | keyboard's highest point (3.0 + thickness over the keycaps) -> MEASURE; clearance under the kit |
+| `LID_UNDER` | `(10.4417, 0.05376)` | measured | [M] parting plane of the original lid, z = a + b y |
+| `LID_SKIN` / `LID_CHAMFER` / `COVER_TOP_RIM` | `1.2` / `0.8` / `0.8` | design choice | least skin; edge chamfers; lid-cover rim above the leaf |
+| `KIT_NOTCH` | `out 7, depth 5.6, end 1.5, r 2` | design choice | finger notches at the caps |
+| `USB_CH` | `w 13, h 7.6` | design choice | channel for a straight USB-C plug (overmold ≤ 12 × 6.5) |
+| `KIT_SCREW_SEAT` | `1.6` | design choice | lid under the M2×4 head -> 2.2 mm into the kit |
+| `DOVETAIL_Y_KIT` | `(-37, 5, 36)` | design choice | lid keys in the deck |
+| `LATCH` | `w 18, t 1.0, slot 0.8, root 9, below 3.6, bump 0.45 @ 2.0, clr 0.15, 45° / 35°` | design choice | snap tab (see "Snap tab") |
 | `PANEL_Z_FRONT` | `15.0` | measured | [M:Display Panel.stl] screen-side face |
 | `PANEL_Z_BACK` | `18.0` | measured | [M:Display Panel.stl] back face, seats against lid corner bosses |
 | `LID_CEILING_Z` | `27.0` | measured | [M:Display.stl] ceiling underside (ceiling 27..30, 3.0 thick) |

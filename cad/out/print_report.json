@@ -1,64 +1,38 @@
 {
  "plate0_test_coupons.3mf": {
   "warnings": [
-   "Loose extrusions: coupon_corner_panel",
-   "Low bed adhesion: key_pushrod"
+   "Low bed adhesion: coupon_latch_tray, coupon_latch_lid"
   ],
   "ok": true,
-  "time": "27m 51s",
-  "grams": 12.14,
-  "metres": 4.06881
+  "time": "24m 9s",
+  "grams": 10.62,
+  "metres": 3.5594099999999997
  },
  "plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "2h 10m 22s",
-  "grams": 81.32,
-  "metres": 27.26391
+  "time": "2h 44m 53s",
+  "grams": 87.36,
+  "metres": 29.29001
  },
  "plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 30m 46s",
-  "grams": 59.98,
-  "metres": 20.11056
+  "time": "1h 37m 51s",
+  "grams": 63.96,
+  "metres": 21.44384
  },
- "plate3_panel_parts.3mf": {
-  "warnings": [
-   "Low bed adhesion: power_pushrod, key_pushrod_1, key_pushrod_2"
-  ],
-  "ok": true,
-  "time": "1h 8m 6s",
-  "grams": 37.21,
-  "metres": 12.47662
- },
- "plate4_front_clip.3mf": {
-  "warnings": [
-   "Low bed adhesion: front_clip_1, front_clip_2"
-  ],
-  "ok": true,
-  "time": "10m 10s",
-  "grams": 4.17,
-  "metres": 1.3973900000000001
- },
- "plate5_magnet_jigs.3mf": {
-  "warnings": [],
-  "ok": true,
-  "time": "16m 53s",
-  "grams": 8.35,
-  "metres": 2.79995
- },
- "total_g": 178.51,
- "total_min": 288,
- "lid_g": 198.47,
- "base_g": 64.01,
+ "total_g": 151.32,
+ "total_min": 261,
+ "lid_g": 136.39000000000001,
+ "base_g": 67.96000000000001,
  "lid_cg": [
-  9.661859586940231,
-  1.2867665883954764,
-  22.11052832193972
+  1.2220893877725754,
+  7.583817342860241,
+  19.465339253526448
  ],
  "pivot_y": 50.95000076293945,
- "table_contact_deg": 150.4,
- "table_limit": 150,
- "keyboard_min_g": 155.74789946041338
+ "table_contact_deg": 160.6,
+ "table_limit": 160,
+ "keyboard_min_g": 81.93546248865191
 }

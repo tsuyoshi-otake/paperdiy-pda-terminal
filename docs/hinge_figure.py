@@ -27,7 +27,15 @@ TRAY_C, TRAY_E = "#ece6d6", "#8f8770"
 METAL, METAL_E, BARREL = "#b9c0c8", "#5b636c", "#9aa2ab"
 SCREW, SCREW_E = "#5a5f66", "#2b2e33"
 INK = "#222222"
-COVER_H_LID, COVER_H_TRAY = 10.3, 8.9          # cover heights (cad/README.md, outputs table)
+
+
+def _extent_z(name):
+    return float(trimesh.load(os.path.join(CAD, "out", name)).extents[2])
+
+
+COVER_H_LID, COVER_H_TRAY = _extent_z("hinge_cover_lid_x2.stl"), _extent_z("hinge_cover_tray_x2.stl")
+_LID = trimesh.load(os.path.join(CAD, "out", "display_lid_usbc.stl"))
+LID_TOP_BACK = float(_LID.vertices[_LID.vertices[:, 1] > Y_BACK - 3.0][:, 2].max())   # lid top at the back face
 
 
 def use_japanese_font():
@@ -73,7 +81,7 @@ def screw_side(ax, zc, y_face=Y_BACK, length=TAP_SCREW_LEN, head_d=3.8, head_h=1
 
 def back_view(ax):
     hw = HOUSING_HALF
-    ax.add_patch(Rectangle((-hw - 9, Z_PART), 2 * hw + 18, 30 - Z_PART, fc=LID_C, ec=LID_E, lw=1.2, zorder=1))
+    ax.add_patch(Rectangle((-hw - 9, Z_PART), 2 * hw + 18, LID_TOP_BACK - Z_PART, fc=LID_C, ec=LID_E, lw=1.2, zorder=1))
     ax.add_patch(Rectangle((-hw - 9, 0), 2 * hw + 18, Z_PART, fc=TRAY_C, ec=TRAY_E, lw=1.2, zorder=1))
     ax.plot([-hw - 9, hw + 9], [Z_PART, Z_PART], color=INK, lw=0.8, ls=(0, (4, 3)), zorder=2)
     ax.add_patch(Rectangle((-HINGE_LEN / 2, Z_PART - HINGE_WIDTH / 2), HINGE_LEN, HINGE_WIDTH,

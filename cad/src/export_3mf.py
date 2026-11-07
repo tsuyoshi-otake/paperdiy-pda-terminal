@@ -2,12 +2,13 @@
 
 Every part is turned into its print orientation (see README "Print orientation") and laid out on the
 plate, so the files can be opened in Bambu Studio / OrcaSlicer / PrusaSlicer and sliced directly.
-Parts are grouped by colour as in the README renders: plate 1 = lid (navy), plates 2-3 = cream (the three
-small push-rods ride along on plate 3; print them in another colour separately if you like).
-Plate 0 holds the test coupons (print it first), 3mf/usb_variants/ holds lid A for other USB-C cables.
+Kit design (PD_MOUNT = "kit", default): plate 0 = test coupons (print first), plate 1 = lid (navy), plate 2 = tray
+(cream). The earlier design ("bare") adds plate 3 (panel, strap, push-rods), plates 4-5 (front clip, magnet jigs) and
+3mf/usb_variants/ (lid A for other USB-C cables).
 
     python3 src/export_3mf.py          # after src/build.py; reads out/, writes 3mf/
 """
+import glob
 import json
 import os
 import sys
@@ -29,8 +30,13 @@ FLIP_X = trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0])      # top fa
 ROT_Z90 = trimesh.transformations.rotation_matrix(np.pi / 2, [0, 0, 1])  # turn on the bed
 LAY_FLAT_Y = trimesh.transformations.rotation_matrix(-np.pi / 2, [1, 0, 0])  # hinge cover plates: visible face on the bed
 STAND_X = trimesh.transformations.rotation_matrix(np.pi / 2, [0, 1, 0])     # front clip: U profile flat on the bed
+with open(os.path.join(OUT_DIR, "assembly.json")) as _f:
+    ASM = json.load(_f)
+KIT = ASM.get("PD_MOUNT") == "kit"
+# the kit design's lid top is a plane z = a + b y: tilt it level before turning it top face down
+LAY_TOP = (trimesh.transformations.rotation_matrix(-np.arctan(ASM["LID_TOP"][1]), [1, 0, 0]) if KIT else np.eye(4))
 # print orientation of everything cut from the three big parts
-ORIENT = {"lid": (FLIP_X,), "tray": (), "panel": ()}
+ORIENT = {"lid": (LAY_TOP, FLIP_X), "tray": (), "panel": ()}
 
 
 def part(path, *rots):
@@ -102,6 +108,30 @@ def plates():
     def coupon(n):
         return (n, part(C(n), *ORIENT[csrc[n]]))
 
+    if KIT:
+        return {
+            # test coupons: hinge seat (lid + tray), dovetail key, snap tab + recess, and one cover of each kind
+            "plate0_test_coupons.3mf": ("Test coupons (print first)", [
+                [coupon("coupon_hinge_tray"), coupon("coupon_hinge_lid"), coupon("coupon_latch_tray")],
+                [coupon("coupon_dovetail_A"), coupon("coupon_dovetail_B"), coupon("coupon_latch_lid")],
+                [("hinge_cover_lid", part(O("hinge_cover_lid_x2"), LAY_FLAT_Y)),
+                 ("hinge_cover_tray", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y))],
+            ]),
+            # navy: lid pieces, top face on the bed (tilted level); no supports needed
+            "plate1_lid.3mf": ("Lid (A + B)", [
+                [("lid_A_left", part(S("lid_A_left"), LAY_TOP, FLIP_X, ROT_Z90)),
+                 ("hinge_cover_lid_1", part(O("hinge_cover_lid_x2"), LAY_FLAT_Y)),
+                 ("hinge_cover_lid_2", part(O("hinge_cover_lid_x2"), LAY_FLAT_Y))],
+                [("lid_B_main", part(S("lid_B_main"), LAY_TOP, FLIP_X))],
+            ]),
+            # cream: keyboard tray pieces, floor on the bed
+            "plate2_tray.3mf": ("Keyboard tray (A + B)", [
+                [("tray_A_left", part(S("tray_A_left"), ROT_Z90)),
+                 ("hinge_cover_tray_1", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y)),
+                 ("hinge_cover_tray_2", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y))],
+                [("tray_B_main", part(S("tray_B_main")))],
+            ]),
+        }
     p = {
         # test coupons: hinge seat, dovetail key, panel corner screw, push-rod bore, plus a rod and two covers
         "plate0_test_coupons.3mf": ("Test coupons (print first)", [
@@ -190,6 +220,8 @@ def write_3mf(path, placed, title):
 
 
 def main():
+    for f in glob.glob(os.path.join(OUT_3MF, "*.3mf")) + glob.glob(os.path.join(OUT_3MF, "usb_variants", "*.3mf")):
+        os.remove(f)                                    # a plate that is no longer made must not linger
     os.makedirs(os.path.join(OUT_3MF, "usb_variants"), exist_ok=True)
     for fname, (title, rows) in plates().items():
         placed = placed_layout(rows["place"]) if isinstance(rows, dict) else rows_layout(rows)

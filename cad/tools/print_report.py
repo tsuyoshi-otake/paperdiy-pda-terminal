@@ -28,7 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CAD = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(CAD, "src"))
 from params import (OUT_DIR, SPLIT_DIR, Y_BACK, HINGE_AXIS_Y, Z_PART, PD_L, PD_TOP_X, PANEL_Z_BACK, BATT_CX, BATT_CY,  # noqa: E402
-                    BATT_T, USB_PM_Y, USB_PM_Z)
+                    BATT_T, USB_PM_Y, USB_PM_Z, PD_MOUNT, KIT_MASS_G, KIT_CX, KIT_T)
 
 INI = os.path.join(HERE, "a1mini_pla_020.ini")
 PLA = 1.24                      # g/cm3
@@ -42,8 +42,10 @@ KB_CG = (0.0, 0.0, 8.0)         # [A] keyboard centre of mass: middle of the tra
 
 # what the slicer warnings on these parts mean (checked by hand)
 KNOWN = {
-    "Low bed adhesion": "the push-rods are 3-4 mm thin bars and the front clips stand 20 mm tall on a 1.6 mm U: keep "
-                        "Bambu Studio's brim type on Auto (its default) or give them a brim",
+    "Low bed adhesion": ("the snap-tab coupons are 8 mm wide strips standing up to 19 mm: keep Bambu Studio's brim type on "
+                         "Auto (its default) or give them a brim" if PD_MOUNT == "kit" else
+                         "the push-rods are 3-4 mm thin bars and the front clips stand 20 mm tall on a 1.6 mm U: keep "
+                         "Bambu Studio's brim type on Auto (its default) or give them a brim"),
     "Loose extrusions": "the 5 mm counterbore at the panel's screen face is bridged 1.5 mm above the bed "
                         "(same in the real panel, a short bridge that prints fine)",
 }
@@ -54,6 +56,8 @@ THIN_NOTE = {"panel_B_main": "the screen-window bevel ends in a sharp edge (as i
 
 LID_PARTS = [("lid_A_left", 1), ("lid_B_main", 1), ("panel_A_left", 1), ("panel_B_main", 1), ("paperdiy_strap", 1),
              ("key_pushrod_x2", 2), ("power_pushrod", 1), ("hinge_cover_lid_x2", 2), ("top_plate_blank", 1)]
+if PD_MOUNT == "kit":
+    LID_PARTS = [("lid_A_left", 1), ("lid_B_main", 1), ("hinge_cover_lid_x2", 2)]
 BASE_PARTS = [("tray_A_left", 1), ("tray_B_main", 1), ("hinge_cover_tray_x2", 2)]
 
 
@@ -149,12 +153,16 @@ def main():
             if not r["ok"]:
                 lines.append(f"| {os.path.basename(p)} | slicing failed | | {r.get('error', '')[:80]} |")
                 continue
-            if os.path.basename(p)[:6] in ("plate1", "plate2", "plate3"):
+            if os.path.basename(p)[:6] in (("plate1", "plate2") if PD_MOUNT == "kit" else ("plate1", "plate2", "plate3")):
                 total_g += r["grams"]; total_min += minutes(r["time"])
             lines.append(f"| `{os.path.basename(p)}` | {r['time']} | {r['grams']:.0f} g ({r['metres']:.1f} m) | "
                          f"{'; '.join(r['warnings']) if r['warnings'] else 'none'} |")
-        lines += ["", f"Plates 1-3 together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
-                  "of printing (plate 0, the test coupons, and the optional plates 4 and 5, front clip and magnet jigs, come on top).", ""]
+        if PD_MOUNT == "kit":
+            lines += ["", f"Plates 1-2 together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
+                      "of printing (plate 0, the test coupons, comes on top).", ""]
+        else:
+            lines += ["", f"Plates 1-3 together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
+                      "of printing (plate 0, the test coupons, and the optional plates 4 and 5, front clip and magnet jigs, come on top).", ""]
         seen = sorted({w.split(":")[0] for r in report.values() if isinstance(r, dict) for w in r.get("warnings", [])})
         for k in seen:
             lines.append(f"- *{k}*: {KNOWN.get(k, 'not reviewed yet - look at it in the slicer preview')}")
@@ -195,7 +203,12 @@ def main():
     pd_c = np.array([PD_TOP_X - PD_L / 2, 0.0, PANEL_Z_BACK + 2.5])
     bat_c = np.array([BATT_CX, BATT_CY, PANEL_Z_BACK + BATT_T / 2 - 0.75])
     usb_c = np.array([-90.0, USB_PM_Y, USB_PM_Z])
-    for g, c in ((PAPERDIY_G, pd_c), (BATTERY_G, bat_c), (USB_CABLE_G, usb_c), (HINGE_G, np.array([0, HINGE_AXIS_Y, Z_PART]))):
+    bought = ((PAPERDIY_G, pd_c), (BATTERY_G, bat_c), (USB_CABLE_G, usb_c), (HINGE_G, np.array([0, HINGE_AXIS_Y, Z_PART])))
+    if PD_MOUNT == "kit":
+        with open(os.path.join(OUT_DIR, "assembly.json")) as f:
+            kz = json.load(f)["KIT"]["z0"]
+        bought = ((KIT_MASS_G, np.array([KIT_CX, 0.0, kz + KIT_T / 2])), (HINGE_G, np.array([0, HINGE_AXIS_Y, Z_PART])))
+    for g, c in bought:
         lid_m += g; lid_mc += g * c
     lid_cg = lid_mc / lid_m
     base_m, base_mc = 0.0, np.zeros(3)
@@ -221,13 +234,15 @@ def main():
         ly = open_point(lid_cg, deg)[1]
         k = (lid_m * (ly - pivot_y) + base_m * (base_cg[1] - pivot_y)) / (pivot_y - KB_CG[1])
         need = max(need, k)
-        if deg in (90, 100, 110, 120, 130, 140) or deg is touch:
+        if deg in (90, 100, 110, 120, 130, 140, 150) or deg is touch:
             rows.append(f"| {deg:.0f} deg | {ly - pivot_y:+.1f} mm | {max(0.0, k):.0f} g |")
     report.update(lid_g=lid_m, base_g=base_m, lid_cg=lid_cg.tolist(), pivot_y=pivot_y, table_contact_deg=touch, table_limit=table_limit,
                   keyboard_min_g=need)
     lines += ["## Does it tip over backwards?", "",
-              f"Lid side (printed parts{' as sliced' if exe else ' (solid estimate)'} + PaperDIY {PAPERDIY_G} g + battery "
-              f"{BATTERY_G:g} g + USB-C cable {USB_CABLE_G:g} g + half the hinges): **{lid_m:.0f} g**, centre of mass "
+              (f"Lid side (printed parts{' as sliced' if exe else ' (solid estimate)'} + PaperDIY Complete Kit {KIT_MASS_G} g "
+               f"+ half the hinges): **{lid_m:.0f} g**, centre of mass " if PD_MOUNT == "kit" else
+               f"Lid side (printed parts{' as sliced' if exe else ' (solid estimate)'} + PaperDIY {PAPERDIY_G} g + battery "
+               f"{BATTERY_G:g} g + USB-C cable {USB_CABLE_G:g} g + half the hinges): **{lid_m:.0f} g**, centre of mass ") +
               f"{HINGE_AXIS_Y - lid_cg[1]:.1f} mm in front of the hinge axis when closed. Base without the keyboard: **{base_m:.0f} g**. "
               f"The device rests on the back edge of the tray at y = {pivot_y:.1f} mm; the lid reaches the table at "
               f"{touch:.1f} deg and is supported from there on.", "",
