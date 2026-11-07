@@ -235,6 +235,16 @@ def build_strap():
     h = STRAP_THK
     s = box(STRAP_X - STRAP_W / 2, STRAP_X + STRAP_W / 2, -STRAP_POST_Y - 3.2, STRAP_POST_Y + 3.2, STRAP_UNDER, STRAP_TOP)
     s = s + cyl_z(3.25, SO_TOP, STRAP_UNDER + 0.01, SO_X, SO_Y)
+    if STRAP_LEGS:   # arms to two legs just past the PCB's inner end: the PCB cannot turn about the standoff
+        g = STRAP_LEGS
+        x_pcb = X_TOP - PD_PCB_TOP_FROM_TOP                 # PCB inner end, -12.1
+        x0, x1 = x_pcb + g["gap"], x_pcb + g["gap"] + g["t"]
+        z_foot = PANEL_Z_BACK + 1.2 + g["foot_clear"]       # display back (glass 1.2) + clearance
+        for sgn in (1.0, -1.0):
+            ya, yb = sorted((sgn * g["arm_y"][0], sgn * g["arm_y"][1]))
+            yl0, yl1 = sorted((sgn * g["leg_y"][0], sgn * g["leg_y"][1]))
+            s = s + box(STRAP_X + STRAP_W / 2 - 0.5, x1, ya, yb, STRAP_UNDER, STRAP_TOP)
+            s = s + box(x0, x1, yl0, yl1, z_foot, STRAP_UNDER + 0.01)
     for (x, y, zb) in [(STRAP_X, STRAP_POST_Y, STRAP_UNDER), (STRAP_X, -STRAP_POST_Y, STRAP_UNDER), (SO_X, SO_Y, SO_TOP)]:
         s = s - cyl_z(M2_CLEAR / 2, zb - 1, STRAP_TOP + 1, x, y)
         s = s - cyl_z(M2_CLEAR / 2, STRAP_TOP - (CSK_D - M2_CLEAR) / 2, STRAP_TOP + 0.01, x, y, CSK_D / 2)  # 90 deg countersink
@@ -760,6 +770,10 @@ def main():
     pd, bat = paperdiy_envelope(), battery_envelope()
     interference(pd, panel, "PaperDIY envelope vs panel")
     interference(pd, strap, "PaperDIY envelope vs strap")
+    if STRAP_LEGS:
+        x_pcb = X_TOP - PD_PCB_TOP_FROM_TOP
+        log(f"  strap legs stand {STRAP_LEGS['gap']} mm past the PCB's inner end (x = {x_pcb:.1f}), feet "
+            f"{STRAP_LEGS['foot_clear']} mm above the display: the PCB cannot turn about its single standoff")
     interference(pd, lid, "PaperDIY envelope vs lid")
     interference(bat, panel, "battery vs panel")
     interference(bat, lid, "battery vs lid")

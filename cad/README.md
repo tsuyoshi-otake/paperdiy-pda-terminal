@@ -55,7 +55,7 @@ log is written to `out/build_log.txt`.
 | `out/display_panel_paperdiy.stl` | 195.2 × 86.2 × 11.5 | bezel, unsplit (too big for A1 mini: use the split pieces) |
 | `out/display_lid_usbc.stl` | 202.0 × 99.5 × 22.0 | lid, unsplit |
 | `out/keyboard_tray.stl` | 202.0 × 99.5 × 12.8 | tray, unsplit |
-| `out/paperdiy_strap.stl` | 8.0 × 78.4 × 2.5 | clamps the PaperDIY via its M2 standoff |
+| `out/paperdiy_strap.stl` | 16.7 × 78.4 × 6.5 | clamps the PaperDIY via its M2 standoff; two legs stop the PCB turning |
 | `out/key_pushrod_x2.stl` | 5.5 × 15.9 × 3.7 | print **2** (KEY1/KEY2) |
 | `out/power_pushrod.stl` | 41.5 × 5.5 × 3.6 | power button |
 | `out/top_plate_blank.stl` | 56.0 × 10.9 × 1.5 | optional plate for the lid-top recess (accent colour) |
@@ -86,6 +86,9 @@ All printed parts ≤ 173 mm (limit 175). Every STL above was re-loaded after wr
   M2, centred, 77.9 mm from the non-USB end). The strap is 2.5 mm thick under the countersunk head, so **ISO 7046 M2×4 gives
   1.5 mm of thread in the standoff, and M2×5 gives 2.5 mm. Both are under the 3 mm limit. Do not use M2×6 or longer.**
   `build.py` asserts this. Elsewhere the strap's underside clears the ESP32-S3 module (5.45 mm tall) by 0.45 mm.
+  The Assembly Kit's PCB only lies on the back of the display, so one screw would let it turn about the standoff: two arms
+  off the strap end in legs 0.2 mm past the PCB's inner end (x = −12.1, at y ±22…29), with their feet 0.2 mm above the
+  display's back (`STRAP_LEGS`). They clear the module and leave the middle free for the battery lead.
 * **Buttons:** two D-section push-rods pass through the restored front wall at the real KEY positions
   (x −17.1 / −29.1, z 20.95). A 41.5 mm rod passes through the left end wall to the power button (y +23.4, z 21.27).
   Each rod has a collar inside the wall that stops it falling out, an open-top U-cradle on the panel, and a 0.3 mm rest gap
@@ -234,8 +237,8 @@ Standard + PLA profile, 3 walls, 15 % gyroid; Bambu Studio's own numbers will di
 | 0 test coupons | 0 h 28 min | 12 g |
 | 1 lid | 2 h 10 min | 81 g |
 | 2 tray | 1 h 31 min | 60 g |
-| 3 panel, strap, rods, top plate | 1 h 00 min | 34 g |
-| 1–3 together | 4 h 39 min | 175 g |
+| 3 panel, strap, rods, top plate | 1 h 01 min | 34 g |
+| 1–3 together | 4 h 41 min | 176 g |
 | 4 front clips (optional) | 0 h 10 min | 4 g |
 | 5 magnet drilling jigs (optional) | 0 h 17 min | 8 g |
 
@@ -315,15 +318,15 @@ If something is tight or loose, change `DOVETAIL["clr"]`, `HINGE_CLR`, `HINGE_BA
 
 ## Does it tip over when open?
 `tools/print_report.py` adds the sliced part masses, the PaperDIY (26.4 g, M5Stack spec), a 38 g cell and a 10 g cable
-(both assumed) and finds the lid side at **≈ 195 g** with its centre of mass 53 mm in front of the hinge axis when closed;
+(both assumed) and finds the lid side at **≈ 196 g** with its centre of mass 53 mm in front of the hinge axis when closed;
 the printed base is ≈ 64 g. The device rests on the back edge of the tray (y = 51.0). Opened past 90° the lid's centre of
 mass moves behind that edge, so the keyboard has to supply the counterweight:
 
 | Opening | 100° | 110° | 120° | 130° | 140° | 150° (lid touches the table) |
 |---|---|---|---|---|---|---|
-| Keyboard needed | 29 g | 61 g | 90 g | 116 g | 136 g | 152 g |
+| Keyboard needed | 29 g | 61 g | 91 g | 116 g | 137 g | 153 g |
 
-**Weigh the CACOE keyboard.** At 152 g or more it never tips; lighter keyboards are fine up to the angle in the table.
+**Weigh the CACOE keyboard.** At 153 g or more it never tips; lighter keyboards are fine up to the angle in the table.
 
 ## Verification actually performed
 STL re-load watertight / single body / bbox ≤ 175 mm for every part. Zero-volume interference (closed assembly) between
@@ -450,6 +453,7 @@ published drawing and structure files.
 | `BACK_STYLE` | `"housings"` | design choice | 9.5 mm only behind the hinges (`"solid"`: whole back wall, v0.3) |
 | `HOUSING_HALF` / `HOUSING_GUSSET` | `13.5` / `5.5` | design choice | housing 27 mm wide; tapered rib 5.5 mm long each side |
 | `LID_RIBS` | `t 1.6, depth 7.0, drop 7.5`, 7 + 7 x positions | design choice | ribs between the long walls and the lid ceiling |
+| `STRAP_LEGS` | `gap 0.2, t 2.0, legs y ±22…29, arms y ±20…29.5` | design choice | two legs just past the PCB's inner end (x = −12.1) stop the loose Assembly Kit PCB turning about its single standoff |
 | `CLIP_X` / `CLIP_W` / `CLIP_T` / `CLIP_LIP` | `20.0` / `20.0` / `1.6` / `12.0` | design choice | front clip: profile taken at x = 20; 20 mm wide, 1.6 mm thick, lips 12 mm deep |
 | `CLIP_CLR` / `CLIP_BUMP` / `CLIP_BUMP_R` | `0.1` / `0.2` / `0.8` | design choice | clip clearance; ridges 0.2 mm into the lid top and tray bottom (spring preload) |
 | `MAGNETS` | `d 2.0, l 3.0, depth 4.0, y -44.8, from_end (17, 57)` | design choice | 4 pairs of 2 x 3 mm magnets in the front walls' land, 17 and 57 mm from each end face |

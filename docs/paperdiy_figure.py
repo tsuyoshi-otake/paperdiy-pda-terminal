@@ -106,6 +106,11 @@ def back_view(ax, panel, strap):
     ax.add_patch(Rectangle((x0, -hw), pcb_x1 - x0, 2 * hw, fc=PD_PCB, ec=PD_E, lw=1.0, alpha=0.9, zorder=4))
     for p in cut(strap, [0, 0, 24.9], [0, 0, 1], XY):
         add_polygon(ax, p, STRAP_C, STRAP_E, lw=1.2, z=6)
+    for p in cut(strap, [0, 0, 21.0], [0, 0, 1], XY):                  # the two legs past the PCB's inner end
+        add_polygon(ax, p, "#b5651d", STRAP_E, lw=1.2, z=7)
+    if B.STRAP_LEGS:
+        x_leg = B.X_TOP - B.PD_PCB_TOP_FROM_TOP + B.STRAP_LEGS["gap"] + B.STRAP_LEGS["t"]
+        note(ax, (x_leg, 25.5), "脚：基板の端に当てて、\n基板が回らないようにする", (8.0, 37.0))
     for y in (B.STRAP_POST_Y, -B.STRAP_POST_Y):
         screw_top(ax, B.STRAP_X, y)
     screw_top(ax, B.SO_X, B.SO_Y)

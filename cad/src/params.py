@@ -81,6 +81,11 @@ STRAP_THK = 2.0
 STRAP_PAD_DROP = 0.5          # pad under the screw reaches the standoff top; elsewhere 0.5 higher (module is 5.45 tall)
 STRAP_POST_Y = 36.0
 STRAP_POST_SIZE = 6.4
+# The Assembly Kit's PCB is loose on the back of the display and the strap holds it at its single standoff only, so it
+# could turn about that screw. Two arms off the strap end in legs that stand just past the PCB's inner end (x = -12.1),
+# one each side of the centre line, so the PCB cannot turn; their feet stop 0.2 mm above the display's back. They keep
+# clear of the ESP32 module (ends at x = -14.1) and leave the middle free for the battery lead.
+STRAP_LEGS = dict(gap=0.2, t=2.0, leg_y=(22.0, 29.0), arm_y=(20.0, 29.5), foot_clear=0.2)
 STRAP_SCREW_LEN = 4.0         # ISO 7046 M2x4 countersunk -> 1.5 mm into the standoff (M2x5 -> 2.5 mm, still < 3)
 CSK_D = 4.2                   # countersink for M2 ISO 7046 (head 3.8)
 M2_CLEAR = 2.4

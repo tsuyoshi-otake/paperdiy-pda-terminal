@@ -8,7 +8,7 @@
 == building
 == exports (bounding boxes are axis-aligned in the original assembly frame)
   out/display_panel_paperdiy.stl: bbox 195.2 x 86.2 x 11.5 mm, watertight=True, winding_ok=True, bodies=1, vol=32389 mm3
-  out/paperdiy_strap.stl: bbox 8.0 x 78.4 x 2.5 mm, watertight=True, winding_ok=True, bodies=1, vol=1230 mm3
+  out/paperdiy_strap.stl: bbox 16.7 x 78.4 x 6.5 mm, watertight=True, winding_ok=True, bodies=1, vol=1687 mm3
   out/key_pushrod_x2.stl: bbox 5.5 x 15.9 x 3.7 mm, watertight=True, winding_ok=True, bodies=1, vol=109 mm3
   out/power_pushrod.stl: bbox 41.5 x 5.5 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=264 mm3
   out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=90995 mm3
@@ -54,6 +54,7 @@
 == interference checks (assembled, closed lid)
   interference PaperDIY envelope vs panel: -0.000 mm3 OK
   interference PaperDIY envelope vs strap: 0.000 mm3 OK
+  strap legs stand 0.2 mm past the PCB's inner end (x = -12.1), feet 0.2 mm above the display: the PCB cannot turn about its single standoff
   interference PaperDIY envelope vs lid: 0.000 mm3 OK
   interference battery vs panel: 0.000 mm3 OK
   interference battery vs lid: 0.000 mm3 OK
