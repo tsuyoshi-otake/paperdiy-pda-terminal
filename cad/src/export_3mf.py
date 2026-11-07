@@ -128,6 +128,10 @@ def plates():
     p["plate4_front_clip.3mf"] = ("Front clip (optional, keeps the lid shut)", [
         [("front_clip_1", part(O("front_clip"), STAND_X)), ("front_clip_2", part(O("front_clip"), STAND_X))],
     ])
+    # any colour: drilling jigs for the retrofit magnetic catch (top face on the bed)
+    p["plate5_magnet_jigs.3mf"] = ("Drilling jigs for the magnetic catch (optional)", [
+        [("magnet_jig_L", part(O("magnet_jig_L"), FLIP_X)), ("magnet_jig_R", part(O("magnet_jig_R"), FLIP_X))],
+    ])
     # lid A for other USB-C panel-mount cables (only the small left lid piece depends on the cable)
     for s in USB_PM_VARIANTS:
         n = usb_name(s)

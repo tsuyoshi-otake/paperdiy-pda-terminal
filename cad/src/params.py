@@ -135,6 +135,14 @@ CLIP_LIP = 12.0               # the lips reach this far back from the front face
 CLIP_CLR = 0.1
 CLIP_BUMP = 0.2               # interference of each ridge with the case (spring preload)
 CLIP_BUMP_R = 0.8
+# Magnetic catch (retrofit; nothing printed changes): 4 pairs of 2 x 3 mm magnets set into the front walls where lid and
+# tray meet (the walls touch on a ~1 mm land at z = 8.0, y -45.5..-44.5). Holes are drilled with printed corner jigs that
+# straddle the front wall and stop against the end face, so lid and tray holes line up. MAGNET_HOLES = True prints the
+# holes into lid and tray instead (for a fresh print).
+MAGNETS = dict(d=2.0, l=3.0, depth=4.0, y=-44.8, from_end=(17.0, 57.0), land_z=8.05)
+MAG_JIG = dict(clr=0.15, guide_d=2.15, h=8.0, finger=3.0, wall=1.6, fence_t=2.0, fence_y=(-38.0, -30.0),
+               straight_x=-94.5, corner_z=9.4)
+MAGNET_HOLES = False
 KB_PORT_BAY = True            # only used with BACK_STYLE = "solid" (the 3 mm wall of "housings" needs no bay)
 KB_PORT_BAY_X = (70.5, 91.5)  # 2.5 mm wider than the opening on each side (overmold + fingers)
 KB_PORT_BAY_Z = (4.0, 15.5)   # floor 1 mm above the bottom chamfer, 2.65 mm up into the lid wall

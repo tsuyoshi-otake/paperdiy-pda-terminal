@@ -41,6 +41,13 @@
   "grams": 4.17,
   "metres": 1.3973900000000001
  },
+ "plate5_magnet_jigs.3mf": {
+  "warnings": [],
+  "ok": true,
+  "time": "16m 53s",
+  "grams": 8.35,
+  "metres": 2.79995
+ },
  "total_g": 175.01999999999998,
  "total_min": 279,
  "lid_g": 194.95999999999998,

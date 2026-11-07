@@ -151,7 +151,7 @@ def main():
             lines.append(f"| `{os.path.basename(p)}` | {r['time']} | {r['grams']:.0f} g ({r['metres']:.1f} m) | "
                          f"{'; '.join(r['warnings']) if r['warnings'] else 'none'} |")
         lines += ["", f"Plates 1-3 together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
-                  "of printing (plate 0, the test coupons, and plate 4, the optional front clip, come on top).", ""]
+                  "of printing (plate 0, the test coupons, and the optional plates 4 and 5, front clip and magnet jigs, come on top).", ""]
         seen = sorted({w.split(":")[0] for r in report.values() if isinstance(r, dict) for w in r.get("warnings", [])})
         for k in seen:
             lines.append(f"- *{k}*: {KNOWN.get(k, 'not reviewed yet - look at it in the slicer preview')}")

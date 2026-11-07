@@ -15,6 +15,8 @@
   out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=69792 mm3
   out/top_plate_blank.stl: bbox 56.0 x 10.9 x 1.5 mm, watertight=True, winding_ok=True, bodies=1, vol=909 mm3
   out/front_clip.stl: bbox 20.0 x 13.7 x 33.4 mm, watertight=True, winding_ok=True, bodies=1, vol=1717 mm3
+  out/magnet_jig_L.stl: bbox 67.2 x 18.2 x 12.0 mm, watertight=True, winding_ok=True, bodies=1, vol=4669 mm3
+  out/magnet_jig_R.stl: bbox 67.2 x 18.2 x 12.0 mm, watertight=True, winding_ok=True, bodies=1, vol=4669 mm3
   out/hinge_cover_lid_x2.stl: bbox 23.5 x 1.0 x 10.3 mm, watertight=True, winding_ok=True, bodies=1, vol=242 mm3
   out/hinge_cover_tray_x2.stl: bbox 23.5 x 1.0 x 8.9 mm, watertight=True, winding_ok=True, bodies=1, vol=209 mm3
 == split pieces for A1 mini (limit 175 mm)
@@ -95,6 +97,14 @@
   interference front clip at x=80 vs key rod 0: 0.000 mm3 OK
   interference front clip at x=80 vs key rod 1: 0.000 mm3 OK
   ridges: 5.75 mm3 of intended overlap (0.2 mm into the lid top and the tray bottom, the clip's spring preload)
+== magnetic catch (retrofit): drilling jigs and the 2 x 3 mm magnet holes in the front walls
+  interference jig L on the tray: 0.036 mm3 OK
+  interference jig R on the lid (upside down): 0.000 mm3 OK
+  interference jig R on the tray: 0.036 mm3 OK
+  interference jig L on the lid (upside down): 0.000 mm3 OK
+  tray: 4 holes at x = -84, -44, +84, +44, y = -44.8, 4.0 mm deep: 48.6 of 50.3 mm3 in material (the rest is the 0.5 mm seam chamfer the rim cuts through)
+  lid: 4 holes at x = -84, -44, +84, +44, y = -44.8, 4.0 mm deep: 50.2 of 50.3 mm3 in material (the rest is the 0.5 mm seam chamfer the rim cuts through)
+  skin beside each hole: 0.70 mm to the front face, 0.30 mm to the inner face (hidden); lid and tray holes are coaxial
 == hinge motion (lid + panel rotated about the real axis y=54.15, z=12.85; tray fixed)
   interference lid hinge cover 0 vs lid: 0.000 mm3 OK
   interference lid hinge cover 0 vs tray: 0.000 mm3 OK

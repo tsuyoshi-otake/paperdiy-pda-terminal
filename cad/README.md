@@ -60,6 +60,7 @@ log is written to `out/build_log.txt`.
 | `out/power_pushrod.stl` | 41.5 × 5.5 × 3.6 | power button |
 | `out/top_plate_blank.stl` | 56.0 × 10.9 × 1.5 | optional plate for the lid-top recess (accent colour) |
 | `out/front_clip.stl` | 20.0 × 13.7 × 33.4 | optional push-on clip for the front edge: keeps the closed lid shut |
+| `out/magnet_jig_L.stl` / `_R.stl` | 67.2 × 18.3 × 12.0 | optional drilling jigs for the retrofit magnetic catch |
 | `out/hinge_cover_lid_x2.stl` / `hinge_cover_tray_x2.stl` | 23.5 × 1.0 × 10.3 / 23.5 × 1.0 × 8.9 | print 2 each (lid / tray colour) |
 | `out/split/lid_A_left.stl` / `lid_B_main.stl` | 35.0 × 93.0 × 22.0 / 173.0 × 99.5 × 22.0 | |
 | `out/split/tray_A_left.stl` / `tray_B_main.stl` | 35.0 × 93.0 × 12.8 / 173.0 × 99.5 × 12.8 | |
@@ -174,6 +175,18 @@ the key push-rods) and logs the ridges' intended overlap. Keep it off the two ke
 1 mm proud of the front face. It prints standing on its U profile (layers across the width), so the bends flex along the
 extrusion lines rather than across layers.
 
+### Magnetic catch (optional retrofit)
+Inside the closed case there is no room for a catch (the panel fills the lid, the keyboard fills the tray), but the front
+walls of lid and tray meet on a ~1 mm flat land at z = 8.0 (y −45.5 … −44.5, chamfered either side). Four pairs of
+2 × 3 mm magnets go into 4 mm deep, Ø2 holes in that land at x = ±44 and ±84 (17 and 57 mm from each end face), centred
+at y = −44.8, which leaves 0.7 mm to the front face and 0.3 mm to the hidden inner face; the rim just touches the seam's
+chamfer. The holes are drilled with printed jigs (`magnet_jig_L/R`) that straddle the front wall with two fingers and
+stop against the end face, so lid and tray holes are coaxial; on the upside-down lid the other hand fits the same corner.
+`build.py` checks both jigs on both parts (0 mm³) and logs how much of each hole lies in material. Magnets are set flush
+with epoxy by letting them jump to a steel ruler laid on the land. Estimated holding force about 2 N per pair in contact,
+≈ 8 N at the front edge for four pairs (about 0.8 N·m with the 99 mm lever, five times the hinges' 0.16 N·m).
+`MAGNET_HOLES = True` prints the holes into lid and tray instead.
+
 ## Changes vs. the original (for the licence "indicate changes")
 1. **Display Panel:** Palma window, Palma button slots and both vent grilles filled. New PaperDIY window, locating lip, strap
    posts, push-rod cradles, battery bay, USB-plug relief. Outline and the 4 corner screw holes are untouched (original mesh kept).
@@ -191,7 +204,7 @@ extrusion lines rather than across layers.
    (`KB_CUTS_ENABLED = False`). The original right-wall (y 26.3–36.7) and
    rear-wall (x 72.9–89.1) openings are kept; they are probably the CACOE port/switch cut-outs of the original design (not
    verified). If the real keyboard's port/switch are elsewhere, set `KB_CUTS_ENABLED = True`, measure `KB_*` and rebuild.
-4. New parts: strap, 3 push-rods, 4 hinge covers, optional top plate, optional front clip, test coupons. Split versions of lid / tray / panel,
+4. New parts: strap, 3 push-rods, 4 hinge covers, optional top plate, optional front clip and magnet drilling jigs, test coupons. Split versions of lid / tray / panel,
    lid-A variants for other USB-C cables. The original knobs and label are not used.
 
 ## Splitting for the A1 mini
@@ -208,7 +221,8 @@ extrusion lines rather than across layers.
 ## Print-ready 3MF (A1 mini)
 `3mf/plate0_test_coupons.3mf` (print first), `plate1_lid.3mf` (lid A+B, 2 lid hinge covers), `plate2_tray.3mf` (tray A+B,
 2 tray hinge covers), `plate3_panel_parts.3mf` (panel A+B, strap, 3 push-rods, optional top plate) and the optional
-`plate4_front_clip.3mf` (two front clips, one is a spare): every part already
+`plate4_front_clip.3mf` (two front clips, one is a spare) and `plate5_magnet_jigs.3mf` (drilling jigs L and R for the
+magnetic catch): every part already
 in print orientation and laid out on a 180 x 180 mm plate, grouped by colour. `3mf/usb_variants/` holds lid A alone for
 the other USB-C hole spacings. No supports are needed. Regenerate with `python3 src/export_3mf.py` after `src/build.py`.
 
@@ -223,6 +237,7 @@ Standard + PLA profile, 3 walls, 15 % gyroid; Bambu Studio's own numbers will di
 | 3 panel, strap, rods, top plate | 1 h 00 min | 34 g |
 | 1–3 together | 4 h 39 min | 175 g |
 | 4 front clips (optional) | 0 h 10 min | 4 g |
+| 5 magnet drilling jigs (optional) | 0 h 17 min | 8 g |
 
 With 2 wall loops (Bambu Studio's default) instead of 3, plates 1–3 come to ≈ 163 g and 4 h 32 min: the 3 mm walls then
 get a sparse core, and the screw pilots get 2 loops as well.
@@ -437,6 +452,9 @@ published drawing and structure files.
 | `LID_RIBS` | `t 1.6, depth 7.0, drop 7.5`, 7 + 7 x positions | design choice | ribs between the long walls and the lid ceiling |
 | `CLIP_X` / `CLIP_W` / `CLIP_T` / `CLIP_LIP` | `20.0` / `20.0` / `1.6` / `12.0` | design choice | front clip: profile taken at x = 20; 20 mm wide, 1.6 mm thick, lips 12 mm deep |
 | `CLIP_CLR` / `CLIP_BUMP` / `CLIP_BUMP_R` | `0.1` / `0.2` / `0.8` | design choice | clip clearance; ridges 0.2 mm into the lid top and tray bottom (spring preload) |
+| `MAGNETS` | `d 2.0, l 3.0, depth 4.0, y -44.8, from_end (17, 57)` | design choice | 4 pairs of 2 x 3 mm magnets in the front walls' land, 17 and 57 mm from each end face |
+| `MAG_JIG` | `clr 0.15, guide_d 2.15, h 8.0, finger 3.0` | design choice | drilling jig: straddles the front wall, fence on the end face, 8 mm guide bores |
+| `MAGNET_HOLES` | `False` | design choice | `True` prints the magnet holes into lid and tray (no jig needed) |
 | `Z_PART` | `12.85` | measured | [M] parting line at the back |
 | `BACK_ZONE_X` | `62.0` | design choice | old hinge removed and back wall rebuilt for /x/ <= 62 |
 | `CORNER_C` | `(95.0, 40.5)` | measured | [M] centre of the r 6 back-corner arcs |

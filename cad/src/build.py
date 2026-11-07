@@ -241,6 +241,42 @@ def build_strap():
     return s
 
 
+def magnet_hole_xs():
+    return [s * (LID_INNER_X + 3.0 - d) for s in (-1.0, 1.0) for d in MAGNETS["from_end"]]
+
+
+def magnet_holes(side):
+    """Drill holes for the magnetic catch: side "tray" (down from the land) or "lid" (up from it)."""
+    m, z = MAGNETS, MAGNETS["land_z"]
+    z0, z1 = (z - m["depth"], z + 1.0) if side == "tray" else (z - 1.0, z + m["depth"])
+    return [cyl_z(m["d"] / 2, z0, z1, x, m["y"]) for x in magnet_hole_xs()]
+
+
+def build_magnet_jig():
+    """Left-hand drilling jig for the magnetic catch, in the tray's frame at its front-left corner (x = -101). It sits on
+    the front wall's land, straddles the wall with two fingers and stops against the end face with a fence; the guide bores
+    are MAGNETS["from_end"] from that face. The mirror image (x -> -x) is the right-hand jig; on the lid (upside down) the
+    other hand fits the same corner."""
+    j, m = MAG_JIG, MAGNETS
+    zl, c, w = m["land_z"], j["clr"], j["wall"]
+    xe = -(LID_INNER_X + 3.0)                             # end face (x = -101)
+    y_out, y_in = -(LID_INNER_Y + 3.0), -LID_INNER_Y      # front wall faces (y = -46.5, -43.5)
+    x1 = xe + max(m["from_end"]) + 8.0
+    yo, yi = y_out - c - w, y_in + c + w                  # outer edges of the fingers
+    top = zl + j["h"]
+    parts = [box(j["straight_x"], x1, yo, yi, zl, top),                                          # bar on the land
+             box(xe - c - j["fence_t"], j["straight_x"], yo, j["fence_y"][1], j["corner_z"], top),  # over the corner
+             box(xe - c - j["fence_t"], xe - c, *j["fence_y"], zl - 4.0, j["corner_z"]),           # fence on the end face
+             box(j["straight_x"], x1, yo, y_out - c, zl - j["finger"], zl),                        # outer finger
+             box(j["straight_x"], x1, y_in + c, yi, zl - j["finger"], zl)]                         # inner finger
+    jig = union(parts)
+    for d in m["from_end"]:
+        x = xe + d
+        jig = jig - cyl_z(j["guide_d"] / 2, zl - j["finger"] - 1.0, top + 1.0, x, m["y"])
+        jig = jig - M.cylinder(1.2, j["guide_d"] / 2, 2.2, SEG).translate([x, m["y"], top - 1.2])  # lead-in
+    return jig
+
+
 def build_front_clip(lid, tray, bumps=True):
     """Accessory: push-on U clip for the front edge of the closed case (CLIP_* in params). The profile is the outline of
     the closed lid + tray at x = CLIP_X, so the clip hugs the front face and the 3 mm chamfers with CLIP_CLR."""
@@ -578,6 +614,8 @@ def build_lid(with_pads, usb_spacing=None):
             cuts.append(cyl_x(INSERT_M2_D / 2, X - p["ins_depth"], X + 0.01, yi, p["ins_z"]))          # insert in piece A
             cuts.append(cyl_x(M2_CLEAR / 2, X - 0.01, X + p["half_len"] + 1, yi, p["ins_z"]))          # clearance in B
             cuts.append(cyl_x(p["cb_d"] / 2, X + p["half_len"] - p["cb_depth"], X + p["half_len"] + 1, yi, p["ins_z"]))
+    if MAGNET_HOLES:
+        cuts += magnet_holes("lid")
     return L - union(cuts)
 
 
@@ -590,7 +628,7 @@ def build_tray():
     # square the bottom-back chamfer under each tray leaf so the whole leaf sits in a pocket
     for c in (hinge_centres() if HINGE_MOUNT == "face" else ()):
         T = T + box(c - HINGE_LEN / 2 - HINGE_CLR, c + HINGE_LEN / 2 + HINGE_CLR, LID_INNER_Y + 0.5, Y_BACK, 0.0, 3.2)
-    T = T - union(hinge_pocket_cuts() + hinge_pilots(False) + kb_port_bay())
+    T = T - union(hinge_pocket_cuts() + hinge_pilots(False) + kb_port_bay() + (magnet_holes("tray") if MAGNET_HOLES else []))
     if not KB_CUTS_ENABLED:
         return T
     sx = -1 if KB_PORT_WALL == "left" else 1
@@ -675,6 +713,10 @@ def main():
     write_assembly_json()
     clip = build_front_clip(lid, tray)
     out["front_clip"] = export(clip, f"{OUT_DIR}/front_clip.stl")
+    jig_l = build_magnet_jig()
+    jig_r = jig_l.mirror([1, 0, 0])
+    out["magnet_jig_L"] = export(jig_l, f"{OUT_DIR}/magnet_jig_L.stl")
+    out["magnet_jig_R"] = export(jig_r, f"{OUT_DIR}/magnet_jig_R.stl")
     if lid_cov:
         out["hinge_cover_lid"] = export(lid_cov[0], f"{OUT_DIR}/hinge_cover_lid_x2.stl")
         out["hinge_cover_tray"] = export(tray_cov[0], f"{OUT_DIR}/hinge_cover_tray_x2.stl")
@@ -739,6 +781,23 @@ def main():
             interference(c, r, f"front clip at x={xc:.0f} vs key rod {i}")
     log(f"  ridges: {(clip ^ lid).volume() + (clip ^ tray).volume():.2f} mm3 of intended overlap "
         f"({CLIP_BUMP} mm into the lid top and the tray bottom, the clip's spring preload)")
+    log("== magnetic catch (retrofit): drilling jigs and the 2 x 3 mm magnet holes in the front walls")
+    zt, zl = MAGNETS["land_z"], MAGNETS["land_z"] - 0.05      # land: tray top up to 8.05, lid bottom down to 8.00
+    for nm, j in (("L", jig_l), ("R", jig_r)):
+        interference(j.translate([0, 0, 0.01]), tray, f"jig {nm} on the tray")
+        lid_j = j.translate([0, 0, -zt]).mirror([0, 0, 1]).translate([0, 0, zl - 0.01])
+        interference(lid_j, lid, f"jig {'R' if nm == 'L' else 'L'} on the lid (upside down)")
+    xs = magnet_hole_xs()
+    for side, part in (("tray", tray), ("lid", lid)):
+        holes = magnet_holes(side)
+        inside = sum((h ^ part).volume() for h in holes)
+        want = len(holes) * np.pi * (MAGNETS["d"] / 2) ** 2 * MAGNETS["depth"]
+        log(f"  {side}: {len(holes)} holes at x = {', '.join(f'{x:+.0f}' for x in xs)}, y = {MAGNETS['y']}, "
+            f"{MAGNETS['depth']} mm deep: {inside:.1f} of {want:.1f} mm3 in material "
+            f"(the rest is the 0.5 mm seam chamfer the rim cuts through)")
+    y_out, y_in = -(LID_INNER_Y + 3.0), -LID_INNER_Y
+    log(f"  skin beside each hole: {MAGNETS['y'] - MAGNETS['d'] / 2 - y_out:.2f} mm to the front face, "
+        f"{y_in - MAGNETS['y'] - MAGNETS['d'] / 2:.2f} mm to the inner face (hidden); lid and tray holes are coaxial")
     log(f"== hinge motion (lid + panel rotated about the real axis y={HINGE_AXIS_Y:.2f}, z={Z_PART}; tray fixed)")
     lidset = lid + panel
     traset = tray

@@ -56,6 +56,14 @@
    1716.82
   ]
  },
+ "3mf/plate5_magnet_jigs.3mf": {
+  "objects": 2,
+  "sha256": "8c6d25a0078657415ffcf0ac000413e7d90bf51b0de063b71423e45742323669",
+  "volumes": [
+   4668.8,
+   4668.8
+  ]
+ },
  "3mf/usb_variants/lid_A_left_usb16mm.3mf": {
   "objects": 1,
   "sha256": "479aea7c97c30fed7acb4e2ec693f51ce43cf405e8bb85c301b09a1fe552113d",
@@ -355,6 +363,40 @@
   "faces": 2298,
   "sha256": "b058dfac8b8cdfa08239f54ba820010d9017a9e70c8df2539ac7cc1c7995552d",
   "volume": 69792.02
+ },
+ "out/magnet_jig_L.stl": {
+  "bbox": [
+   [
+    -103.15,
+    -48.25,
+    4.05
+   ],
+   [
+    -36.0,
+    -30.0,
+    16.05
+   ]
+  ],
+  "faces": 650,
+  "sha256": "4b146c7d16f1e8a0238723f00252785d845dad0c88ee37d09ddf9a62c28b8409",
+  "volume": 4668.8
+ },
+ "out/magnet_jig_R.stl": {
+  "bbox": [
+   [
+    36.0,
+    -48.25,
+    4.05
+   ],
+   [
+    103.15,
+    -30.0,
+    16.05
+   ]
+  ],
+  "faces": 650,
+  "sha256": "e046b745b1edb3aaa50666039bcfc61da58741f39a6ba49f67c87a64c01b6327",
+  "volume": 4668.8
  },
  "out/paperdiy_strap.stl": {
   "bbox": [

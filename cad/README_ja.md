@@ -24,6 +24,7 @@ Un Kyu Lee さんの [phone-enclosure](https://github.com/unkyulee/phone-enclosu
 | `3mf/plate2_tray.3mf` | トレイ A・B、トレイ側のヒンジカバー 2 枚 | クリーム | 1 時間 30 分・60 g |
 | `3mf/plate3_panel_parts.3mf` | 画面パネル A・B、ストラップ、押し棒 3 本、天面プレート | クリーム | 1 時間・34 g |
 | `3mf/plate4_front_clip.3mf` | 留めクリップ 2 個（任意。閉じた蓋が開かないように手前の縁に差す） | 何色でも | 10 分・4 g |
+| `3mf/plate5_magnet_jigs.3mf` | 留め磁石の穴あけジグ L・R（任意。前の壁に φ2×3 mm の磁石を 4 組埋める） | 何色でも | 17 分・8 g |
 | `3mf/usb_variants/*.3mf` | USB-C のねじ間隔が 28 mm 以外のときの蓋 A | 紺 | 約 30 分 |
 
 部品は印刷する向きにそろえて 180 × 180 mm のプレートに並べてあります。Bambu Studio で開けば、そのままスライスできます。時間と重さは PrusaSlicer に A1 mini に近い設定を入れて出した目安です（`out/print_report.md`）。個別の STL は `out/split/`（分割した部品）、`out/`（小物）、`out/coupons/`（試し刷り）にあります。`out/` 直下の `display_lid_usbc.stl`、`display_panel_paperdiy.stl`、`keyboard_tray.stl` は分割前の確認用です。

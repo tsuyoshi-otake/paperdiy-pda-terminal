@@ -46,6 +46,7 @@ render:
 	$(PYTHON) docs/coupons_figure.py docs/images/plate0_coupons.png
 	$(PYTHON) docs/paperdiy_figure.py docs/images/paperdiy_mount.png
 	$(PYTHON) docs/clip_figure.py docs/images/front_clip.png
+	$(PYTHON) docs/magnet_figure.py docs/images/magnet_catch.png
 
 test:
 	$(MAKE) -C firmware/test/host test PYTHON=$(PYTHON)
