@@ -56,9 +56,10 @@ firmware:
 	$(MAKE) firmware-check
 
 firmware-check:
-	@cd firmware && sha256sum build/paperdiy-term-merged.bin && \
-	if cmp -s build/paperdiy-term-merged.bin prebuilt/paperdiy-term-merged.bin; then \
-	  echo "identical to prebuilt/paperdiy-term-merged.bin (reproducible build)"; \
+	@cd firmware && sha256sum build/paperdiy-term-merged.bin build/paperdiy_term.bin && \
+	if cmp -s build/paperdiy-term-merged.bin prebuilt/paperdiy-term-merged.bin && \
+	   cmp -s build/paperdiy_term.bin prebuilt/paperdiy-term-app.bin; then \
+	  echo "identical to prebuilt/ (reproducible build)"; \
 	else echo "differs from prebuilt/ (other ESP-IDF version, or changed sources)"; exit 1; fi
 
 firmware-docker:

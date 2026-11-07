@@ -6,6 +6,7 @@
 #include <cstring>
 #include <mutex>
 
+#include "esp_heap_caps.h"
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
@@ -248,6 +249,10 @@ void App::run()
     else if (!settings::wifiList().empty()) wifi::autoConnectAsync();
     if (!blekbd::start(kick_status)) say("Bluetooth の初期化に失敗しました: " + blekbd::lastError());
     sdcard::mount();
+    ESP_LOGI("app", "heap after start: internal %u free (largest %u), psram %u free",
+             static_cast<unsigned>(heap_caps_get_free_size(MALLOC_CAP_INTERNAL)),
+             static_cast<unsigned>(heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL)),
+             static_cast<unsigned>(heap_caps_get_free_size(MALLOC_CAP_SPIRAM)));
 
     bootWaitForKeyboard();
     mainMenu();

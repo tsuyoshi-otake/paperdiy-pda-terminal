@@ -51,9 +51,12 @@ jobs:
           ./fetch_deps.sh
           idf.py build
           idf.py merge-bin -o paperdiy-term-merged.bin
-          sha256sum build/paperdiy-term-merged.bin prebuilt/paperdiy-term-merged.bin
+          sha256sum build/paperdiy-term-merged.bin prebuilt/paperdiy-term-merged.bin build/paperdiy_term.bin prebuilt/paperdiy-term-app.bin
           cmp build/paperdiy-term-merged.bin prebuilt/paperdiy-term-merged.bin
+          cmp build/paperdiy_term.bin prebuilt/paperdiy-term-app.bin
       - uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: firmware/build/paperdiy-term-merged.bin
+          path: |
+            firmware/build/paperdiy-term-merged.bin
+            firmware/build/paperdiy_term.bin

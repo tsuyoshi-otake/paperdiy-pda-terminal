@@ -22,13 +22,21 @@ M5Stack PaperDIY（ESP32-S3、4.7 型 e-paper）を、BLE キーボードで操�
 
 ### ビルド済みのファームを書く
 
-`prebuilt/paperdiy-term-merged.bin` を 0x0 番地に書き込みます（中身とビルド条件は [`prebuilt/BUILDINFO.md`](prebuilt/BUILDINFO.md)、ファイルが壊れていないかは `sha256sum -c prebuilt/SHA256SUMS` で確かめられます）。PaperDIY を USB-C で PC につなぎ、この `firmware/` フォルダで
+中身とビルド条件は [`prebuilt/BUILDINFO.md`](prebuilt/BUILDINFO.md)、ファイルが壊れていないかは `sha256sum -c prebuilt/SHA256SUMS` で確かめられます。PaperDIY を USB-C で PC につなぎ、この `firmware/` フォルダで書き込みます。
+
+**初めて書くとき**は、`prebuilt/paperdiy-term-merged.bin`（ブートローダー・パーティション表・本体をまとめたもの）を 0x0 番地に書きます。設定の領域（NVS）も空にするので、前に入っていたファームの設定は消えます。
 
 ```bash
 python -m esptool --chip esp32s3 -b 460800 write_flash 0x0 prebuilt/paperdiy-term-merged.bin
 ```
 
-ブラウザの [ESP Tool](https://espressif.github.io/esptool-js/) でも同じファイルを 0x0 に書けます。書き込みモードに入らないときは、電源ボタンを長押ししてダウンロードモードにします。
+**更新するとき**は、本体だけの `prebuilt/paperdiy-term-app.bin` を 0x20000 番地に書きます。キーボードのペアリング、Wi-Fi、SSH の接続先、ホスト鍵がそのまま残ります（パーティション表を変えた版では、BUILDINFO.md にそう書きます。そのときはまとめた方を書いてください）。
+
+```bash
+python -m esptool --chip esp32s3 -b 460800 write_flash 0x20000 prebuilt/paperdiy-term-app.bin
+```
+
+ブラウザの [ESP Tool](https://espressif.github.io/esptool-js/) でも、同じファイルを同じ番地に書けます。書き込みモードに入らないときは、電源ボタンを長押ししてダウンロードモードにします。
 
 ### ソースからビルドする
 
@@ -42,7 +50,7 @@ cd firmware
 idf.py build flash monitor # ターゲット（esp32s3）は sdkconfig.defaults で決まっています
 ```
 
-**再現可能ビルド**：`sdkconfig.defaults` の `CONFIG_APP_REPRODUCIBLE_BUILD=y` で、日時やビルドしたフォルダのパスがバイナリに入らないようにしてあり、バージョンも `version.txt`（0.3.0）で固定しています。ESP-IDF v5.5.6 なら、どこでビルドしても `prebuilt/` と同じバイナリになります（ここで 3 か所と、GitHub Actions のコンテナで確認済み）。リポジトリのルートで
+**再現可能ビルド**：`sdkconfig.defaults` の `CONFIG_APP_REPRODUCIBLE_BUILD=y` で、日時やビルドしたフォルダのパスがバイナリに入らないようにしてあり、バージョンも `version.txt`（0.3.1）で固定しています。ESP-IDF v5.5.6 なら、どこでビルドしても `prebuilt/` と同じバイナリになります（ここで 3 か所と、GitHub Actions のコンテナで確認済み）。リポジトリのルートで
 
 ```bash
 make firmware          # 上の export.sh を読み込んだシェルで。ビルドして prebuilt/ と 1 バイトずつ比べる

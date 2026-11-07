@@ -9,8 +9,10 @@
 #include <cstring>
 #include <mutex>
 
+#include "esp_heap_caps.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/idf_additions.h"
 #include "freertos/semphr.h"
 #include "freertos/stream_buffer.h"
 #include "freertos/task.h"
@@ -36,6 +38,11 @@ int s_sock = -1;
 StreamBufferHandle_t s_tx = nullptr;
 SemaphoreHandle_t s_tx_mtx = nullptr;
 std::atomic<bool> s_task_running{false};
+// One I/O task for all sessions, started on the first connect and kept: creating (and deleting) a task per session
+// needs a fresh stack each time, and internal RAM is scarce with Wi-Fi and Bluetooth running.
+TaskHandle_t s_io_task = nullptr;
+SemaphoreHandle_t s_io_go = nullptr;
+constexpr uint32_t kIoStack = 12288;
 std::mutex s_label_mtx;
 std::string s_label;
 
@@ -45,6 +52,24 @@ struct KbdCtx {
     int round;
 };
 KbdCtx* s_kbd = nullptr;
+
+std::string heapReport()
+{
+    char b[128];
+    snprintf(b, sizeof(b), "内部 RAM 空き %u KB（最大 %u KB）、PSRAM 空き %u KB",
+             static_cast<unsigned>(heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024),
+             static_cast<unsigned>(heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL) / 1024),
+             static_cast<unsigned>(heap_caps_get_free_size(MALLOC_CAP_SPIRAM) / 1024));
+    return b;
+}
+
+void logHeap(const char* stage)
+{
+    ESP_LOGI(kTag, "%s: internal %u free (largest %u), psram %u free", stage,
+             static_cast<unsigned>(heap_caps_get_free_size(MALLOC_CAP_INTERNAL)),
+             static_cast<unsigned>(heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL)),
+             static_cast<unsigned>(heap_caps_get_free_size(MALLOC_CAP_SPIRAM)));
+}
 
 std::string sessionError()
 {
@@ -192,7 +217,7 @@ void cleanup(bool graceful)
     }
 }
 
-void ioTask(void*)
+void runSession()
 {
     static char buf[2048];
     std::string pending;
@@ -255,8 +280,31 @@ void ioTask(void*)
     s_state = State::Idle;
     ESP_LOGI(kTag, "session ended: %s", user_closed ? "by user" : reason.c_str());
     if (s_on_closed) s_on_closed(user_closed ? "切断しました" : reason);
+    logHeap("after session");
     s_task_running = false;
-    vTaskDelete(nullptr);
+}
+
+void ioTask(void*)
+{
+    for (;;) {
+        xSemaphoreTake(s_io_go, portMAX_DELAY);
+        runSession();
+    }
+}
+
+bool ensureIoTask()
+{
+    if (s_io_task) return true;
+    if (!s_io_go) s_io_go = xSemaphoreCreateBinary();
+    if (!s_io_go) return false;
+    // Stack in PSRAM. A task with an external stack must not write to flash (NVS, partitions): this one only runs
+    // libssh2 on the socket and hands the data to the terminal.
+    if (xTaskCreatePinnedToCoreWithCaps(ioTask, "ssh_io", kIoStack, nullptr, 6, &s_io_task, 0,
+                                        MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT) == pdPASS) {
+        return true;
+    }
+    s_io_task = nullptr;
+    return xTaskCreatePinnedToCore(ioTask, "ssh_io", kIoStack, nullptr, 6, &s_io_task, 0) == pdPASS;
 }
 
 bool fail(std::string& error, const std::string& msg)
@@ -284,6 +332,11 @@ bool connect(const settings::SshProfile& p, int cols, int rows, Prompter& ui, st
         libssh2_init(0);
     }
     xStreamBufferReset(s_tx);
+    logHeap("connect");
+    if (!ensureIoTask()) {
+        error = "メモリ不足（通信タスクを作れません）: " + heapReport();
+        return false;
+    }
     s_state = State::Connecting;
     const uint16_t port = p.port ? p.port : 22;
     char where[120];
@@ -295,11 +348,12 @@ bool connect(const settings::SshProfile& p, int cols, int rows, Prompter& ui, st
     if (s_sock < 0) return fail(error, err);
 
     s_session = libssh2_session_init();
-    if (!s_session) return fail(error, "メモリ不足（セッションを作れません）");
+    if (!s_session) return fail(error, "メモリ不足（セッションを作れません）: " + heapReport());
     libssh2_session_set_blocking(s_session, 1);
     libssh2_session_set_timeout(s_session, 20000);
     ui.status("暗号化の準備をしています…");
     if (libssh2_session_handshake(s_session, s_sock) != 0) return fail(error, "SSH の開始に失敗: " + sessionError());
+    logHeap("handshake");
 
     // Host key: trust on first use, warn loudly when it changes.
     std::string type;
@@ -385,10 +439,8 @@ bool connect(const settings::SshProfile& p, int cols, int rows, Prompter& ui, st
     s_new_cols = 0;
     s_state = State::Open;
     s_task_running = true;
-    if (xTaskCreatePinnedToCore(ioTask, "ssh_io", 12288, nullptr, 6, nullptr, 0) != pdPASS) {
-        s_task_running = false;
-        return fail(error, "メモリ不足（通信タスクを作れません）");
-    }
+    logHeap("shell open");
+    xSemaphoreGive(s_io_go);
     return true;
 }
 

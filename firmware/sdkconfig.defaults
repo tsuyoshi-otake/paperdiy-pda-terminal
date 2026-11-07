@@ -11,7 +11,7 @@ CONFIG_ESP_MAIN_TASK_STACK_SIZE=24576
 CONFIG_SPIRAM=y
 CONFIG_SPIRAM_MODE_OCT=y
 CONFIG_SPIRAM_USE_MALLOC=y
-CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=4096
+CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=512
 CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP=y
 CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST=y
 
@@ -29,6 +29,13 @@ CONFIG_BT_BLE_SMP_ENABLE=y
 # Wi-Fi + BLE coexistence
 CONFIG_ESP_COEX_SW_COEXIST_ENABLE=y
 
+# Internal RAM is the scarce resource with Wi-Fi + BLE + the e-paper driver (24 KB free after start in 0.3.0, and an
+# SSH login ran out). An SSH terminal needs little Wi-Fi throughput: fewer static RX buffers (internal DMA memory)
+# and no Wi-Fi code in IRAM; small mallocs (libssh2) go to PSRAM above 512 bytes.
+CONFIG_ESP_WIFI_STATIC_RX_BUFFER_NUM=8
+# CONFIG_ESP_WIFI_IRAM_OPT is not set
+# CONFIG_ESP_WIFI_RX_IRAM_OPT is not set
+
 # mbedTLS features used by libssh2 (ECDH/ECDSA P-256, RSA, AES-CTR, SHA-1/256/512, MD5;
 # AES-CTR and PK parsing are always on in the mbedTLS 3 that ships with ESP-IDF 5.5)
 CONFIG_MBEDTLS_ECDH_C=y
@@ -40,6 +47,8 @@ CONFIG_MBEDTLS_SHA512_C=y
 CONFIG_MBEDTLS_RIPEMD160_C=y
 CONFIG_MBEDTLS_DES_C=y
 CONFIG_MBEDTLS_PEM_PARSE_C=y
+# mbedTLS (libssh2's key exchange: big-number work) allocates from PSRAM: internal RAM is needed by Wi-Fi + BLE
+CONFIG_MBEDTLS_EXTERNAL_MEM_ALLOC=y
 
 # microSD (FAT, UTF-8 long names) for SSH keys
 CONFIG_FATFS_LFN_HEAP=y
