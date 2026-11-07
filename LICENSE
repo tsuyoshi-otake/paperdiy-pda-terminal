@@ -20,12 +20,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
--------------------------------------------------------------------------------
-Scope: this MIT License covers the source code and documentation in this
-repository (firmware/, cad/src/, cad/tools/, docs/*.py, docs/render/, Makefile,
-.github/, and the Markdown files). It does NOT cover the enclosure models and
-the images made from them, which are adapted from "The PDA Terminal" /
-phone-enclosure by Un Kyu Lee and stay under CC BY-NC 4.0 (non-commercial):
-cad/out/, cad/3mf/, cad/renders/ and docs/images/. See cad/LICENSE.md.
-The prebuilt firmware images in firmware/prebuilt/ also contain third-party
-libraries under their own licenses: see firmware/prebuilt/THIRD_PARTY_NOTICES.md.
