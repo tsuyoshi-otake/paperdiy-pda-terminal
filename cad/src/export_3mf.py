@@ -80,6 +80,20 @@ def rows_layout(rows):
     return placed
 
 
+def placed_layout(items):
+    """items: [(name, mesh, (cx, cy))] placed by hand. Checks the bed edge and a GAP / 2 clearance between bounding boxes."""
+    boxes = []
+    for name, m, (cx, cy) in items:
+        ex = m.extents
+        b = (cx - ex[0] / 2, cy - ex[1] / 2, cx + ex[0] / 2, cy + ex[1] / 2)
+        assert MARGIN <= b[0] and b[2] <= BED - MARGIN and MARGIN <= b[1] and b[3] <= BED - MARGIN, (name, b)
+        for other, o in boxes:
+            sep = max(o[0] - b[2], b[0] - o[2], o[1] - b[3], b[1] - o[3])
+            assert sep >= GAP / 2, (name, other, sep)
+        boxes.append((name, b))
+    return items
+
+
 def plates():
     """{file name: (title, rows)} with every part already in its print orientation."""
     with open(os.path.join(OUT_DIR, "coupons", "orientation.json")) as f:
@@ -114,15 +128,16 @@ def plates():
         ]),
         # cream: display panel pieces (screen face down), strap (top face down), push-rods (flat side down),
         # optional top plate (visible face down; print it in an accent colour if you like)
-        "plate3_panel_parts.3mf": ("Display panel (A + B), strap, push-rods", [
-            [("key_pushrod_1", part(O("key_pushrod_x2"), ROT_Z90)),
-             ("key_pushrod_2", part(O("key_pushrod_x2"), ROT_Z90)),
-             ("power_pushrod", part(O("power_pushrod")))],
-            [("panel_A_left", part(S("panel_A_left"), ROT_Z90)),
-             ("paperdiy_strap", part(O("paperdiy_strap"), FLIP_X, ROT_Z90))],
-            [("top_plate_blank", part(O("top_plate_blank"), FLIP_X))],
-            [("panel_B_main", part(S("panel_B_main")))],
-        ]),
+        # placed by hand: the railed strap is nearly square, so the rows layout no longer fits
+        "plate3_panel_parts.3mf": ("Display panel (A + B), strap, push-rods", {"place": [
+            ("panel_B_main", part(S("panel_B_main")), (90.0, 133.9)),
+            ("paperdiy_strap", part(O("paperdiy_strap"), FLIP_X), (42.6, 42.4)),
+            ("panel_A_left", part(S("panel_A_left"), ROT_Z90), (131.1, 18.8)),
+            ("top_plate_blank", part(O("top_plate_blank"), FLIP_X), (120.0, 75.45)),
+            ("power_pushrod", part(O("power_pushrod")), (112.75, 57.75)),
+            ("key_pushrod_1", part(O("key_pushrod_x2"), ROT_Z90), (149.0, 47.75)),
+            ("key_pushrod_2", part(O("key_pushrod_x2"), ROT_Z90), (149.0, 58.75)),
+        ]}),
     }
     # any colour: optional front clip that keeps the closed lid shut (one is enough; the second is a spare)
     p["plate4_front_clip.3mf"] = ("Front clip (optional, keeps the lid shut)", [
@@ -177,7 +192,7 @@ def write_3mf(path, placed, title):
 def main():
     os.makedirs(os.path.join(OUT_3MF, "usb_variants"), exist_ok=True)
     for fname, (title, rows) in plates().items():
-        placed = rows_layout(rows)
+        placed = placed_layout(rows["place"]) if isinstance(rows, dict) else rows_layout(rows)
         path = os.path.join(OUT_3MF, fname)
         write_3mf(path, placed, title)
         # re-load and check what was written

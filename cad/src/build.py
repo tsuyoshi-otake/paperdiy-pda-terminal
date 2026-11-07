@@ -240,11 +240,18 @@ def build_strap():
         x_pcb = X_TOP - PD_PCB_TOP_FROM_TOP                 # PCB inner end, -12.1
         x0, x1 = x_pcb + g["gap"], x_pcb + g["gap"] + g["t"]
         z_foot = PANEL_Z_BACK + 1.2 + g["foot_clear"]       # display back (glass 1.2) + clearance
+        r = STRAP_RAILS
         for sgn in (1.0, -1.0):
             ya, yb = sorted((sgn * g["arm_y"][0], sgn * g["arm_y"][1]))
             yl0, yl1 = sorted((sgn * g["leg_y"][0], sgn * g["leg_y"][1]))
             s = s + box(STRAP_X + STRAP_W / 2 - 0.5, x1, ya, yb, STRAP_UNDER, STRAP_TOP)
             s = s + box(x0, x1, yl0, yl1, z_foot, STRAP_UNDER + 0.01)
+            if r:   # ribbed rail from the leg to near the far end of the glass, with feet on the display's back
+                yc, hw = (ya + yb) / 2, r["width"] / 2
+                s = s + box(x1 - 0.5, r["x_end"], yc - hw, yc + hw, STRAP_UNDER, STRAP_TOP)
+                s = s + box(x1 - 0.5, r["x_end"] - 0.3, yc - r["rib_t"] / 2, yc + r["rib_t"] / 2, r["rib_bottom"], STRAP_UNDER + 0.3)
+                for xf in r["feet_x"]:
+                    s = s + box(xf - r["foot_len"] / 2, xf + r["foot_len"] / 2, yc - hw + 0.05, yc + hw - 0.05, z_foot, STRAP_UNDER + 0.3)
     for (x, y, zb) in [(STRAP_X, STRAP_POST_Y, STRAP_UNDER), (STRAP_X, -STRAP_POST_Y, STRAP_UNDER), (SO_X, SO_Y, SO_TOP)]:
         s = s - cyl_z(M2_CLEAR / 2, zb - 1, STRAP_TOP + 1, x, y)
         s = s - cyl_z(M2_CLEAR / 2, STRAP_TOP - (CSK_D - M2_CLEAR) / 2, STRAP_TOP + 0.01, x, y, CSK_D / 2)  # 90 deg countersink
@@ -774,6 +781,9 @@ def main():
         x_pcb = X_TOP - PD_PCB_TOP_FROM_TOP
         log(f"  strap legs stand {STRAP_LEGS['gap']} mm past the PCB's inner end (x = {x_pcb:.1f}), feet "
             f"{STRAP_LEGS['foot_clear']} mm above the display: the PCB cannot turn about its single standoff")
+        if STRAP_RAILS:
+            log(f"  strap rails reach x = {STRAP_RAILS['x_end']} (glass ends at {X_TOP}) with feet at x = "
+                f"{', '.join(f'{x:g}' for x in STRAP_RAILS['feet_x'])} on the display's back: its far end cannot lift")
     interference(pd, lid, "PaperDIY envelope vs lid")
     interference(bat, panel, "battery vs panel")
     interference(bat, lid, "battery vs lid")

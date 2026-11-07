@@ -25,12 +25,12 @@
  },
  "plate3_panel_parts.3mf": {
   "warnings": [
-   "Low bed adhesion: key_pushrod_1, key_pushrod_2, power_pushrod"
+   "Low bed adhesion: power_pushrod, key_pushrod_1, key_pushrod_2"
   ],
   "ok": true,
-  "time": "1h 1m 17s",
-  "grams": 34.26,
-  "metres": 11.486360000000001
+  "time": "1h 8m 17s",
+  "grams": 37.3,
+  "metres": 12.506440000000001
  },
  "plate4_front_clip.3mf": {
   "warnings": [
@@ -48,17 +48,17 @@
   "grams": 8.35,
   "metres": 2.79995
  },
- "total_g": 175.55999999999997,
- "total_min": 281,
- "lid_g": 195.5,
+ "total_g": 178.59999999999997,
+ "total_min": 288,
+ "lid_g": 198.54999999999998,
  "base_g": 64.01,
  "lid_cg": [
-  9.442560013765846,
-  1.295712363302328,
-  22.085551541964193
+  9.642388200933324,
+  1.275808446364159,
+  22.110375626921048
  ],
  "pivot_y": 50.95000076293945,
  "table_contact_deg": 150.4,
  "table_limit": 150,
- "keyboard_min_g": 152.53816782962795
+ "keyboard_min_g": 155.86911431647783
 }

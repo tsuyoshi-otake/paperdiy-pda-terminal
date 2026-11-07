@@ -86,6 +86,10 @@ STRAP_POST_SIZE = 6.4
 # one each side of the centre line, so the PCB cannot turn; their feet stop 0.2 mm above the display's back. They keep
 # clear of the ESP32 module (ends at x = -14.1) and leave the middle free for the battery lead.
 STRAP_LEGS = dict(gap=0.2, t=2.0, leg_y=(22.0, 29.0), arm_y=(20.0, 29.5), foot_clear=0.2)
+# The display's far (right) end would otherwise be free to lift: the two arms carry on as ribbed rails to near the end of
+# the glass, with feet at x = 18 and 49 that stand on the display's back (same height as the legs' feet). The rails stay
+# at y +-20..29.5, so the battery lead runs between them.
+STRAP_RAILS = dict(x_end=52.3, width=6.0, rib_t=1.6, rib_bottom=20.4, feet_x=(18.0, 49.0), foot_len=4.0)
 STRAP_SCREW_LEN = 4.0         # ISO 7046 M2x4 countersunk -> 1.5 mm into the standoff (M2x5 -> 2.5 mm, still < 3)
 CSK_D = 4.2                   # countersink for M2 ISO 7046 (head 3.8)
 M2_CLEAR = 2.4

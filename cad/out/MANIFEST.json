@@ -37,13 +37,13 @@
  },
  "3mf/plate3_panel_parts.3mf": {
   "objects": 7,
-  "sha256": "dd6560899812b5152f6fc71f3798a9b047f4009c97a27c1b8fdc9f403de4f911",
+  "sha256": "c73beff136f55dbf12c1de88eb97619950ee50315b6fada156a105df999e36dc",
   "volumes": [
    108.94,
    108.94,
    263.77,
    909.31,
-   1686.96,
+   4208.24,
    6780.04,
    25572.36
   ]
@@ -406,14 +406,14 @@
     19.4
    ],
    [
-    -9.9,
+    52.3,
     39.2,
     25.9
    ]
   ],
-  "faces": 1152,
-  "sha256": "8d6d8cfbb0ff9cf526cdabd62ec537cc25a4ec7e4274bb503bf11da0359f405d",
-  "volume": 1686.95
+  "faces": 1362,
+  "sha256": "1fdf6f82b3448e41b287336f13445a22674078bc5712d0f207f6790ebd6b8b23",
+  "volume": 4208.23
  },
  "out/power_pushrod.stl": {
   "bbox": [

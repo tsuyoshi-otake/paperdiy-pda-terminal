@@ -111,6 +111,8 @@ def back_view(ax, panel, strap):
     if B.STRAP_LEGS:
         x_leg = B.X_TOP - B.PD_PCB_TOP_FROM_TOP + B.STRAP_LEGS["gap"] + B.STRAP_LEGS["t"]
         note(ax, (x_leg, 25.5), "脚：基板の端に当てて、\n基板が回らないようにする", (8.0, 37.0))
+    if B.STRAP_RAILS:
+        note(ax, (B.STRAP_RAILS["feet_x"][1], -24.75), "レールの足：画面の右側を押さえる", (20.0, -47.5))
     for y in (B.STRAP_POST_Y, -B.STRAP_POST_Y):
         screw_top(ax, B.STRAP_X, y)
     screw_top(ax, B.SO_X, B.SO_Y)
