@@ -47,7 +47,10 @@ KNOWN = {
     "Loose extrusions": "the 5 mm counterbore at the panel's screen face is bridged 1.5 mm above the bed "
                         "(same in the real panel, a short bridge that prints fine)",
 }
-THIN_NOTE = {"panel_B_main": "the screen-window bevel ends in a sharp edge (as in the original panel)"}
+ROD_NOTE = ("the snap tip: each half of the split end is one 1 mm perimeter loop and the barbs are 0.35 mm bumps on "
+            "its outline, which the sliced G-code traces")
+THIN_NOTE = {"panel_B_main": "the screen-window bevel ends in a sharp edge (as in the original panel)",
+             "key_pushrod_x2": ROD_NOTE, "power_pushrod": ROD_NOTE}
 
 LID_PARTS = [("lid_A_left", 1), ("lid_B_main", 1), ("panel_A_left", 1), ("panel_B_main", 1), ("paperdiy_strap", 1),
              ("key_pushrod_x2", 2), ("power_pushrod", 1), ("hinge_cover_lid_x2", 2), ("top_plate_blank", 1)]
@@ -173,7 +176,7 @@ def main():
             worst = max(worst, frac)
         lines.append(f"| {name} | {d.min():.2f} | {np.percentile(d, 1):.2f} | {100 * frac:.2f} %"
                      f"{' (' + note + ')' if note else ''} |")
-    lines += ["", f"Largest share apart from the noted part: {100 * worst:.2f} %. " +
+    lines += ["", f"Largest share apart from the noted parts: {100 * worst:.2f} %. " +
               ("OK: only sharp edges and the dovetail jaws." if worst < 0.01 else "CHECK the parts above 1 %."), ""]
 
     # 3. stability (tipping backwards when open)

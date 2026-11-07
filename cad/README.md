@@ -56,8 +56,8 @@ log is written to `out/build_log.txt`.
 | `out/display_lid_usbc.stl` | 202.0 × 99.5 × 22.0 | lid, unsplit |
 | `out/keyboard_tray.stl` | 202.0 × 99.5 × 12.8 | tray, unsplit |
 | `out/paperdiy_strap.stl` | 78.9 × 78.4 × 6.5 | clamps the PaperDIY via its M2 standoff; legs stop the PCB turning, rails hold the display's far end |
-| `out/key_pushrod_x2.stl` | 5.5 × 15.9 × 3.7 | print **2** (KEY1/KEY2) |
-| `out/power_pushrod.stl` | 41.5 × 5.5 × 3.6 | power button |
+| `out/key_pushrod_x2.stl` | 5.5 × 16.9 × 3.6 | print **2** (KEY1/KEY2); snap tip clicks into the front wall |
+| `out/power_pushrod.stl` | 42.5 × 5.5 × 3.6 | power button; snap tip clicks into the left wall |
 | `out/top_plate_blank.stl` | 56.0 × 10.9 × 1.5 | optional plate for the lid-top recess (accent colour) |
 | `out/front_clip.stl` | 20.0 × 13.7 × 33.4 | optional push-on clip for the front edge: keeps the closed lid shut |
 | `out/magnet_jig_L.stl` / `_R.stl` | 67.2 × 18.3 × 12.0 | optional drilling jigs for the retrofit magnetic catch |
@@ -94,8 +94,15 @@ All printed parts ≤ 173 mm (limit 175). Every STL above was re-loaded after wr
   The strap is now nearly square, so plate 3 is laid out by hand (`placed_layout` in `export_3mf.py`).
 * **Buttons:** two D-section push-rods pass through the restored front wall at the real KEY positions
   (x −17.1 / −29.1, z 20.95). A 41.5 mm rod passes through the left end wall to the power button (y +23.4, z 21.27).
-  Each rod has a collar inside the wall that stops it falling out, an open-top U-cradle on the panel, and a 0.3 mm rest gap
-  to the actuator. These are **side-actuated** switches on the board edges, so rods (not front holes) are the only way to reach them.
+  Each rod has a collar inside the wall, an open-top U-cradle on the panel, and a 0.3 mm rest gap to the actuator. The
+  outer end is split by a 1.0 mm vertical slot (7.5 mm long) and each half carries a barb (`ROD_SNAP`): pushed in from
+  inside the lid, the halves close up, pass the Ø3.4 bore and spring out 0.9 mm past the outer face, so the wall is held
+  between collar and barbs and the rod no longer drops out while the panel is fitted (plain rods did). The barbs are
+  circles of the bore's radius set 0.35 mm off the axis, so squeezed together they exactly fill the bore; prong strain is
+  about 1.2 % with the bore printed 0.1 mm small, and the split part is flattened on top like underneath, so each half
+  slices as one 1 mm perimeter loop. The 0.9 mm between barbs and wall is the press travel (rest gap 0.3 + switch
+  travel; the plain rods had 0.7 to the cradle), and the collar is 0.8 mm thick so that, pushed fully in, the KEY collars
+  still clear the panel cradles by 0.2 mm (checked). To take a rod out, pinch the split tip and push it back in. These are **side-actuated** switches on the board edges, so rods (not front holes) are the only way to reach them.
 * **Battery** (integrated, see below) sits at **+x**, at the far end from the antenna. The antenna is on the hinge-side long
   edge, 70–88 mm from the non-USB end, so it is about 70 mm from the cell.
 * **USB-C panel mount** goes on the **left end wall** (the wall nearest the PaperDIY port). It is offset to y = +1
@@ -259,17 +266,19 @@ Cut from the real parts and printed in the same orientation, so they show how yo
   HG-MF08 in: the leaves must sit flush, the barrel must turn freely, M2×8 screws must bite without splitting.
 * `coupon_dovetail_A` + `_B`: one dovetail key (0.2 mm per side). It should slide in by hand without play.
 * `coupon_corner_lid` + `coupon_corner_panel`: a panel corner screw (counterbore, Ø1.8 pilot in the lid boss).
-* `coupon_keywall_lid` + a key push-rod: the rod must slide freely in the bore printed upside down in the lid wall.
+* `coupon_keywall_lid` + a key push-rod: pushed in from the inner side, the rod must click in and then slide freely in the
+  bore printed upside down in the lid wall.
 * One lid cover and one tray cover: they must lie flat on the leaves.
 If something is tight or loose, change `DOVETAIL["clr"]`, `HINGE_CLR`, `HINGE_BARREL_D`, `HINGE_PILOT_D`, `SCREW_PILOT_D` or
-`ROD_HOLE` and rebuild.
+`ROD_HOLE` (and `ROD_SNAP["catch"]` if the rod will not click in, or falls out again) and rebuild.
 
 ## Print orientation (suggested)
 * Lid pieces: **top face down** (the ceiling is flat at z = 30). No supports (the knuckle that needed them is gone).
 * Panel pieces: **screen face down** (z = 15 on the bed). Lip, posts, cradles and bay frame grow upward with no supports.
 * Tray pieces: **floor down** (as modelled).
 * Strap: **top face down** (countersinks open toward the bed, pad up). Push-rods: **flat (D) side down**; the flat sits
-  0.9 mm below the axis (2.4 mm wide on the bed) and the panel cradles are raised to match.
+  0.9 mm below the axis (2.4 mm wide on the bed) and the panel cradles are raised to match. The snap slot then runs
+  vertically, so the two halves flex in the bed plane along their perimeters.
 * Hinge covers and top plate: **visible face down**, like the lid, so they match its texture.
 * Suggested process (Bambu Studio): 0.20 mm Standard, PLA, textured PEI, **3 wall loops** (material around the screw
   pilots), 15 % gyroid, no supports, brim type Auto (default).
@@ -321,7 +330,7 @@ If something is tight or loose, change `DOVETAIL["clr"]`, `HINGE_CLR`, `HINGE_BA
 
 ## Does it tip over when open?
 `tools/print_report.py` adds the sliced part masses, the PaperDIY (26.4 g, M5Stack spec), a 38 g cell and a 10 g cable
-(both assumed) and finds the lid side at **≈ 199 g** with its centre of mass 53 mm in front of the hinge axis when closed;
+(both assumed) and finds the lid side at **≈ 198 g** with its centre of mass 53 mm in front of the hinge axis when closed;
 the printed base is ≈ 64 g. The device rests on the back edge of the tray (y = 51.0). Opened past 90° the lid's centre of
 mass moves behind that edge, so the keyboard has to supply the counterweight:
 
@@ -405,8 +414,9 @@ published drawing and structure files.
 | `ROD_HOLE` | `3.4` | design choice | +0.4 slide clearance |
 | `ROD_GAP` | `0.3` | design choice | rest gap rod tip -> actuator |
 | `ROD_COLLAR_D` | `5.5` | design choice |  |
-| `ROD_COLLAR_T` | `1.2` | design choice |  |
-| `ROD_PROUD` | `1.0` | design choice | rod end proud of the outer wall |
+| `ROD_COLLAR_T` | `0.8` | design choice | thin enough that a rod pushed fully in still clears the panel cradle |
+| `ROD_PROUD` | `1.0` | design choice | rod end proud of the outer wall (plain rods, `ROD_SNAP = None`) |
+| `ROD_SNAP` | `play 0.9, catch 0.35, slot 1.0 × 7.5` | design choice | split snap tip: barbs click past the outer face |
 | `BATT_L` | `50.0` | ASSUMED | [A] cell length (along y)   default 50x34x10 "~2000 mAh" |
 | `BATT_W` | `34.0` | ASSUMED | [A] cell width  (along x) |
 | `BATT_T` | `10.0` | ASSUMED | [A] cell thickness |

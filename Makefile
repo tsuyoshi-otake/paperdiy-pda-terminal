@@ -47,6 +47,7 @@ render:
 	$(PYTHON) docs/paperdiy_figure.py docs/images/paperdiy_mount.png
 	$(PYTHON) docs/clip_figure.py docs/images/front_clip.png
 	$(PYTHON) docs/magnet_figure.py docs/images/magnet_catch.png
+	$(PYTHON) docs/pushrod_figure.py docs/images/pushrod_snap.png
 
 test:
 	$(MAKE) -C firmware/test/host test PYTHON=$(PYTHON)

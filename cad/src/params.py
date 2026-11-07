@@ -99,8 +99,16 @@ ROD_D = 3.0
 ROD_HOLE = 3.4                # +0.4 slide clearance
 ROD_GAP = 0.3                 # rest gap rod tip -> actuator
 ROD_COLLAR_D = 5.5
-ROD_COLLAR_T = 1.2
-ROD_PROUD = 1.0               # rod end proud of the outer wall
+ROD_COLLAR_T = 0.8            # inside the wall (was 1.2): with the snap tip pushed fully in, the KEY collars stay 0.2 mm
+                              # short of the panel's cradles, so the panel still drops in
+ROD_PROUD = 1.0               # rod end proud of the outer wall (plain rods, ROD_SNAP = None)
+# Snap tip: the outer end is split by a vertical slot and each half carries a barb, so a rod pushed in from inside the
+# lid clicks past the outer face and stays there before the panel goes in (the plain rods fell out while assembling).
+# The wall is held between the collar (inside) and the barbs (outside) with `play` of travel for the button press; the
+# barbs are circles of the bore's radius set `catch` off the axis, so with the halves squeezed together they just fill
+# the bore. Prongs `slot_len` long keep the bending strain about 1.2 % (bore printed 0.1 mm small). The split part is
+# flattened on top as well (`top` above the axis, like the flat underside) so no layer of a prong is a sliver.
+ROD_SNAP = dict(play=0.9, catch=0.35, slot=1.0, slot_len=7.5, land=0.5, lead=0.6, tip_r=1.2, top=0.9)
 ROD_FLAT = 0.9                # flat underside this far below the axis: 2.4 mm wide on the bed (was 1.2 -> 1.8 mm,
                               # which the slicer flags as low bed adhesion); the cradles are raised to match
 

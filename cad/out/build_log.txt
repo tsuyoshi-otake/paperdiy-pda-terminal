@@ -9,8 +9,8 @@
 == exports (bounding boxes are axis-aligned in the original assembly frame)
   out/display_panel_paperdiy.stl: bbox 195.2 x 86.2 x 11.5 mm, watertight=True, winding_ok=True, bodies=1, vol=32389 mm3
   out/paperdiy_strap.stl: bbox 78.9 x 78.4 x 6.5 mm, watertight=True, winding_ok=True, bodies=1, vol=4208 mm3
-  out/key_pushrod_x2.stl: bbox 5.5 x 15.9 x 3.7 mm, watertight=True, winding_ok=True, bodies=1, vol=109 mm3
-  out/power_pushrod.stl: bbox 41.5 x 5.5 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=264 mm3
+  out/key_pushrod_x2.stl: bbox 5.5 x 16.9 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=87 mm3
+  out/power_pushrod.stl: bbox 42.5 x 5.5 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=242 mm3
   out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 22.0 mm, watertight=True, winding_ok=True, bodies=1, vol=90995 mm3
   out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=69792 mm3
   out/top_plate_blank.stl: bbox 56.0 x 10.9 x 1.5 mm, watertight=True, winding_ok=True, bodies=1, vol=909 mm3
@@ -70,6 +70,11 @@
   interference power rod vs lid: -0.000 mm3 OK
   interference power rod vs panel: 0.000 mm3 OK
   interference power rod vs PaperDIY: 0.000 mm3 OK
+  rods pushed fully in (0.9 mm, barbs on the outer face) before the panel goes in:
+  interference     key rod 0 pushed in vs panel cradle: 0.000 mm3 OK
+  interference     key rod 1 pushed in vs panel cradle: 0.000 mm3 OK
+  interference     power rod pushed in vs panel cradle: 0.000 mm3 OK
+  snap tip: barbs reach 2.05 mm off the axis (0.35 past the 3.4 bore); halves squeezed 0.35 mm each leave -0.000 mm3 outside the bore; prong strain 1.2 % (bore 0.1 small); press travel 0.9 mm to the barb stop (rest gap 0.3)
   interference panel vs lid: 0.000 mm3 OK
   interference panel A vs B (dovetail): 0.000 mm3 OK
   interference tray A vs B (dovetail): -0.000 mm3 OK

@@ -1,9 +1,9 @@
 {
  "3mf/plate0_test_coupons.3mf": {
   "objects": 10,
-  "sha256": "fa389f1028f8a2a2057ee4227335b63937009caf2b32a9c2936e2adaaa0d8d3c",
+  "sha256": "2af60aa2d1acdd2196919dbac17938b947c9e387891ba89ca0475714ddd8117a",
   "volumes": [
-   108.94,
+   86.75,
    209.46,
    242.36,
    361.44,
@@ -37,11 +37,11 @@
  },
  "3mf/plate3_panel_parts.3mf": {
   "objects": 7,
-  "sha256": "c73beff136f55dbf12c1de88eb97619950ee50315b6fada156a105df999e36dc",
+  "sha256": "dc92024d96cbe95ebb7c494f418d2e5154375af406c8bc345a784e2c08a12f55",
   "volumes": [
-   108.94,
-   108.94,
-   263.77,
+   86.75,
+   86.75,
+   241.57,
    909.31,
    4208.24,
    6780.04,
@@ -334,18 +334,18 @@
   "bbox": [
    [
     -19.85,
-    -47.5,
+    -48.5,
     20.05
    ],
    [
     -14.35,
     -31.6,
-    23.7
+    23.648
    ]
   ],
-  "faces": 400,
-  "sha256": "860cd8cf5d15f1fed7f19f9ed9607cb76360a1bf49c122d5f5b7bdd0c594f3b8",
-  "volume": 108.94
+  "faces": 632,
+  "sha256": "6d843076e917cb25cd9211977d2da840b80c5c3ec6077a2865af59b42739dad7",
+  "volume": 86.75
  },
  "out/keyboard_tray.stl": {
   "bbox": [
@@ -418,19 +418,19 @@
  "out/power_pushrod.stl": {
   "bbox": [
    [
-    -102.0,
+    -103.0,
     20.65,
     20.37
    ],
    [
     -60.5,
     26.15,
-    24.02
+    23.968
    ]
   ],
-  "faces": 400,
-  "sha256": "b35c0e98a921f751cd9479fc5ecc7b75d1407df375bf9e5250312d69ee09ee75",
-  "volume": 263.77
+  "faces": 632,
+  "sha256": "01a6ec4fd8cb659c975bbce27430a99f86c3ee1829814e8b8642602ce0fc69f7",
+  "volume": 241.57
  },
  "out/split/lid_A_left.stl": {
   "bbox": [

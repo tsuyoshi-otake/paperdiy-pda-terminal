@@ -314,16 +314,42 @@ def dflat(rod, zc):        # flat underside ROD_FLAT below the axis: prints flat
     return rod ^ box(-BIG, BIG, -BIG, BIG, zc - ROD_FLAT, BIG)
 
 
+ROD_WALL = 3.0             # the lid walls the rods pass through (front y -46.5..-43.5, left side x -101..-98)
+
+
+def rod_local(length):
+    """Push-rod in its own frame: axis along x, x = 0 at the wall's outer face, +x inward to the tip at `length`;
+    y across (the snap slot splits the rod into +y / -y halves), z up with the flat underside at z = -ROD_FLAT."""
+    r0, rc = ROD_D / 2, ROD_COLLAR_D / 2
+    collar = cyl_x(rc, ROD_WALL, ROD_WALL + ROD_COLLAR_T, 0, 0)
+    if not ROD_SNAP:
+        return dflat(cyl_x(r0, -ROD_PROUD, length, 0, 0) + collar, 0.0)
+    s = ROD_SNAP
+    rb = ROD_HOLE / 2
+    x_catch = -s["play"]                                   # barb faces: `play` outside the wall with the collar home
+    x_land = x_catch - s["land"]
+    x_end = x_land - s["lead"]
+    rod = cyl_x(r0, x_catch - 0.01, length, 0, 0)
+    for sg in (1.0, -1.0):
+        barb = M.batch_hull([cyl_x(rb, x_land, x_catch, sg * s["catch"], 0),
+                             cyl_x(s["tip_r"], x_end, x_end + 0.01, 0, 0)])
+        half = box(-BIG, BIG, s["slot"] / 2, BIG, -BIG, BIG) if sg > 0 else box(-BIG, BIG, -BIG, -s["slot"] / 2, -BIG, BIG)
+        rod = rod + (barb ^ half)
+    x_root = x_catch - s["land"] / 2 + s["slot_len"]
+    rod = (rod ^ (box(x_root + s["slot"] / 2, BIG, -BIG, BIG, -BIG, BIG) + box(-BIG, BIG, -BIG, BIG, -BIG, s["top"]))) + collar
+    slot = box(x_end - 1.0, x_root, -s["slot"] / 2, s["slot"] / 2, -BIG, BIG) + cyl_z(s["slot"] / 2, -10, 10, x_root, 0)
+    return dflat(rod - slot, 0.0)
+
+
 def build_key_rod(x):
-    y_in, y_out = KEY_TIP_Y - ROD_GAP, -46.5 - ROD_PROUD
-    r = cyl_y(ROD_D / 2, y_out, y_in, x, KEY_Z) + cyl_y(ROD_COLLAR_D / 2, -LID_INNER_Y, -LID_INNER_Y + ROD_COLLAR_T, x, KEY_Z)
-    return dflat(r, KEY_Z)
+    y_out = -(LID_INNER_Y + ROD_WALL)
+    r = rod_local(KEY_TIP_Y - ROD_GAP - y_out)
+    return r.rotate([0, 0, 90]).translate([x, y_out, KEY_Z])     # local x -> +y (inward), local y -> -x
 
 
 def build_power_rod():
-    x_in, x_out = PWR_TIP_X - ROD_GAP, -101.0 - ROD_PROUD
-    r = cyl_x(ROD_D / 2, x_out, x_in, PWR_Y, PWR_Z) + cyl_x(ROD_COLLAR_D / 2, -LID_INNER_X, -LID_INNER_X + ROD_COLLAR_T, PWR_Y, PWR_Z)
-    return dflat(r, PWR_Z)
+    x_out = -(LID_INNER_X + ROD_WALL)
+    return rod_local(PWR_TIP_X - ROD_GAP - x_out).translate([x_out, PWR_Y, PWR_Z])
 
 
 # ------------------------------------------------------------------ LID
@@ -791,6 +817,20 @@ def main():
     for i, r in enumerate(krods):
         interference(r, lid, f"key rod {i} vs lid"); interference(r, panel, f"key rod {i} vs panel"); interference(r, pd, f"key rod {i} vs PaperDIY")
     interference(prod, lid, "power rod vs lid"); interference(prod, panel, "power rod vs panel"); interference(prod, pd, "power rod vs PaperDIY")
+    if ROD_SNAP:
+        s = ROD_SNAP
+        log(f"  rods pushed fully in ({s['play']} mm, barbs on the outer face) before the panel goes in:")
+        for i, r in enumerate(krods):
+            interference(r.translate([0, s["play"], 0]), panel, f"    key rod {i} pushed in vs panel cradle")
+        interference(prod.translate([s["play"], 0, 0]), panel, "    power rod pushed in vs panel cradle")
+        loc = rod_local(15.0)
+        rb = ROD_HOLE / 2
+        squeezed = sum(((loc ^ box(-BIG, 0.0, sg * s["slot"] / 2 if sg > 0 else -BIG, BIG if sg > 0 else -s["slot"] / 2, -BIG, BIG))
+                        .translate([0, -sg * s["catch"], 0]) - cyl_x(rb, -10.0, 0.5, 0, 0)).volume() for sg in (1.0, -1.0))
+        t, d = ROD_D / 2 - s["slot"] / 2, s["catch"] + 0.1
+        log(f"  snap tip: barbs reach {rb + s['catch']:.2f} mm off the axis ({s['catch']} past the {ROD_HOLE} bore); halves squeezed "
+            f"{s['catch']} mm each leave {squeezed:.3f} mm3 outside the bore; prong strain {150 * t * d / s['slot_len'] ** 2:.1f} % "
+            f"(bore 0.1 small); press travel {s['play']} mm to the barb stop (rest gap {ROD_GAP})")
     interference(panel, lid, "panel vs lid", tol=1.0)
     interference(pa, pb, "panel A vs B (dovetail)"); interference(ta, tb, "tray A vs B (dovetail)"); interference(la, lb, "lid A vs B")
     h_fixed, h_moving = hinge_envelope(0.0)
