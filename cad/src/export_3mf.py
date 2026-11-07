@@ -1,4 +1,5 @@
-"""Write print-ready 3MF files for a Bambu Lab A1 mini (180 x 180 mm bed), one file per plate.
+"""Write print-ready 3MF files for a Bambu Lab A1 mini (180 x 180 mm bed), one file per plate, and (kit design) the
+same plates with the lid, tray and panel in one piece each for printers with a bed of 220 mm or more (3mf/large/).
 
 Every part is turned into its print orientation (see README "Print orientation") and laid out on the
 plate, so the files can be opened in Bambu Studio / OrcaSlicer / PrusaSlicer and sliced directly.
@@ -19,7 +20,7 @@ import numpy as np
 import trimesh
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from params import CAD_DIR, OUT_DIR, SPLIT_DIR, USB_PM_SCREW_SPACING, USB_PM_VARIANTS  # noqa: E402
+from params import CAD_DIR, OUT_DIR, SPLIT_DIR, USB_PM_SCREW_SPACING, USB_PM_VARIANTS, WHOLE_BED, WHOLE_DIR  # noqa: E402
 
 BED = 180.0
 MARGIN = 3.0     # keep parts this far from the bed edge
@@ -64,7 +65,11 @@ def usb_name(s):
     return "lid_A_left_usb_noscrew" if s <= 0 else f"lid_A_left_usb{s:g}mm"
 
 
-def rows_layout(rows):
+def W(name):
+    return os.path.join(WHOLE_DIR, f"{name}.stl")
+
+
+def rows_layout(rows, BED=BED):
     """rows: list of rows (front to back), each a list of (name, mesh). Returns [(name, mesh, (x, y))]."""
     placed = []
     row_h = [max(m.extents[1] for _, m in r) for r in rows]
@@ -143,6 +148,38 @@ def plates():
                 else "Lid A, USB-C panel-mount opening only (glue the connector in)",
                 [[(usb_name(sp), part(os.path.join(SPLIT_DIR, "usb_variants", f"{usb_name(sp)}.stl"), LAY_TOP, FLIP_X, ROT_Z90))]])
             for sp in USB_PM_VARIANTS if os.path.exists(os.path.join(SPLIT_DIR, "usb_variants", f"{usb_name(sp)}.stl"))}
+    return bare_plates(csrc, coupon)
+
+
+def large_plates():
+    """The kit design's plates with whole parts (no split, nothing to glue), for a bed of WHOLE_BED or more."""
+    if not (KIT and os.path.exists(W("lid"))):
+        return {}
+    p = {
+        "large/plate1_lid.3mf": ("Lid, one piece (bed 220 mm or more)", [
+            [("hinge_cover_lid_1", part(O("hinge_cover_lid_x2"), LAY_FLAT_Y)),
+             ("hinge_cover_lid_2", part(O("hinge_cover_lid_x2"), LAY_FLAT_Y))],
+            [("lid", part(W("lid"), LAY_TOP, FLIP_X))],
+        ]),
+        "large/plate2_tray.3mf": ("Keyboard tray, one piece (bed 220 mm or more)", [
+            [("hinge_cover_tray_1", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y)),
+             ("hinge_cover_tray_2", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y))],
+            [("tray", part(W("tray")))],
+        ]),
+        "large/plate3_panel.3mf": ("Bezel panel, one piece (bed 220 mm or more)", [
+            [("panel", part(W("panel")))],
+        ]),
+    }
+    for sp in USB_PM_VARIANTS:
+        n = usb_name(sp).replace("lid_A_left", "lid")
+        p[f"large/usb_variants/{n}.3mf"] = (
+            (f"Lid, one piece, for a USB-C panel mount with {sp:g} mm hole spacing" if sp > 0
+             else "Lid, one piece, USB-C panel-mount opening only (glue the connector in)"),
+            [[(n, part(W(f"usb_variants/{n}"), LAY_TOP, FLIP_X))]])
+    return p
+
+
+def bare_plates(csrc, coupon):
     p = {
         # test coupons: hinge seat, dovetail key, panel corner screw, push-rod bore, plus a rod and two covers
         "plate0_test_coupons.3mf": ("Test coupons (print first)", [
@@ -231,11 +268,14 @@ def write_3mf(path, placed, title):
 
 
 def main():
-    for f in glob.glob(os.path.join(OUT_3MF, "*.3mf")) + glob.glob(os.path.join(OUT_3MF, "usb_variants", "*.3mf")):
-        os.remove(f)                                    # a plate that is no longer made must not linger
+    for sub in ("", "usb_variants", "large", "large/usb_variants"):
+        for f in glob.glob(os.path.join(OUT_3MF, sub, "*.3mf")):
+            os.remove(f)                                # a plate that is no longer made must not linger
     os.makedirs(os.path.join(OUT_3MF, "usb_variants"), exist_ok=True)
-    for fname, (title, rows) in plates().items():
-        placed = placed_layout(rows["place"]) if isinstance(rows, dict) else rows_layout(rows)
+    jobs = [(k, v, BED) for k, v in plates().items()] + [(k, v, WHOLE_BED) for k, v in large_plates().items()]
+    for fname, (title, rows), bed in jobs:
+        os.makedirs(os.path.dirname(os.path.join(OUT_3MF, fname)), exist_ok=True)
+        placed = placed_layout(rows["place"]) if isinstance(rows, dict) else rows_layout(rows, bed)
         path = os.path.join(OUT_3MF, fname)
         write_3mf(path, placed, title)
         # re-load and check what was written
@@ -243,7 +283,7 @@ def main():
         geoms = sc.dump() if isinstance(sc, trimesh.Scene) else [sc]
         lo = np.min([g.bounds[0] for g in geoms], axis=0)
         hi = np.max([g.bounds[1] for g in geoms], axis=0)
-        ok = all(g.is_watertight for g in geoms) and lo[0] >= 0 and lo[1] >= 0 and hi[0] <= BED and hi[1] <= BED \
+        ok = all(g.is_watertight for g in geoms) and lo[0] >= 0 and lo[1] >= 0 and hi[0] <= bed and hi[1] <= bed \
             and abs(lo[2]) < 1e-3
         print(f"{fname}: {len(geoms)} parts, extent x {lo[0]:.1f}..{hi[0]:.1f} y {lo[1]:.1f}..{hi[1]:.1f} "
               f"z {lo[2]:.1f}..{hi[2]:.1f} -> {'OK' if ok else 'CHECK'}")

@@ -67,12 +67,15 @@ log is written to `out/build_log.txt`.
 | `out/hinge_cover_lid_x2.stl`, `out/hinge_cover_tray_x2.stl` | print 2 of each |
 | `out/split/lid_A_left.stl`, `lid_B_main.stl`, `panel_A_left.stl`, `panel_B_main.stl`, `tray_A_left.stl`, `tray_B_main.stl` | A1 mini pieces (≤ 175 mm) |
 | `out/split/usb_variants/lid_A_left_usb*.stl` | lid A for a panel-mount female USB-C: M3 ears 16 / 18 / 20 / 22 / 25 / 28 / 30 mm apart, or none (glue) |
+| `out/whole/lid.stl`, `tray.stl`, `panel.stl`, `out/whole/usb_variants/lid_usb*.stl` | one-piece parts for a bed of 220 mm or more: no split, no keys, and the lid without the ceiling blocks that only carry the keys (each asserted to be the checked part minus material; the panel-mount lids are also checked against the connector) |
 | `out/coupons/*.stl` | hinge seat (lid, tray), dovetail key (A, B), snap tab (lid) + recess (tray) |
 | `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~22 min, 9 g |
 | `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers, ~1 h 18 min, 52 g |
 | `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers, ~1 h 38 min, 64 g |
 | `3mf/plate3_panel.3mf` | panel A + B, ~34 min, 23 g |
 | `3mf/usb_variants/lid_A_left_usb*.3mf` | the lid-A variants, one per file |
+| `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 11 min 51 g, ~1 h 34 min 63 g, ~33 min 23 g (138 g, 3 h 15 min, nothing to glue) |
+| `3mf/large/usb_variants/lid_usb*.3mf` | the panel-mount lids in one piece |
 
 Plates 1–3: about 140 g and 3 h 28 min (the solid kit lid took 87 g and 2 h 45 min for plate 1 alone).
 

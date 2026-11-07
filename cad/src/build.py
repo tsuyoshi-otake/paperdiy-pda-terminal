@@ -872,7 +872,8 @@ def usb_pm_room():
     return top_z(usb_pm_low_y()) - SHELL_CEIL - PANEL_Z1
 
 
-def build_kit_lid_shell(usb="direct"):
+def build_kit_lid_shell(usb="direct", blocks=True):
+    """blocks: the thicker ceiling around the dovetail keys, only needed when the lid is split."""
     bottom, top = LID_UNDER, LID_TOP[:2]
     plan = lid_plan_pieces()
     outer = union(chamfered_slab(cs, bottom, top, LID_CHAMFER) for cs in plan)
@@ -891,7 +892,7 @@ def build_kit_lid_shell(usb="direct"):
         adds.append(box(gx0, KIT_X0 - PANEL_RIM["w"] - 0.3, y0, y1, PANEL_Z1 + 0.1, 60.0))   # stop short of the rim
     g = SPLIT_BLOCK
     adds += [box(SPLIT_X_LID - g["dx"], SPLIT_X_LID + g["dx"], y - g["dy"], y + g["dy"], -10.0, 60.0)
-             ^ half_space(top[0] - g["h"], top[1]) for y in DOVETAIL_Y_KIT]
+             ^ half_space(top[0] - g["h"], top[1]) for y in DOVETAIL_Y_KIT] if blocks else []
     L = L + (union(adds) ^ outer)
     cut, tab = latch_lid_parts()
     L = (L - cut) + tab
@@ -1057,7 +1058,8 @@ def interference(a, b, name, tol=0.5):
 # ------------------------------------------------------------------ main
 def clean_outputs():
     """Remove generated STLs and renders first, so a part that is no longer built does not linger in out/."""
-    for pat in ("out/*.stl", "out/split/*.stl", "out/split/usb_variants/*.stl", "out/coupons/*.stl", "renders/*.png"):
+    for pat in ("out/*.stl", "out/split/*.stl", "out/split/usb_variants/*.stl", "out/whole/*.stl", "out/whole/usb_variants/*.stl",
+                "out/coupons/*.stl", "renders/*.png"):
         for f in glob.glob(os.path.join(CAD_DIR, pat)):
             os.remove(f)
 
@@ -1134,6 +1136,20 @@ def main_kit():
             usb_variants[sp] = va + lb
             log(f"    {name}: opening {usb_pm_opening_w(sp):.1f} x {USB_PM_H:.1f} mm at y = {USB_PM_Y_KIT:g}, z = {usb_pm_zc():.1f}"
                 + (f", M3 holes {sp:g} mm apart" if sp > 0 else ", no screw holes (glue)"))
+        # Whole parts for printers with a bed of WHOLE_BED or more: no split, no dovetail keys, and the lid without the
+        # thicker ceiling blocks that only carry the keys. Each is the checked part minus material (asserted), so the
+        # interference checks below hold for them too.
+        log(f"== whole parts for printers with a {WHOLE_BED:.0f} mm bed or bigger (no split, no dovetails, nothing to glue)")
+        os.makedirs(os.path.join(WHOLE_DIR, "usb_variants"), exist_ok=True)
+        whole = {"lid": (build_kit_lid_shell(blocks=False), lid), "tray": (tray, tray), "panel": (panel, panel)}
+        whole_pm = {sp: build_kit_lid_shell(usb=sp, blocks=False) for sp in USB_PM_VARIANTS}
+        whole.update({f"usb_variants/{usb_variant_name(sp).replace('lid_A_left', 'lid')}":
+                      (v, build_kit_lid_shell(usb=sp)) for sp, v in whole_pm.items()})
+        for k, (v, checked) in whole.items():
+            assert (v - checked).volume() < 0.01, (k, "a whole part must not add material to its full-block version")
+            tm = export(v, f"{WHOLE_DIR}/{k}.stl")
+            assert max(tm.extents[:2]) <= WHOLE_BED - 6.0, (k, tm.extents)
+        log(f"  lid without the dovetail blocks: {whole['lid'][0].volume() / 1000:.2f} cm3 (split lid {lid.volume() / 1000:.2f} cm3)")
     log("== test coupons (cut from the real parts; print these first)")
     coupon_src = {}
     for k, (v, src) in build_kit_coupons(lid, tray, ta, tb).items():
@@ -1157,6 +1173,7 @@ def main_kit():
             interference(env, full, f"{usb_variant_name(sp)}: panel-mount female vs lid", tol=0.05)
             interference(env, panel, f"{usb_variant_name(sp)}: panel-mount female vs panel", tol=0.05)
             interference(env, kit, f"{usb_variant_name(sp)}: panel-mount female vs kit", tol=0.05)
+            interference(env, whole_pm[sp], f"{usb_variant_name(sp)}: panel-mount female vs the one-piece lid", tol=0.05)
         log(f"  panel-mount female: ears and body up to {usb_pm_room() - 0.2:.1f} mm tall fit between the panel and the ceiling")
     interference(la, lb, "lid A vs B (dovetail)"); interference(ta, tb, "tray A vs B (dovetail)")
     h_fixed, h_moving = hinge_envelope(0.0)

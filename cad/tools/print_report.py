@@ -81,9 +81,10 @@ def slicer():
     return exe
 
 
-def slice_file(exe, path, tmp):
+def slice_file(exe, path, tmp, bed=None):
     out = os.path.join(tmp, os.path.basename(path) + ".gcode")
-    r = subprocess.run([exe, "--export-gcode", "--load", INI, "--dont-arrange", "-o", out, path],
+    extra = ["--bed-shape", f"0x0,{bed:g}x0,{bed:g}x{bed:g},0x{bed:g}"] if bed else []
+    r = subprocess.run([exe, "--export-gcode", "--load", INI, *extra, "--dont-arrange", "-o", out, path],
                        capture_output=True, text=True, timeout=900)
     text = r.stdout + r.stderr
     warn = []
@@ -171,6 +172,22 @@ def main():
         else:
             lines += ["", f"Plates 1-3 together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
                       "of printing (plate 0, the test coupons, and the optional plates 4 and 5, front clip and magnet jigs, come on top).", ""]
+        large = sorted(glob.glob(os.path.join(CAD, "3mf", "large", "plate*.3mf")))
+        if large:
+            lines += ["### One-piece plates for bigger printers (`3mf/large/`, sliced on a 220 x 220 mm bed)", "",
+                      "| Plate | Time | Filament | Slicer stability warnings |", "| --- | --- | --- | --- |"]
+            lg, lm = 0.0, 0
+            for p in large:
+                r = slice_file(exe, p, tmp, bed=220)
+                report["large/" + os.path.basename(p)] = r
+                if not r["ok"]:
+                    lines.append(f"| large/{os.path.basename(p)} | slicing failed | | {r.get('error', '')[:80]} |")
+                    continue
+                lg += r["grams"]; lm += minutes(r["time"])
+                lines.append(f"| `large/{os.path.basename(p)}` | {r['time']} | {r['grams']:.0f} g ({r['metres']:.1f} m) | "
+                             f"{'; '.join(r['warnings']) if r['warnings'] else 'none'} |")
+            lines += ["", f"Together: about **{lg:.0f} g** and **{lm // 60} h {lm % 60:02d} min**, with nothing to glue.", ""]
+            report["large_total_g"], report["large_total_min"] = lg, lm
         seen = sorted({w.split(":")[0] for r in report.values() if isinstance(r, dict) for w in r.get("warnings", [])})
         for k in seen:
             lines.append(f"- *{k}*: {KNOWN.get(k, 'not reviewed yet - look at it in the slicer preview')}")

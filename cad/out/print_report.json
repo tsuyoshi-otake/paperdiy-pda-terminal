@@ -31,6 +31,29 @@
   "grams": 23.34,
   "metres": 7.82606
  },
+ "large/plate1_lid.3mf": {
+  "warnings": [],
+  "ok": true,
+  "time": "1h 10m 41s",
+  "grams": 51.12,
+  "metres": 17.14062
+ },
+ "large/plate2_tray.3mf": {
+  "warnings": [],
+  "ok": true,
+  "time": "1h 33m 33s",
+  "grams": 63.14,
+  "metres": 21.170080000000002
+ },
+ "large/plate3_panel.3mf": {
+  "warnings": [],
+  "ok": true,
+  "time": "32m 38s",
+  "grams": 23.34,
+  "metres": 7.82553
+ },
+ "large_total_g": 137.6,
+ "large_total_min": 195,
  "total_g": 139.67,
  "total_min": 208,
  "lid_g": 125.74000000000001,

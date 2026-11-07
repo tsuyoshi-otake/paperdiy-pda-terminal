@@ -21,8 +21,9 @@ import trimesh
 
 CAD = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MANIFEST = os.path.join(CAD, "out", "MANIFEST.json")
-PATTERNS = ["out/*.stl", "out/split/*.stl", "out/split/usb_variants/*.stl", "out/coupons/*.stl",
-            "out/assembly.json", "out/coupons/orientation.json", "3mf/*.3mf", "3mf/usb_variants/*.3mf"]
+PATTERNS = ["out/*.stl", "out/split/*.stl", "out/split/usb_variants/*.stl", "out/whole/*.stl", "out/whole/usb_variants/*.stl",
+            "out/coupons/*.stl", "out/assembly.json", "out/coupons/orientation.json", "3mf/*.3mf", "3mf/usb_variants/*.3mf",
+            "3mf/large/*.3mf", "3mf/large/usb_variants/*.3mf"]
 
 
 def sha(path):

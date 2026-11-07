@@ -23,6 +23,7 @@ ORIG_SHA256 = {
 }
 OUT_DIR = os.path.join(CAD_DIR, "out")
 SPLIT_DIR = os.path.join(OUT_DIR, "split")
+WHOLE_DIR = os.path.join(OUT_DIR, "whole")   # lid, tray and panel in one piece each, for bigger printers
 RENDER_DIR = os.path.join(CAD_DIR, "renders")
 
 # ---------------------------------------------------------------- original enclosure (measured from the STLs)
@@ -258,6 +259,7 @@ SPLIT_X_LID = -72.0           # clear of hinge knuckle (|x|<=44) and camera wind
 SPLIT_X_TRAY = -72.0          # clear of tray hinge ears (|x| 46..61) and rear opening (x 72.9..89.1)
 SPLIT_X_PANEL = -72.0         # clear of the window bevel (x>=-52.1)
 MAX_PIECE = 175.0
+WHOLE_BED = 220.0   # the unsplit plates are laid out on a 220 x 220 mm bed (fits 220 mm beds and bigger)
 DOVETAIL = dict(neck=6.0, head=10.0, depth=6.0, clr=0.2)   # glued dovetail keys (0.4 total clearance)
 DOVETAIL_Y = (-25.0, 0.0, 25.0)
 DOWEL_D = 3.3                 # for 3 mm dowel pins (3x10)

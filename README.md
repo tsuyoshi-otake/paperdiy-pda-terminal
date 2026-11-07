@@ -27,7 +27,7 @@ English: [cad/README.md](cad/README.md); the assembly guide and firmware notes a
 
 1. 部品を買う前に、CACOE が BLE キーボードとして見えるか、キーボードの重さと厚さを確かめる
 2. `cad/3mf/plate0_test_coupons.3mf`（約 20 分）を刷って、ヒンジ・蟻ほぞ・留めツメのはめあいを確かめる
-3. 本番の 3 枚（蓋・トレイ・化粧パネル、約 3 時間 30 分・PLA 約 140 g、Bambu Lab A1 mini）を刷る
+3. 本番の 3 枚（蓋・トレイ・化粧パネル、約 3 時間 30 分・PLA 約 140 g、Bambu Lab A1 mini）を刷る。造形範囲が 220 mm 角以上のプリンターなら、分割しない一体の版（`cad/3mf/large/`、貼り合わせ不要）も使える
 4. ファームを書き込んでから組み立てる。PaperDIY は Complete Kit のケースに入れたまま使い、ねじは M2×8 皿タッピング 14 本（ヒンジ 8、化粧パネル 6）だけ
 
 | フォルダ | 内容 |

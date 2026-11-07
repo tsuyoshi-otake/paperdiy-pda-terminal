@@ -35,6 +35,19 @@
     lid_A_left_usb28mm: opening 13.0 x 7.0 mm at y = 20, z = 20.6, M3 holes 28 mm apart
   out/split/usb_variants/lid_A_left_usb30mm.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=7844 mm3
     lid_A_left_usb30mm: opening 13.0 x 7.0 mm at y = 20, z = 20.6, M3 holes 30 mm apart
+== whole parts for printers with a 220 mm bed or bigger (no split, no dovetails, nothing to glue)
+  out/whole/lid.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42998 mm3
+  out/whole/tray.stl: bbox 202.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=79710 mm3
+  out/whole/panel.stl: bbox 198.4 x 95.9 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=18745 mm3
+  out/whole/usb_variants/lid_usb_noscrew.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42802 mm3
+  out/whole/usb_variants/lid_usb16mm.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42805 mm3
+  out/whole/usb_variants/lid_usb18mm.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42782 mm3
+  out/whole/usb_variants/lid_usb20mm.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42773 mm3
+  out/whole/usb_variants/lid_usb22mm.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42773 mm3
+  out/whole/usb_variants/lid_usb25mm.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42773 mm3
+  out/whole/usb_variants/lid_usb28mm.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42773 mm3
+  out/whole/usb_variants/lid_usb30mm.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42773 mm3
+  lid without the dovetail blocks: 43.00 cm3 (split lid 44.24 cm3)
 == test coupons (cut from the real parts; print these first)
   out/coupons/coupon_hinge_tray.stl: bbox 27.0 x 17.0 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=3196 mm3
   out/coupons/coupon_hinge_lid.stl: bbox 27.0 x 17.0 x 14.4 mm, watertight=True, winding_ok=True, bodies=1, vol=3239 mm3
@@ -56,27 +69,35 @@
   interference lid_A_left_usb_noscrew: panel-mount female vs lid: 0.000 mm3 OK
   interference lid_A_left_usb_noscrew: panel-mount female vs panel: 0.000 mm3 OK
   interference lid_A_left_usb_noscrew: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb_noscrew: panel-mount female vs the one-piece lid: 0.000 mm3 OK
   interference lid_A_left_usb16mm: panel-mount female vs lid: 0.000 mm3 OK
   interference lid_A_left_usb16mm: panel-mount female vs panel: 0.000 mm3 OK
   interference lid_A_left_usb16mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb16mm: panel-mount female vs the one-piece lid: 0.000 mm3 OK
   interference lid_A_left_usb18mm: panel-mount female vs lid: 0.000 mm3 OK
   interference lid_A_left_usb18mm: panel-mount female vs panel: 0.000 mm3 OK
   interference lid_A_left_usb18mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb18mm: panel-mount female vs the one-piece lid: 0.000 mm3 OK
   interference lid_A_left_usb20mm: panel-mount female vs lid: 0.000 mm3 OK
   interference lid_A_left_usb20mm: panel-mount female vs panel: 0.000 mm3 OK
   interference lid_A_left_usb20mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb20mm: panel-mount female vs the one-piece lid: 0.000 mm3 OK
   interference lid_A_left_usb22mm: panel-mount female vs lid: 0.000 mm3 OK
   interference lid_A_left_usb22mm: panel-mount female vs panel: 0.000 mm3 OK
   interference lid_A_left_usb22mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb22mm: panel-mount female vs the one-piece lid: 0.000 mm3 OK
   interference lid_A_left_usb25mm: panel-mount female vs lid: 0.000 mm3 OK
   interference lid_A_left_usb25mm: panel-mount female vs panel: 0.000 mm3 OK
   interference lid_A_left_usb25mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb25mm: panel-mount female vs the one-piece lid: 0.000 mm3 OK
   interference lid_A_left_usb28mm: panel-mount female vs lid: 0.000 mm3 OK
   interference lid_A_left_usb28mm: panel-mount female vs panel: 0.000 mm3 OK
   interference lid_A_left_usb28mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb28mm: panel-mount female vs the one-piece lid: 0.000 mm3 OK
   interference lid_A_left_usb30mm: panel-mount female vs lid: 0.000 mm3 OK
   interference lid_A_left_usb30mm: panel-mount female vs panel: 0.000 mm3 OK
   interference lid_A_left_usb30mm: panel-mount female vs kit: 0.000 mm3 OK
+  interference lid_A_left_usb30mm: panel-mount female vs the one-piece lid: 0.000 mm3 OK
   panel-mount female: ears and body up to 7.8 mm tall fit between the panel and the ceiling
   interference lid A vs B (dovetail): -0.000 mm3 OK
   interference tray A vs B (dovetail): 0.000 mm3 OK
