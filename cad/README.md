@@ -469,8 +469,10 @@ byte-identical. Renders inspected visually.
 
 ## Licence & attribution
 Derived from **"The PDA Terminal" / phone-enclosure by Un Kyu Lee** — https://github.com/unkyulee/phone-enclosure —
-licensed **CC BY-NC 4.0** (https://creativecommons.org/licenses/by-nc/4.0/). This derivative is under the same licence,
-non-commercial use only. Changes are listed above. The PaperDIY is a product of M5Stack; its dimensions come from M5Stack's
+licensed **CC BY-NC 4.0** (https://creativecommons.org/licenses/by-nc/4.0/). The models and the images made from them
+(`out/`, `3mf/`, `renders/`, `../docs/images/`) are under the same licence, non-commercial use only: see
+[LICENSE.md](LICENSE.md). The scripts that build them (`src/`, `tools/`) and the documentation are under the
+repository's [MIT License](../LICENSE). Changes are listed above. The PaperDIY is a product of M5Stack; its dimensions come from M5Stack's
 published drawing and structure files.
 
 ## Parameters (`src/params.py`, all of them)

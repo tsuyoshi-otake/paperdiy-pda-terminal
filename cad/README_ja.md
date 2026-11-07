@@ -98,4 +98,4 @@ make render    # 完成予想図（docs/images/render_*.png、色違いも）
 
 ## ライセンス
 
-元データ「The PDA Terminal / phone-enclosure」（Un Kyu Lee、[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)）の改変物なので、このデータも **CC BY-NC 4.0（非営利のみ）** です。変更点は `README.md` の「Changes vs. the original」に書いてあります。PaperDIY の寸法は M5Stack が公開している図面と構造データ（[M5_Hardware](https://github.com/m5stack/M5_Hardware) の K159-B）によります。
+筐体の 3D データ（`out/`、`3mf/`、`renders/`）と、それを描いた画像（`../docs/images/`）は、元データ「The PDA Terminal / phone-enclosure」（Un Kyu Lee、[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)）の改変物なので、**CC BY-NC 4.0（非営利のみ）** です（[LICENSE.md](LICENSE.md)）。変更点は `README.md` の「Changes vs. the original」に書いてあります。データを作るスクリプト（`src/`、`tools/`）と文書は、リポジトリ全体と同じ [MIT ライセンス](../LICENSE) です。PaperDIY の寸法は M5Stack が公開している図面と構造データ（[M5_Hardware](https://github.com/m5stack/M5_Hardware) の K159-B）によります。

@@ -2,6 +2,11 @@
 
 M5Stack PaperDIY（4.7 型 e-paper、ESP32-S3）を画面に、CACOE キーボードを BLE でつないだ、PDA 風クラムシェルの SSH 端末です。Un Kyu Lee さんの [phone-enclosure](https://github.com/unkyulee/phone-enclosure)（Boox Palma 2 + CACOE キーボード）を元にしています。
 
+*English:* a clamshell SSH terminal with an M5Stack PaperDIY (4.7" e-paper, ESP32-S3) as the screen and a CACOE
+keyboard over BLE, in a 3D-printed case derived from Un Kyu Lee's phone-enclosure. The firmware (ESP-IDF, reproducible
+build) pairs the keyboard, joins Wi-Fi and runs an SSH terminal; the case prints on a Bambu Lab A1 mini. Details in
+English: [cad/README.md](cad/README.md); the assembly guide and firmware notes are in Japanese.
+
 ![完成予想（開いたところ）](docs/images/render_open.png)
 
 <p align="center"><img src="docs/images/render_closed.png" width="49%" alt="完成予想（閉じたところ）"> <img src="docs/images/render_back.png" width="49%" alt="完成予想（背面のヒンジ）"></p>
@@ -12,7 +17,7 @@ M5Stack PaperDIY（4.7 型 e-paper、ESP32-S3）を画面に、CACOE キーボ�
 
 <p align="center"><img src="docs/images/render_open_black.png" width="32%" alt="黒だけ"> <img src="docs/images/render_open_khaki.png" width="32%" alt="カーキだけ"> <img src="docs/images/render_open_mix.png" width="32%" alt="ミックス（蓋がカーキ、トレイと化粧パネルが黒）"></p>
 
-> **試作段階です。** ファームはビルド（同じソースから同じバイナリができる再現可能ビルド）とホスト上のテストまで、筐体はデータ上のチェックとスライサーでの検査まで済んでいます。実機での動作確認、印刷、仮組みはまだです。
+> **試作段階です。** ファームは実機の PaperDIY で動いています（画面の表示、CACOE キーボードの BLE 接続と自動ペアリング、Wi-Fi、Raspberry Pi への SSH ログインまで確認）。同じソースから同じバイナリができる再現可能ビルドで、端末エミュレータはホスト上でテストしています。筐体は前の版（PaperDIY の基板をそのまま載せる版）を印刷して組み、キーボードのがたつきや開いたときのすき間などを直しました。今の版（Complete Kit のケースごと入れる中空の蓋と化粧パネル）は、データ上のチェックとスライサーでの検査までで、まだ印刷していません。
 
 ## 作り方
 
@@ -36,7 +41,7 @@ M5Stack PaperDIY（4.7 型 e-paper、ESP32-S3）を画面に、CACOE キーボ�
 
 ## 実機で確かめること
 
-1. CACOE が BLE の HID キーボードとして見えるか（スマホの nRF Connect などで、HID サービス 0x1812 を広告しているか）。ESP32-S3 は Bluetooth Classic に対応しないため、BLE で見えなければつながりません
+1. ~~CACOE が BLE の HID キーボードとして見えるか~~ → つながりました（Esc は Fn＋スペース、SSH 中は Ctrl＋[ でも出せます）。別のキーボードを使うときは、BLE の HID キーボードか確かめてください（ESP32-S3 は Bluetooth Classic に対応しません）
 2. CACOE の重さと寸法。76 g 以上なら蓋をどこまで開いても後ろに倒れません。厚さ（キートップまで）は蓋の高さを決めるので、測って `cad/src/params.py` の `KB_TOP_Z` に入れます（いまは 11.5 mm を想定）。幅と奥行きはトレイを詰めるのに使います
 3. CACOE をトレイに置いて、元からある開口から充電ケーブルを挿せるか、スイッチに届くか（充電ケーブルを挿したままだと蓋は 95° まで）
 4. PaperDIY 内蔵の 140 mAh でどれくらい使えるか（足りなければモバイルバッテリー）
@@ -61,5 +66,7 @@ make render     # README の画像を描き直す（Node.js）
 
 ## ライセンス
 
-- `cad/`：phone-enclosure（Un Kyu Lee、[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)）の改変物なので、同じ **CC BY-NC 4.0（非営利のみ）** です。変更点は [`cad/README.md`](cad/README.md) にあります。
-- `firmware/`：まだ決めていません。使っているライブラリ（M5GFX、M5Unified：MIT、libssh2：BSD-3-Clause、ESP-IDF：Apache-2.0）はビルド時に取得します。
+- **ソースコードと文書は [MIT ライセンス](LICENSE)** です（`firmware/`、`cad/src/`、`cad/tools/`、`docs/` のスクリプト、`Makefile`、CI、Markdown の文書）。
+- **筐体の 3D データと、それを描いた画像は [CC BY-NC 4.0（非営利のみ）](cad/LICENSE.md)** です（`cad/out/`、`cad/3mf/`、`cad/renders/`、`docs/images/`）。Un Kyu Lee さんの [phone-enclosure](https://github.com/unkyulee/phone-enclosure)（[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)）の改変物なので、MIT にはできません。変更点は [`cad/README.md`](cad/README.md#changes-vs-the-original-for-the-licence-indicate-changes) にあります。
+- **ビルド済みのファーム**（`firmware/prebuilt/`）には、ビルド時に取得するライブラリ（M5GFX・M5Unified：MIT、LovyanGFX：FreeBSD、efont：BSD 系、libssh2：BSD-3-Clause、ESP-IDF：Apache-2.0 ほか）が入っています。著作権表示とライセンス本文は [`firmware/prebuilt/THIRD_PARTY_NOTICES.md`](firmware/prebuilt/THIRD_PARTY_NOTICES.md) にあります。
+- M5Stack、PaperDIY、スガツネ（HG-MF08）、CACOE はそれぞれの会社の名称です。このプロジェクトはどの会社とも関係ありません。

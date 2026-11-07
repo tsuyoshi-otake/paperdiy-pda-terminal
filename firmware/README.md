@@ -96,6 +96,10 @@ make firmware-docker   # Docker があれば espressif/idf:v5.5.6 のコンテ�
 | メニューの 0 | SSH を切断 |
 | 電源ボタン 2 回押し | 電源オフ（PaperDIY 本体の機能） |
 
+Esc キーのないキーボードでは、キーボードの Fn 層の Esc を使います（CACOE は Fn＋スペース）。SSH 中は Ctrl＋[ でも Esc が送れます。
+
+接続できないときは、画面のエラーに、つなぎに行った IP とポート、この端末の IP が出ます。USB でつないでシリアルログ（115200 bps）を見ると、接続の各段階と、起動時・接続時の空きメモリも分かります。
+
 ## 公開鍵認証
 
 libssh2 の mbedTLS 版は **PEM 形式の RSA / ECDSA 鍵**だけを読めます。ED25519 鍵と OpenSSH 新形式（`BEGIN OPENSSH PRIVATE KEY`）は使えません。
@@ -144,4 +148,4 @@ ssh-keygen -p -m PEM -f 既存のRSAかECDSA鍵           # 既存鍵を PEM に
 - [ESP-IDF](https://github.com/espressif/esp-idf) v5.5.6（Apache-2.0）。esp_hid の HID ホストを利用
 - 日本語フォント：M5GFX 同梱の efont
 
-このファームウェア自体のライセンスは未設定です。公開するときに決めてください。
+このファームウェアのソースコードは [MIT ライセンス](../LICENSE) です。ビルド済みのファーム（`prebuilt/`）に入っているライブラリの著作権表示とライセンス本文は [`prebuilt/THIRD_PARTY_NOTICES.md`](prebuilt/THIRD_PARTY_NOTICES.md) にあります。
