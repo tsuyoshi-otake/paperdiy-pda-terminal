@@ -116,7 +116,9 @@ void Renderer::begin(M5GFX* gfx, int font_px, bool rotate180)
     font_px_ = (font_px == 16) ? 16 : 24;
     gfx_->setAutoDisplay(false);
     int r = gfx_->getRotation();
-    if (gfx_->width() < gfx_->height()) r = (r + 1) & 3;  // landscape: 960 x 540
+    // landscape (960 x 540), upright with the USB-C end on the left and the KEY buttons on top, as the kit sits in
+    // the enclosure's lid ((r + 1) & 3 was upside down that way, checked on a PaperDIY)
+    if (gfx_->width() < gfx_->height()) r = (r + 3) & 3;
     s_base_rotation = r;
     gfx_->setRotation(rotate180 ? ((r + 2) & 3) : r);
     layout();

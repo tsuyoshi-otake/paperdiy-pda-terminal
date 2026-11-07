@@ -42,7 +42,7 @@ cd firmware
 idf.py build flash monitor # ターゲット（esp32s3）は sdkconfig.defaults で決まっています
 ```
 
-**再現可能ビルド**：`sdkconfig.defaults` の `CONFIG_APP_REPRODUCIBLE_BUILD=y` で、日時やビルドしたフォルダのパスがバイナリに入らないようにしてあり、バージョンも `version.txt`（0.2.0）で固定しています。ESP-IDF v5.5.6 なら、どこでビルドしても `prebuilt/` と同じバイナリになります（ここで 3 か所と、GitHub Actions のコンテナで確認済み）。リポジトリのルートで
+**再現可能ビルド**：`sdkconfig.defaults` の `CONFIG_APP_REPRODUCIBLE_BUILD=y` で、日時やビルドしたフォルダのパスがバイナリに入らないようにしてあり、バージョンも `version.txt`（0.2.1）で固定しています。ESP-IDF v5.5.6 なら、どこでビルドしても `prebuilt/` と同じバイナリになります（ここで 3 か所と、GitHub Actions のコンテナで確認済み）。リポジトリのルートで
 
 ```bash
 make firmware          # 上の export.sh を読み込んだシェルで。ビルドして prebuilt/ と 1 バイトずつ比べる
