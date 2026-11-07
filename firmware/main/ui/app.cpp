@@ -259,9 +259,11 @@ void App::bootWaitForKeyboard()
     if (settings::keyboardGet(saved)) {
         say(std::string("登録済みのキーボード「") + saved.name + "」を探しています。");
         say("キーボードの電源を入れて、どれかキーを押してください。");
-        say("別のキーボードを使うときはボタンA を押します。");
+        say("ペアリング待ちの別のキーボードが近くにあれば、そちらに自動でつなぎます。");
+        say("一覧から選ぶときはボタンA を押します。");
         for (int i = 0; i < 120; ++i) {  // up to 30 s
             if (blekbd::state() == blekbd::State::Connected) return;
+            if (blekbd::passkey()) break;  // pairing another keyboard: the pairing screen shows the passkey
             KeyEvent ev;
             if (getKey(ev, 250) && ev.key == input::kKeyButtonA) break;
         }
@@ -273,8 +275,15 @@ void App::bootWaitForKeyboard()
 void App::pairingScreen(bool from_menu)
 {
     for (;;) {
+        // With no keyboard connected, the Bluetooth task looks for one by itself (blekbd): show how that goes.
+        const bool watch_auto = blekbd::state() != blekbd::State::Connected;
         cls("キーボードの接続");
-        say("キーボードをペアリング（接続待ち）の状態にしてから、ボタンA を押すと検索します。");
+        if (watch_auto) {
+            say("キーボードをペアリング（接続待ち）の状態にしてください。近くにあれば自動で見つけて接続します。");
+            say("一覧から選ぶときはボタンA を押します。");
+        } else {
+            say("キーボードをペアリング（接続待ち）の状態にしてから、ボタンA を押すと検索します。");
+        }
         settings::Keyboard saved;
         if (settings::keyboardGet(saved)) {
             say(std::string("登録済み: ") + saved.name + "（キーを押せば自動でつながります）");
@@ -284,11 +293,35 @@ void App::pairingScreen(bool from_menu)
 
         KeyEvent ev;
         bool start_scan = false;
+        bool connecting = false;
+        uint32_t shown_pk = 0;
         while (!start_scan) {
-            if (!getKey(ev, 500)) {
-                if (!from_menu && blekbd::state() == blekbd::State::Connected) return;
-                continue;
+            if (watch_auto) {
+                const auto st = blekbd::state();
+                if (st == blekbd::State::Connected) {
+                    say("接続しました: " + blekbd::deviceName());
+                    vTaskDelay(pdMS_TO_TICKS(1200));
+                    return;
+                }
+                if (st == blekbd::State::Connecting && !connecting) {
+                    connecting = true;
+                    const std::string n = blekbd::targetName();
+                    say("「" + (n.empty() ? std::string("(名前なし)") : n) + "」に接続しています…");
+                }
+                const uint32_t pk = blekbd::passkey();
+                if (pk && pk != shown_pk) {
+                    shown_pk = pk;
+                    console_->printf("キーボードで次の数字を入力して Enter を押してください:\r\n\r\n    %s %06lu %s\r\n\r\n",
+                                     kInv, static_cast<unsigned long>(pk), kNorm);
+                }
+                if (connecting && st != blekbd::State::Connecting) {
+                    connecting = false;
+                    shown_pk = 0;
+                    const std::string e = blekbd::lastError();
+                    say("つながりませんでした" + (e.empty() ? std::string() : "（" + e + "）") + "。続けて探します。");
+                }
             }
+            if (!getKey(ev, 500)) continue;
             if (ev.key == input::kKeyButtonA || ev.key == input::kKeyEnter) start_scan = true;
             else if (from_menu && (ev.key == input::kKeyButtonB || ev.key == input::kKeyEscape)) return;
         }

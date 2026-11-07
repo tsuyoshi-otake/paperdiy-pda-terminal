@@ -23,15 +23,29 @@ namespace {
 
 constexpr char kTag[] = "blekbd";
 constexpr uint16_t kHidServiceUuid = 0x1812;
+constexpr int kAutoPairMinRssi = -80;              // only keyboards close by pair on their own
+constexpr uint32_t kAutoPairRetryMs = 120 * 1000;  // after a failed automatic attempt (nobody typed the passkey)
+constexpr uint32_t kForgottenMs = 300 * 1000;      // a keyboard just forgotten in the menu
 
 std::function<void()> s_on_change;
 std::atomic<State> s_state{State::Off};
 std::atomic<uint32_t> s_passkey{0};
 std::atomic<int> s_battery{-1};
 std::atomic<bool> s_auto{true};
+std::atomic<bool> s_auto_pair{true};
 std::mutex s_info_mtx;
 std::string s_name;
+std::string s_target_name;
 std::string s_error;
+
+// Keyboards that an automatic pairing attempt failed with, or that were just forgotten: left alone for a while,
+// so a keyboard nobody is typing the passkey on does not keep the others from being found.
+struct Cooldown {
+    uint8_t bda[6];
+    TickType_t until;
+};
+std::mutex s_cool_mtx;
+std::vector<Cooldown> s_cooldown;
 
 SemaphoreHandle_t s_op_mtx = nullptr;    // serialises scan / connect
 SemaphoreHandle_t s_scan_param = nullptr;
@@ -69,6 +83,48 @@ void changed()
     if (s_on_change) s_on_change();
 }
 
+void coolDown(const uint8_t* bda, uint32_t ms)
+{
+    std::lock_guard<std::mutex> lk(s_cool_mtx);
+    const TickType_t until = xTaskGetTickCount() + pdMS_TO_TICKS(ms);
+    for (auto& c : s_cooldown) {
+        if (memcmp(c.bda, bda, 6) == 0) {
+            c.until = until;
+            return;
+        }
+    }
+    if (s_cooldown.size() >= 8) s_cooldown.erase(s_cooldown.begin());
+    Cooldown c{};
+    memcpy(c.bda, bda, 6);
+    c.until = until;
+    s_cooldown.push_back(c);
+}
+
+bool coolingDown(const uint8_t* bda)
+{
+    std::lock_guard<std::mutex> lk(s_cool_mtx);
+    const TickType_t now = xTaskGetTickCount();
+    for (const auto& c : s_cooldown) {
+        if (memcmp(c.bda, bda, 6) == 0) return static_cast<int32_t>(c.until - now) > 0;
+    }
+    return false;
+}
+
+// A keyboard waiting to be paired: discoverable, HID with a keyboard (or no specific) appearance, close by.
+bool pairingCandidate(const Device& d)
+{
+    const bool keyboard_like = d.appearance == 0 || d.appearance == 0x03C0 || d.appearance == 0x03C1;
+    return d.hid && keyboard_like && (d.flags & 0x03) && d.rssi >= kAutoPairMinRssi && !coolingDown(d.bda);
+}
+
+// Limited discoverable (a pairing button was pressed) first, then the stronger signal.
+bool betterCandidate(const Device& a, const Device& b)
+{
+    const bool la = a.flags & 0x01, lb = b.flags & 0x01;
+    if (la != lb) return la;
+    return a.rssi > b.rssi;
+}
+
 void setError(const std::string& e)
 {
     std::lock_guard<std::mutex> lk(s_info_mtx);
@@ -89,6 +145,9 @@ void handleAdv(const esp_ble_gap_cb_param_t::ble_scan_result_evt_param& r)
     if (!p) p = esp_ble_resolve_adv_data_by_type(adv, total, ESP_BLE_AD_TYPE_NAME_SHORT, &len);
     if (p && len) memcpy(d.name, p, std::min<size_t>(len, sizeof(d.name) - 1));
 
+    p = esp_ble_resolve_adv_data_by_type(adv, total, ESP_BLE_AD_TYPE_FLAG, &len);
+    if (p && len >= 1) d.flags = p[0];
+
     p = esp_ble_resolve_adv_data_by_type(adv, total, ESP_BLE_AD_TYPE_APPEARANCE, &len);
     if (p && len >= 2) d.appearance = p[0] | (p[1] << 8);
 
@@ -104,6 +163,7 @@ void handleAdv(const esp_ble_gap_cb_param_t::ble_scan_result_evt_param& r)
         if (memcmp(e.bda, d.bda, 6) == 0) {
             e.rssi = std::max(e.rssi, d.rssi);
             e.hid |= d.hid;
+            e.flags |= d.flags;
             if (!e.appearance) e.appearance = d.appearance;
             if (!e.name[0] && d.name[0]) memcpy(e.name, d.name, sizeof(d.name));
             return;
@@ -243,6 +303,10 @@ bool connectLocked(const Device& d)
         s_target_lost = false;
     }
     s_auth_failed = false;
+    {
+        std::lock_guard<std::mutex> lk(s_info_mtx);
+        s_target_name = d.name;
+    }
     s_state = State::Connecting;
     s_passkey = 0;
     setError("");
@@ -304,18 +368,37 @@ void bleTask(void*)
             changed();
             continue;
         }
-        // Auto-reconnect to the saved keyboard: it advertises again after a key press.
+        // Nothing connected: reconnect the saved keyboard (it advertises again after a key press), or else pair
+        // with a keyboard nearby that is waiting to be paired.
+        if (!s_auto || s_state != State::Idle) continue;
         settings::Keyboard saved;
-        if (!s_auto || s_state != State::Idle || !settings::keyboardGet(saved)) continue;
+        const bool have_saved = settings::keyboardGet(saved);
+        if (!have_saved && !s_auto_pair) continue;
         xSemaphoreTake(s_op_mtx, portMAX_DELAY);
-        auto found = scanLocked(4);
+        if (s_state != State::Idle) {
+            xSemaphoreGive(s_op_mtx);
+            continue;
+        }
+        const auto found = scanLocked(4);
+        const Device* pick = nullptr;
         for (const auto& d : found) {
+            if (!have_saved) break;
             const bool same_addr = memcmp(d.bda, saved.bda, 6) == 0;
             const bool same_name = d.hid && saved.name[0] && strncmp(d.name, saved.name, sizeof(saved.name)) == 0;
             if (same_addr || same_name) {
-                connectLocked(d);
+                pick = &d;
                 break;
             }
+        }
+        const bool pairing = !pick && s_auto_pair;
+        for (const auto& d : found) {
+            if (!pairing) break;
+            if (pairingCandidate(d) && (!pick || betterCandidate(d, *pick))) pick = &d;
+        }
+        if (pick) {
+            const Device d = *pick;
+            if (pairing) ESP_LOGI(kTag, "auto pairing with %s (%d dBm, flags 0x%02x)", d.name, d.rssi, d.flags);
+            if (!connectLocked(d) && pairing) coolDown(d.bda, kAutoPairRetryMs);
         }
         xSemaphoreGive(s_op_mtx);
     }
@@ -381,6 +464,12 @@ std::string deviceName()
 int batteryLevel() { return s_battery; }
 uint32_t passkey() { return s_passkey; }
 
+std::string targetName()
+{
+    std::lock_guard<std::mutex> lk(s_info_mtx);
+    return s_target_name;
+}
+
 std::string lastError()
 {
     std::lock_guard<std::mutex> lk(s_info_mtx);
@@ -420,7 +509,10 @@ bool connectResult(uint32_t ticket, bool& ok)
 void forget()
 {
     settings::Keyboard saved;
-    if (settings::keyboardGet(saved)) esp_ble_remove_bond_device(saved.bda);
+    if (settings::keyboardGet(saved)) {
+        esp_ble_remove_bond_device(saved.bda);
+        coolDown(saved.bda, kForgottenMs);  // don't pair straight back with the keyboard just forgotten
+    }
     settings::keyboardClear();
     esp_hidh_dev_t* dev;
     {
@@ -431,5 +523,6 @@ void forget()
 }
 
 void setAutoReconnect(bool on) { s_auto = on; }
+void setAutoPair(bool on) { s_auto_pair = on; }
 
 }  // namespace blekbd
