@@ -136,7 +136,7 @@ def section_view(ax, lid, tray):
          f"カバー（{COVER_T:.0f} mm・面一、ヒンジのねじで共締め）" if COVER_SCREWED else f"カバー（{COVER_T:.0f} mm・接着）",
          (50.5, 29.5))
     ax.annotate("", xy=(Y_BACK - 9.5, 31.6), xytext=(Y_BACK, 31.6), arrowprops=dict(arrowstyle="<->", color=INK, lw=0.9))
-    ax.text(Y_BACK - 4.75, 32.4, "ヒンジ受け（壁の厚い部分）9.5 mm", ha="center", va="bottom", fontsize=10.5, color=INK)
+    ax.text(Y_BACK - 4.75, 32.4, "ヒンジの受け（パッドとねじのボス）9.5 mm", ha="center", va="bottom", fontsize=10.5, color=INK)
     ax.text(36.0, 19.0, "蓋", color=LID_E, fontsize=12, va="center")
     ax.text(36.0, 7.0, "トレイ", color="#6f6852", fontsize=12, va="center")
     ax.text(35.0, 13.0, "← 内側", fontsize=9.5, color="#666", va="center")

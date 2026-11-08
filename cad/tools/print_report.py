@@ -28,7 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CAD = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(CAD, "src"))
 from params import (OUT_DIR, SPLIT_DIR, Y_BACK, HINGE_AXIS_Y, Z_PART, PD_L, PD_TOP_X, PANEL_Z_BACK, BATT_CX, BATT_CY,  # noqa: E402
-                    BATT_T, USB_PM_Y, USB_PM_Z, PD_MOUNT, KIT_MASS_G, KIT_CX, KIT_T)
+                    BATT_T, USB_PM_Y, USB_PM_Z, PD_MOUNT, KIT_MASS_G, KIT_CX, KIT_T, USB_CEIL)
 
 INI = os.path.join(HERE, "a1mini_pla_020.ini")
 PLA = 1.24                      # g/cm3
@@ -56,11 +56,9 @@ ROD_NOTE = ("the snap tip: each half of the split end is one 1 mm perimeter loop
 THIN_NOTE = {"panel_B_main": "the screen-window bevel ends in a sharp edge (as in the original panel)",
              "key_pushrod_x2": ROD_NOTE, "power_pushrod": ROD_NOTE}
 if PD_MOUNT == "kit":
-    THIN_NOTE["lid_A_left"] = ("the ceiling over the USB-C channel is 0.8 mm (USB_CEIL), printed as the first four "
+    THIN_NOTE["lid_A_left"] = (f"the ceiling over the USB-C channel is {USB_CEIL:g} mm (USB_CEIL), printed as the first "
                                "layers on the bed")
-    THIN_NOTE["panel_B_main"] += "; the snap bumps on its front and back edges come to a 45 deg ridge"
-    THIN_NOTE["lid_B_main"] = ("above each flush hinge cover the 0.8 mm top chamfer leaves a thin lip, printed as the "
-                               "first layers on the bed")
+    THIN_NOTE["panel_B_main"] = "the snap bumps on its front and back edges come to a ridge"
     for _c in ("hinge_cover_lid_x2", "hinge_cover_tray_x2"):
         THIN_NOTE[_c] = ("a 1 mm plate; the thin spots are the edges of the screw countersinks and of the cones under "
                          "them, which the screw head and the hinge's countersink hold from both sides")

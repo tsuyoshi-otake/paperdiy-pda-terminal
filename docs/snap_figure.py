@@ -64,14 +64,14 @@ def plan_view(ax, lid, panel):
     for poly in polygons(panel, [0, 0, zc], [0, 0, 1], xy):
         add_polygon(ax, poly, PANEL_C, PANEL_E, z=2)
     yb = [float(panel.bounds[0][1]), float(panel.bounds[1][1])]
-    for x in PANEL_SNAP["x"]:
-        for y in yb:
+    for xs, y in ((PANEL_SNAP["x_front"], yb[0]), (PANEL_SNAP["x_back"], yb[1])):
+        for x in xs:
             ax.add_patch(Rectangle((x - PANEL_SNAP["len"] / 2 - 1.5, y - 2.5), PANEL_SNAP["len"] + 3, 5.0, fc="none", ec=HI,
                                    lw=2.0, zorder=4))
-    ax.annotate("突起と溝（手前に 2 か所）", xy=(PANEL_SNAP["x"][1] + 6, yb[0] - 1), xytext=(40, -62), fontsize=11, color=HI,
-                ha="left", arrowprops=dict(arrowstyle="-", color=HI, lw=1.0))
-    ax.annotate("突起と溝（奥に 2 か所）", xy=(PANEL_SNAP["x"][1] + 6, yb[1] + 1), xytext=(40, 62), fontsize=11, color=HI,
-                ha="left", arrowprops=dict(arrowstyle="-", color=HI, lw=1.0))
+    ax.annotate(f"突起と溝（手前に {len(PANEL_SNAP['x_front'])} か所）", xy=(PANEL_SNAP["x_front"][-1] + 6, yb[0] - 1),
+                xytext=(40, -62), fontsize=11, color=HI, ha="left", arrowprops=dict(arrowstyle="-", color=HI, lw=1.0))
+    ax.annotate(f"突起と溝（奥に {len(PANEL_SNAP['x_back'])} か所）", xy=(PANEL_SNAP["x_back"][-1] + 6, yb[1] + 1),
+                xytext=(40, 62), fontsize=11, color=HI, ha="left", arrowprops=dict(arrowstyle="-", color=HI, lw=1.0))
     ax.text(-100, -70, "手前（留めツメの側）", fontsize=10, color=INK)
     ax.text(-100, 66, "奥（ヒンジの側）", fontsize=10, color=INK)
     ax.set_xlim(-108, 108)
@@ -82,7 +82,7 @@ def plan_view(ax, lid, panel):
 
 
 def section_view(ax, lid, panel):
-    x = PANEL_SNAP["x"][1]
+    x = PANEL_SNAP["x_front"][-1]
     yz = np.array([[0, 1, 0, 0], [0, 0, 1, 0], [1, 0, 0, 0], [0, 0, 0, 1]], float)
     for poly in polygons(lid, [x, 0, 0], [1, 0, 0], yz):
         add_polygon(ax, poly, LID_C, LID_E)
@@ -94,9 +94,10 @@ def section_view(ax, lid, panel):
     def note(xy, txt, xytext):
         ax.annotate(txt, xy=xy, xytext=xytext, fontsize=10.5, ha="left", va="center", color=INK,
                     arrowprops=dict(arrowstyle="-", color=INK, lw=0.8, shrinkA=2, shrinkB=1))
-    note((y_wall - 0.1, PANEL_Z0 + g["peak"]), f"突起（パネルの縁から {g['bump']:g} mm、45° の山）", (y_wall + 1.5, PANEL_Z0 - 1.1))
-    note((y_wall - 0.25, PANEL_Z0 + g["peak"] + 0.3), f"溝（深さ {g['h'] - PANEL_CLR + g['clr']:.2f} mm）", (y_wall + 2.5, 18.3))
-    note((y_wall - 0.8, 19.2), f"蓋の壁（{SHELL_WALL:g} mm）。押し込むと外へたわむ", (y_wall + 1.0, 19.4))
+    peak = PANEL_T / 2
+    note((y_wall - 0.1, PANEL_Z0 + peak), f"突起（パネルの縁から {g['bump']:g} mm の山）", (y_wall + 1.5, PANEL_Z0 - 1.1))
+    note((y_wall - 0.25, PANEL_Z0 + peak + 0.3), f"溝（深さ {g['h'] - PANEL_CLR + g['clr']:.2f} mm）", (y_wall + 2.5, PANEL_Z1 + 2.3))
+    note((y_wall - 0.8, PANEL_Z1 + 3.0), f"蓋の壁（{SHELL_WALL:g} mm）。押し込むと外へたわむ", (y_wall + 1.0, PANEL_Z1 + 3.2))
     note((y_wall + 4.0, PANEL_Z1 - 0.4), "化粧パネル", (y_wall + 5.5, 17.5))
     ax.text(y_wall + 1.5, PANEL_Z0 - 2.0, "↓ 画面側（キーボードの側）", fontsize=9.5, color="#666", va="center")
     ax.set_xlim(y_wall - 2.5, y_wall + 9.5)

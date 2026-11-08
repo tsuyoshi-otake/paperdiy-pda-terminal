@@ -128,20 +128,20 @@ def plates():
                  ("hinge_cover_lid_1", part(O("hinge_cover_lid_x2"), LAY_FLAT_Y)),
                  ("hinge_cover_lid_2", part(O("hinge_cover_lid_x2"), LAY_FLAT_Y))],
                 [("lid_B_main", part(S("lid_B_main"), LAY_TOP, FLIP_X))],
-            ]),
+            ] + splice_row("lid", LAY_TOP, FLIP_X)),
             # cream: keyboard tray pieces, floor on the bed
             "plate2_tray.3mf": ("Keyboard tray (A + B)", [
                 [("tray_A_left", part(S("tray_A_left"), ROT_Z90)),
                  ("hinge_cover_tray_1", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y)),
                  ("hinge_cover_tray_2", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y))],
                 [("tray_B_main", part(S("tray_B_main")))],
-            ]),
+            ] + splice_row("tray")),
         } | ({
             # bezel panel pieces, visible face on the bed (the locating rim grows upward)
             "plate3_panel.3mf": ("Bezel panel (A + B)", [
                 [("panel_A_left", part(S("panel_A_left"), ROT_Z90))],
                 [("panel_B_main", part(S("panel_B_main")))],
-            ]),
+            ] + splice_row("panel")),
         } if os.path.exists(S("panel_B_main")) else {}) | {
             f"usb_variants/{usb_name(sp)}.3mf": (
                 f"Lid A for a USB-C panel mount with {sp:g} mm hole spacing" if sp > 0
@@ -149,6 +149,18 @@ def plates():
                 [[(usb_name(sp), part(os.path.join(SPLIT_DIR, "usb_variants", f"{usb_name(sp)}.stl"), LAY_TOP, FLIP_X, ROT_Z90))]])
             for sp in USB_PM_VARIANTS if os.path.exists(os.path.join(SPLIT_DIR, "usb_variants", f"{usb_name(sp)}.stl"))}
     return bare_plates(csrc, coupon)
+
+
+def splice_row(kind, *rots):
+    """The splice plates of one kind (out/split/splice/) as an extra row, flat on the bed, long side along x."""
+    files = sorted(glob.glob(os.path.join(SPLIT_DIR, "splice", f"{kind}_splice_*.stl")))
+    items = []
+    for f in files:
+        m = part(f, *rots)
+        if m.extents[1] > m.extents[0]:
+            m = part(f, *rots, ROT_Z90)
+        items.append((os.path.splitext(os.path.basename(f))[0], m))
+    return [items] if items else []
 
 
 def large_plates():

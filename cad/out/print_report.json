@@ -1,70 +1,66 @@
 {
  "plate0_test_coupons.3mf": {
-  "warnings": [
-   "Low bed adhesion: coupon_latch_tray, coupon_latch_lid"
-  ],
+  "warnings": [],
   "ok": true,
-  "time": "22m 47s",
-  "grams": 9.15,
-  "metres": 3.06852
+  "time": "25m 23s",
+  "grams": 8.38,
+  "metres": 2.81008
  },
  "plate1_lid.3mf": {
-  "warnings": [
-   "Floating bridge anchors: lid_B_main"
-  ],
+  "warnings": [],
   "ok": true,
-  "time": "1h 18m 15s",
-  "grams": 52.41,
-  "metres": 17.570610000000002
+  "time": "1h 44m 30s",
+  "grams": 66.92,
+  "metres": 22.43789
  },
  "plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 38m 46s",
-  "grams": 63.85,
-  "metres": 21.408830000000002
+  "time": "1h 31m 23s",
+  "grams": 58.13,
+  "metres": 19.49079
  },
  "plate3_panel.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "34m 22s",
-  "grams": 23.35,
-  "metres": 7.82992
+  "time": "46m 10s",
+  "grams": 27.09,
+  "metres": 9.08171
  },
  "large/plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 11m 29s",
-  "grams": 51.16,
-  "metres": 17.15402
+  "time": "1h 38m 59s",
+  "grams": 66.47,
+  "metres": 22.287830000000003
  },
  "large/plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 34m 26s",
-  "grams": 63.04,
-  "metres": 21.13502
+  "time": "1h 25m 45s",
+  "grams": 57.45,
+  "metres": 19.261419999999998
  },
  "large/plate3_panel.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "32m 48s",
-  "grams": 23.35,
-  "metres": 7.82854
+  "time": "43m 4s",
+  "grams": 26.71,
+  "metres": 8.95646
  },
- "large_total_g": 137.54999999999998,
- "large_total_min": 197,
- "total_g": 139.60999999999999,
- "total_min": 210,
- "lid_g": 125.77000000000001,
- "base_g": 67.85,
+ "large_total_g": 150.63,
+ "large_total_min": 226,
+ "total_g": 152.14000000000001,
+ "total_min": 241,
+ "lid_g": 141.5,
+ "base_g": 59.76,
  "lid_cg": [
-  -2.2357081255064486,
-  5.426800722119088,
-  19.897677476779457
+  -0.030459693570814947,
+  3.6675620064250816,
+  19.78626698974624
  ],
  "pivot_y": 53.0,
- "table_contact_deg": 157.3,
- "table_limit": 157,
- "keyboard_min_g": 60.25777047705222
+ "table_contact_deg": 160.4,
+ "table_limit": 160,
+ "keyboard_min_g": 81.90952651497034
 }

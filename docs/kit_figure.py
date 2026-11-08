@@ -113,9 +113,9 @@ def section_view(ax, lid, panel, tray, kit):
         add_polygon(ax, p, KIT_C, KIT_E, lw=0.9, z=2)
     for p in cut(panel, [x, 0, 0], [1, 0, 0], YZ):
         add_polygon(ax, p, PANEL_C, PANEL_E, lw=0.9, z=3)
-    kb = B.KB_TOP_Z
-    ax.add_patch(Rectangle((-40.0, 3.0), 80.0, kb - 3.0, fc="none", ec="#999", lw=0.8, ls=(0, (4, 3)), zorder=1))
-    ax.text(0.0, (3.0 + kb) / 2, f"キーボード（厚さ {kb - 3.0:g} mm と仮定）", fontsize=9.5, color="#777", ha="center", va="center")
+    kb, fl = B.KB_TOP_Z, B.TRAY_FLOOR
+    ax.add_patch(Rectangle((-40.0, fl), 80.0, kb - fl, fc="none", ec="#999", lw=0.8, ls=(0, (4, 3)), zorder=1))
+    ax.text(0.0, (fl + kb) / 2, f"キーボード（厚さ {kb - fl:g} mm と仮定）", fontsize=9.5, color="#777", ha="center", va="center")
     ax.text(10.0, B.KIT_Z0 + B.KIT_T / 2, "PaperDIY（ケースごと）", fontsize=9.5, color=INK, ha="center", va="center", zorder=7)
     note(ax, (40.0, B.PANEL_Z0 + B.PANEL_T / 2), f"化粧パネル（{B.PANEL_T:g} mm）", (22.0, 31.5))
     note(ax, (-30.0, B.top_z(-30.0) - B.SHELL_CEIL / 2), f"蓋（壁 {B.SHELL_WALL:g}・天板 {B.SHELL_CEIL:g} mm の中空）", (-64.0, 31.5))
