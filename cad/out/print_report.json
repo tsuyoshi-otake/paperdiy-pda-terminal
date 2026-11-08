@@ -4,25 +4,25 @@
    "Low bed adhesion: coupon_latch_tray, coupon_latch_lid"
   ],
   "ok": true,
-  "time": "22m 39s",
+  "time": "22m 47s",
   "grams": 9.15,
-  "metres": 3.0678400000000003
+  "metres": 3.0685100000000003
  },
  "plate1_lid.3mf": {
   "warnings": [
    "Floating bridge anchors: lid_B_main"
   ],
   "ok": true,
-  "time": "1h 18m 11s",
+  "time": "1h 18m 16s",
   "grams": 52.08,
-  "metres": 17.4617
+  "metres": 17.46252
  },
  "plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 38m 42s",
+  "time": "1h 38m 46s",
   "grams": 63.85,
-  "metres": 21.40743
+  "metres": 21.408830000000002
  },
  "plate3_panel.3mf": {
   "warnings": [],
@@ -34,16 +34,16 @@
  "large/plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 11m 9s",
+  "time": "1h 11m 13s",
   "grams": 50.84,
-  "metres": 17.04523
+  "metres": 17.04607
  },
  "large/plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 34m 22s",
+  "time": "1h 34m 26s",
   "grams": 63.04,
-  "metres": 21.134619999999998
+  "metres": 21.13502
  },
  "large/plate3_panel.3mf": {
   "warnings": [],
@@ -59,12 +59,12 @@
  "lid_g": 125.44,
  "base_g": 67.85,
  "lid_cg": [
-  -1.99057980653091,
-  5.505368068167453,
-  19.896893155748494
+  -1.9905798065908755,
+  5.505369347588559,
+  19.89689294547238
  ],
  "pivot_y": 53.0,
  "table_contact_deg": 157.3,
  "table_limit": 157,
- "keyboard_min_g": 59.79350739589639
+ "keyboard_min_g": 59.793507494146084
 }

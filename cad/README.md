@@ -187,7 +187,10 @@ tray and panel): `docs/images/render_{open,closed}_{black,khaki,mix}.png`.
 * **Covers** (`out/hinge_cover_lid_x2.stl`, `out/hinge_cover_tray_x2.stl`, 1.0 mm, case colour): flush in a pocket in the
   back face (0.15 mm clearance), overlapping the case by 1.5 mm and starting 3.6 mm from the axis; the tray's runs out
   through the bottom, where the tray's 3 mm back-bottom chamfer is squared under the cover plus a 1.5 mm frame each side. Each has two Ø4.0 × 90° countersinks over the leaf holes and under each a cone (Ø4.1, 0.7 mm) that
-  fills the leaf's countersink, so the hinge screw clamps cover and leaf through a conical PLA washer: no glue. Flush
+  fills the leaf's countersink, so the hinge screw clamps cover and leaf through a conical PLA washer: no glue. Two crush
+  ribs on each side edge (`COVER_RIBS`: 0.15 → 0.3 mm proud from the inner to the outer face, so up to 0.15 mm into the
+  pocket wall) hold a cover in its pocket when pressed in, before or without the screws; tune them by reprinting the
+  covers only. Flush
   covers sink the leaves by their thickness, which moves the axis in by as much: at 2 mm the axis would sit inside the back
   face and the back edges of lid and tray would collide when opening, so they stay 1 mm (too thin for print services'
   2 mm minimum; print them yourself).
@@ -220,7 +223,7 @@ fits the original opening (≈ 16 × 6.8 mm) fits.
   (put a real HG-MF08 and a cover in: cover flush, barrel free, M2×8 bites, opens past 160°), a dovetail key (slides in by hand
   without play; skip it for the one-piece parts), the snap tab and its recess (clicks shut, lifts off; tune
   `LATCH["bump"]` in 0.05 mm steps), and one cover of each kind. Other fits: `HINGE_CLR`, `HINGE_BARREL_D`,
-  `HINGE_PILOT_D`, `HINGE_AXIS_ABOVE_BACK`, `COVER_POCKET_CLR`, `COVER_CSK`, `DOVETAIL["clr"]`.
+  `HINGE_PILOT_D`, `HINGE_AXIS_ABOVE_BACK`, `COVER_POCKET_CLR`, `COVER_RIBS`, `COVER_CSK`, `DOVETAIL["clr"]`.
 
 ### Hardware
 * 14 × **M2×8 countersunk tapping screws** for plastic: 8 hinges (through the covers), 6 panel.
@@ -449,6 +452,7 @@ published drawing and structure files.
 | `HINGE_COVER` / `COVER_T` / `COVER_RIM` / `COVER_R0` | `True` / `1.0` / `1.5` / `3.6` | design choice | printed covers over the leaves |
 | `COVER_FLUSH` / `COVER_SCREWED` / `HINGE_SINK` | `True` / `True` / `1.0` (kit) | design choice | covers flush in a pocket, leaves sunk by `COVER_T`, covers clamped by the hinge screws (bare: glued on top) |
 | `COVER_POCKET_CLR` / `COVER_CSK` | `0.15` / `top_d 4.0, hole_d 2.3, cone_d 4.1, cone_h 0.7` | design choice | pocket clearance per side; countersink for the M2 head, cone into the leaf's 4.2 countersink |
+| `COVER_RIBS` | `per_side 2, h 0.3, r 0.6` | design choice | tapered crush ribs on the covers' side edges: press fit in the pocket (tight: lower `h`; loose: raise it) |
 | `FASTENING` | `"tapping"` | design choice | M2x8 tapping screws into printed pilots ("inserts": M2 heat-set inserts) |
 | `SCREW_PILOT_D` / `TAP_SCREW_LEN` | `1.8` / `8.0` | design choice | one tapping-screw size everywhere |
 | `LID_CORNER_HOLES` | `(+-92.8, +-38.78)` | measured | [M] panel screw bosses in the lid |

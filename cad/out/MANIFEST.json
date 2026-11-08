@@ -1,19 +1,19 @@
 {
  "3mf/large/plate1_lid.3mf": {
   "objects": 3,
-  "sha256": "842cdb64e39153349810ce50ddbd39462aab644f4192c7891da492d871b9c057",
+  "sha256": "66e1770dde1ce6a0d65e01ecc0ee48facc03691679c70fad034e60cfa6fba5aa",
   "volumes": [
-   225.16,
-   225.16,
+   225.71,
+   225.71,
    42485.4
   ]
  },
  "3mf/large/plate2_tray.3mf": {
   "objects": 3,
-  "sha256": "a1aeb67f015d0e1b5f49318d4fd1cbce2bcd07a3dd9bea17e372ac5a1285dc44",
+  "sha256": "59a23210f8b02f2d53233031dd387d46c919614a29c89b6afe5d62e11e984b41",
   "volumes": [
-   208.71,
-   208.71,
+   209.26,
+   209.26,
    79293.04
   ]
  },
@@ -82,10 +82,10 @@
  },
  "3mf/plate0_test_coupons.3mf": {
   "objects": 8,
-  "sha256": "1c24bd92b5b92b92adf7961604f5db6672bf56a9fb08cbc2a2269c097ef068de",
+  "sha256": "d814b3b737b2f9f91d474f1fecc344d4d2086484379c37c737e908ef1615190a",
   "volumes": [
-   208.71,
-   225.16,
+   209.26,
+   225.71,
    598.12,
    792.0,
    792.55,
@@ -96,20 +96,20 @@
  },
  "3mf/plate1_lid.3mf": {
   "objects": 4,
-  "sha256": "01d22e074a6b630eef36e337f96a627234685132797cb3ec139a4600f0c07e25",
+  "sha256": "d473f6344900fd8694530298301859f0822d140bc52ff149a37c094881bd24a6",
   "volumes": [
-   225.16,
-   225.16,
+   225.71,
+   225.71,
    8049.83,
    35644.15
   ]
  },
  "3mf/plate2_tray.3mf": {
   "objects": 4,
-  "sha256": "1b54ced069aa7fc4ff22b2aaf146b6b6e712d53df3e1fd54eba3824449b2aa87",
+  "sha256": "fa925144bf097e4587eb89b2bb1bbdeca6494ea926bcd11702c756cae4c4eaa6",
   "volumes": [
-   208.71,
-   208.71,
+   209.26,
+   209.26,
    13254.37,
    65997.03
   ]
@@ -323,36 +323,36 @@
  "out/hinge_cover_lid_x2.stl": {
   "bbox": [
    [
-    -63.75,
+    -64.05,
     51.3,
     16.45
    ],
    [
-    -40.25,
+    -39.95,
     53.0,
     26.4
    ]
   ],
-  "faces": 1172,
-  "sha256": "571257602655db8c1f1464043df8bcb1d361adc7d0580136cdddcae71313c2ed",
-  "volume": 225.16
+  "faces": 1444,
+  "sha256": "515c95f7bed543db49adc896799a59c31f4c66f5c38b37ab866e87520fc3ac1d",
+  "volume": 225.71
  },
  "out/hinge_cover_tray_x2.stl": {
   "bbox": [
    [
-    -63.75,
+    -64.05,
     51.3,
     0.0
    ],
    [
-    -40.25,
+    -39.95,
     53.0,
     9.25
    ]
   ],
-  "faces": 1172,
-  "sha256": "9bb82e8b151b74c2852d253f77cd66399550501c5908f514e641ab522b21a697",
-  "volume": 208.71
+  "faces": 1444,
+  "sha256": "b84af1592c3a9efcb3f6f6cb18a7aff3e985f75fc379fa9c68e426867345fc41",
+  "volume": 209.26
  },
  "out/keyboard_tray.stl": {
   "bbox": [

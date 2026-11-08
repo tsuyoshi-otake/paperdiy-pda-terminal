@@ -292,6 +292,11 @@ COVER_POCKET_CLR = 0.15       # kit: pocket around each cover, per side
 # fills the leaf's countersink (catalogue 4.2, assumed 90 deg) with 0.1 mm radial clearance
 COVER_CSK = dict(top_d=4.0, hole_d=2.3, cone_d=4.1, cone_h=0.7)
 HINGE_SINK = COVER_T if COVER_FLUSH else 0.0   # the leaves sit this much deeper than in a plain mortise
+# kit: crush ribs on the side edges of each flush cover, so it stays in its pocket when pressed in, before (or without)
+# the screws. Each rib stands out COVER_POCKET_CLR at the inner face (just touching the pocket wall: the lead-in) and h at
+# the outer face, so the interference grows from 0 to h - COVER_POCKET_CLR (0.15 mm) per side as the cover goes in.
+# The ribs are on the covers, so the fit is tuned by reprinting them (tight: lower h; loose: raise it).
+COVER_RIBS = dict(per_side=2, h=0.3, r=0.6) if COVER_FLUSH else None
 HINGE_MODEL = "Sugatsune HG-MF08-BL x2 (free-stop, 0.0784 N*m +-25% each, POM)"
 # [M] Sugatsune spec table (global.sugatsune.com, 21651_t): HG-MF08 L 20, W 25, t 2, W2 16, H2 10, holes 2.4 / csk 4.2
 HINGE_LEN = 20.0              # [M] L: length along the axis

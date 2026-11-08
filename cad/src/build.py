@@ -552,10 +552,11 @@ def cover_spans():
     return (Z_PART + COVER_R0, z_top), (z_bot, Z_PART - COVER_R0)
 
 
-def hinge_covers():
+def hinge_covers(ribs=True):
     """Cover plates over the leaves (face mounting), in the closed assembly position: (lid covers, tray covers).
     Kit: flush in the back face (y Y_BACK - COVER_T .. Y_BACK), a countersunk hole at each leaf hole and under it a cone
-    that fills the leaf's countersink; the hinge screw then clamps cover and leaf. Bare: on the back face, glued."""
+    that fills the leaf's countersink; the hinge screw then clamps cover and leaf; crush ribs on the side edges hold it
+    in its pocket before the screws go in (ribs=False: without them, for the clearance checks). Bare: glued on."""
     if HINGE_MOUNT != "face" or not HINGE_COVER:
         return [], []
     lid_c, tray_c = [], []
@@ -565,6 +566,16 @@ def hinge_covers():
     for c in hinge_centres():
         for side, (z0, z1) in zip((1, -1), cover_spans()):
             cov = prism_y(rrect(c, (z0 + z1) / 2, 2 * half_w, z1 - z0, 1.0), y0, y1)
+            if COVER_RIBS and ribs:    # tapered crush ribs on the straight part of both side edges
+                rb = COVER_RIBS
+                n = rb["per_side"]
+                for sx in (-1, 1):
+                    xc = c + sx * (half_w - (rb["r"] - rb["h"]))
+                    for i in range(n):
+                        zr = z0 + 1.0 + (z1 - z0 - 2.0) * (i + 0.5) / n
+                        # protrusion COVER_POCKET_CLR at the inner face (just touches) -> h at the outer face
+                        cov = cov + (M.cylinder(COVER_T, rb["r"] - rb["h"] + COVER_POCKET_CLR, rb["r"], SEG)
+                                     .rotate([-90, 0, 0]).translate([xc, y0, zr]))
             if COVER_SCREWED:
                 k = COVER_CSK
                 zc = Z_PART + side * HINGE_HOLE_OFF
@@ -1229,10 +1240,18 @@ def main_kit():
     h_fixed, h_moving = hinge_envelope(0.0)
     interference(h_fixed, tray, "hinge (tray leaf + barrel) vs tray"); interference(h_moving, lid, "hinge (lid leaf) vs lid")
     interference(h_fixed, lid, "hinge barrel vs lid", tol=1.0)
-    for i, cv in enumerate(lid_cov):
+    plain_lid_cov, plain_tray_cov = hinge_covers(ribs=False)        # clearance checks without the crush ribs
+    for i, cv in enumerate(plain_lid_cov):
         interference(cv, lid, f"lid hinge cover {i} vs lid"); interference(cv, tray, f"lid hinge cover {i} vs tray")
-    for i, cv in enumerate(tray_cov):
+    for i, cv in enumerate(plain_tray_cov):
         interference(cv, tray, f"tray hinge cover {i} vs tray"); interference(cv, lid, f"tray hinge cover {i} vs lid")
+    if COVER_RIBS:
+        rb = COVER_RIBS
+        press = [(lid_cov[0] ^ lid).volume(), (tray_cov[0] ^ tray).volume()]
+        log(f"  cover crush ribs: {rb['per_side']} per side edge, tapered {COVER_POCKET_CLR:g} -> {rb['h']:g} mm over the {COVER_T:g} mm "
+            f"thickness, up to {rb['h'] - COVER_POCKET_CLR:.2f} mm into the pocket wall (pressed in: lid cover "
+            f"{press[0]:.2f} mm3, tray cover {press[1]:.2f} mm3 of rib in the wall; nothing else touches)")
+        assert 0.0 < min(press) and max(press) < 1.0, press
     if not SHELL:
         sx = kit_x(KIT_SCREW_D)
         seat = min(KIT_Z1 + KIT_SCREW_SEAT, top_z(0.0))

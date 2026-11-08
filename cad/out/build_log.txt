@@ -9,8 +9,8 @@
   out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=79293 mm3
   out/paperdiy_kit_envelope.stl: bbox 121.3 x 68.2 x 6.3 mm, watertight=True, winding_ok=True, bodies=1, vol=50716 mm3
   out/display_panel_kit.stl: bbox 198.4 x 95.9 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=18745 mm3
-  out/hinge_cover_lid_x2.stl: bbox 23.5 x 1.7 x 9.9 mm, watertight=True, winding_ok=True, bodies=1, vol=225 mm3
-  out/hinge_cover_tray_x2.stl: bbox 23.5 x 1.7 x 9.2 mm, watertight=True, winding_ok=True, bodies=1, vol=209 mm3
+  out/hinge_cover_lid_x2.stl: bbox 24.1 x 1.7 x 9.9 mm, watertight=True, winding_ok=True, bodies=1, vol=226 mm3
+  out/hinge_cover_tray_x2.stl: bbox 24.1 x 1.7 x 9.2 mm, watertight=True, winding_ok=True, bodies=1, vol=209 mm3
 == split pieces for A1 mini (limit 175 mm)
   out/split/lid_A_left.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=8050 mm3
   out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=35644 mm3
@@ -104,7 +104,7 @@
   interference hinge (tray leaf + barrel) vs tray: 0.000 mm3 OK
   interference hinge (lid leaf) vs lid: 0.000 mm3 OK
   interference hinge barrel vs lid: 0.000 mm3 OK
-  interference lid hinge cover 0 vs lid: -0.000 mm3 OK
+  interference lid hinge cover 0 vs lid: 0.000 mm3 OK
   interference lid hinge cover 0 vs tray: 0.000 mm3 OK
   interference lid hinge cover 1 vs lid: 0.000 mm3 OK
   interference lid hinge cover 1 vs tray: 0.000 mm3 OK
@@ -112,6 +112,7 @@
   interference tray hinge cover 0 vs lid: 0.000 mm3 OK
   interference tray hinge cover 1 vs tray: 0.000 mm3 OK
   interference tray hinge cover 1 vs lid: 0.000 mm3 OK
+  cover crush ribs: 2 per side edge, tapered 0.15 -> 0.3 mm over the 1 mm thickness, up to 0.15 mm into the pocket wall (pressed in: lid cover 0.13 mm3, tray cover 0.13 mm3 of rib in the wall; nothing else touches)
   the panel holds the kit: rim 2.0 mm around it (0.2 clear), ribs 0.1 mm above its back; 6 x M2x8 countersunk through the 1.6 mm panel, 6.4 mm into the bosses
   skin over the kit 1.82..3.59 mm, over the USB-C channel 0.80 mm
 == snap tab (latch)
