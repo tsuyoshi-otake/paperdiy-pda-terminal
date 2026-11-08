@@ -58,6 +58,7 @@ THIN_NOTE = {"panel_B_main": "the screen-window bevel ends in a sharp edge (as i
 if PD_MOUNT == "kit":
     THIN_NOTE["lid_A_left"] = ("the ceiling over the USB-C channel is 0.8 mm (USB_CEIL), printed as the first four "
                                "layers on the bed")
+    THIN_NOTE["panel_B_main"] += "; the snap bumps on its front and back edges come to a 45 deg ridge"
     THIN_NOTE["lid_B_main"] = ("above each flush hinge cover the 0.8 mm top chamfer leaves a thin lip, printed as the "
                                "first layers on the bed")
     for _c in ("hinge_cover_lid_x2", "hinge_cover_tray_x2"):

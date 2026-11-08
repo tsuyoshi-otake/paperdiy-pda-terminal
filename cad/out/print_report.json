@@ -6,16 +6,16 @@
   "ok": true,
   "time": "22m 47s",
   "grams": 9.15,
-  "metres": 3.0685100000000003
+  "metres": 3.06852
  },
  "plate1_lid.3mf": {
   "warnings": [
    "Floating bridge anchors: lid_B_main"
   ],
   "ok": true,
-  "time": "1h 18m 16s",
+  "time": "1h 17m 55s",
   "grams": 52.08,
-  "metres": 17.46252
+  "metres": 17.46122
  },
  "plate2_tray.3mf": {
   "warnings": [],
@@ -27,16 +27,16 @@
  "plate3_panel.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "34m 27s",
-  "grams": 23.34,
-  "metres": 7.82606
+  "time": "34m 31s",
+  "grams": 23.35,
+  "metres": 7.82906
  },
  "large/plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 11m 13s",
+  "time": "1h 11m 31s",
   "grams": 50.84,
-  "metres": 17.04607
+  "metres": 17.044810000000002
  },
  "large/plate2_tray.3mf": {
   "warnings": [],
@@ -48,23 +48,23 @@
  "large/plate3_panel.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "32m 38s",
-  "grams": 23.34,
-  "metres": 7.82553
+  "time": "32m 48s",
+  "grams": 23.35,
+  "metres": 7.82854
  },
- "large_total_g": 137.22,
+ "large_total_g": 137.23,
  "large_total_min": 197,
- "total_g": 139.27,
- "total_min": 210,
- "lid_g": 125.44,
+ "total_g": 139.28,
+ "total_min": 209,
+ "lid_g": 125.43,
  "base_g": 67.85,
  "lid_cg": [
-  -1.9905798065908755,
-  5.505369347588559,
-  19.89689294547238
+  -1.9931652897899914,
+  5.505322415323672,
+  19.896931063534065
  ],
  "pivot_y": 53.0,
  "table_contact_deg": 157.3,
  "table_limit": 157,
- "keyboard_min_g": 59.793507494146084
+ "keyboard_min_g": 59.78481016472978
 }

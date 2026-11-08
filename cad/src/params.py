@@ -123,6 +123,12 @@ PANEL_SCREWS = ((-91.0, -37.5), (91.0, -37.5), (-91.0, 46.0), (91.0, 46.0), (-62
 # The panel is open over the USB-C plug path (left edge to the kit's port, like the button slots): a plug can be
 # guided into the port by hand, and a panel-mount female's inner plug goes in and out without taking the panel off.
 PANEL_USB_SLOT = dict(frame=2.2, half=6.6, r=1.5)   # None = closed; frame left at the panel's left edge
+# snap detents: bumps on the panel's front and back edges click into shallow grooves in the lid's 1.6 mm walls (which flex
+# outward as the panel goes in), so the panel stays in without its screws. x: between the wall ribs, clear of the latch
+# (x 0) and the hinge housings. Profile across the edge: a 45 deg ridge, its peak h out from the panel edge at mid-thickness
+# (peak above the visible face), so it goes in and comes out (prised at the finger slots) alike.
+# "h" sets the grooves (lid), "bump" the bumps (panel): tight -> lower "bump" and reprint the panel only.
+PANEL_SNAP = dict(x=(-23.0, 26.0), len=8.0, h=0.45, bump=0.45, peak=0.8, clr=0.05)
 PANEL_DOVETAIL_Y = (-37.6, 0.0, 40.0)        # keys between the front edge (y -44.7) and the USB slot (-30.6), 1.8 mm each side; clear of the power slot (16.4..30.3)
 KIT_RIBS_X = (-50.0, 0.0, 40.0)              # ribs from the ceiling onto the kit's back (clear of the ESP32 window)
 USB_GUIDE_X = (-84.0, None)                  # USB-C guide ribs from x = -84 to the kit, either side of the plug path

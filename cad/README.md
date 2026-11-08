@@ -68,7 +68,7 @@ log is written to `out/build_log.txt`.
 | File | Notes |
 |---|---|
 | `out/display_lid_usbc.stl` | lid, unsplit (hollow shell; 202.0 × 99.5 × 22.8) |
-| `out/display_panel_kit.stl` | bezel panel, unsplit (198.4 × 95.9, 1.6 thick + 2.0 rim) |
+| `out/display_panel_kit.stl` | bezel panel, unsplit (198.4 × 95.9 + snap bumps, 1.6 thick + 2.0 rim) |
 | `out/keyboard_tray.stl` | tray, unsplit (the original tray with the hinge rework and the snap-tab recess) |
 | `out/paperdiy_kit_envelope.stl` | the kit as placed (case 120.0 × 67.0 × 6.3, r 3, KEY and power caps): checks and renders |
 | `out/hinge_cover_lid_x2.stl`, `out/hinge_cover_tray_x2.stl` | print 2 of each |
@@ -84,7 +84,7 @@ log is written to `out/build_log.txt`.
 | `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 11 min 51 g, ~1 h 34 min 63 g, ~33 min 23 g (137 g, 3 h 17 min, nothing to glue) |
 | `3mf/large/usb_variants/lid_usb*.3mf` | the panel-mount lids in one piece |
 
-Plates 1–3: about 139 g and 3 h 30 min (the solid kit lid took 87 g and 2 h 45 min for plate 1 alone).
+Plates 1–3: about 139 g and 3 h 29 min (the solid kit lid took 87 g and 2 h 45 min for plate 1 alone).
 
 ### The kit
 Measured from M5Stack's model of the Complete Kit (`m5stack/M5_Hardware`, `Products/K159-B_PaperDIY_Complete_Kit/Structures/PaperDlY_Complete_Kit.stl`,
@@ -118,6 +118,11 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
   window = the kit's window + 0.3 per side with a 1.0 mm chamfer on the visible face; a locating rim (2.0 high, 1.2 wide,
   0.2 clear, below the caps at 2.1) around the kit on its back; six countersunk M2×8 holes (6.4 mm into the bosses); a gap in
   the rim for the USB-C plug. The kit is clamped between the panel and the ribs.
+* **Panel snaps** (`PANEL_SNAP`): four 8 mm bumps, two on the front edge and two on the back (x = −23 and +26, between
+  the wall ribs, clear of the latch and the housings), a 45° ridge 0.45 mm out from the panel edge at mid-thickness. Going
+  in they pass the lid's 1.6 mm walls by 0.25 mm (the walls flex), then sit in 0.3 mm grooves (0.05 clear) once the panel
+  rests on the bosses, so the panel stays in without its screws; prise it out at the finger slots. The grooves follow
+  `PANEL_SNAP["h"]`, the bumps `["bump"]`: if it is too tight, lower `bump` and reprint the panel only.
 * **Buttons**: finger slots through the panel, 6.5 mm out from the kit, at the KEY caps (one slot for both, on the front
   edge) and the power cap (on the USB end). No push-rods.
 * **USB-C, direct** (default): a 13 × 7.6 mm opening in the left end face; the guide ribs lead a straight plug (overmold
@@ -208,7 +213,7 @@ fits the original opening (≈ 16 × 6.8 mm) fits.
 ### Printing
 * **Plates** (`3mf/`, A1 mini, 180 × 180 mm): `plate0_test_coupons` (23 min, 9 g, print first), `plate1_lid` (lid A + B,
   2 lid covers, 1 h 18 min, 52 g), `plate2_tray` (tray A + B, 2 tray covers, 1 h 38 min, 64 g), `plate3_panel` (panel A + B,
-  34 min, 23 g): 139 g and 3 h 30 min for plates 1–3. `3mf/usb_variants/` holds lid A for a panel-mount female.
+  34 min, 23 g): 139 g and 3 h 29 min for plates 1–3. `3mf/usb_variants/` holds lid A for a panel-mount female.
 * **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 11 min, 51 g), tray (1 h 34 min, 63 g), panel (33 min,
   23 g): 137 g and 3 h 17 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
 * **Orientation:** lid top face down (the export tilts the sloped top plane level first, `LAY_TOP` from `assembly.json`),
@@ -325,6 +330,7 @@ published drawing and structure files.
 | `PANEL_T` / `PANEL_CLR` / `PANEL_WIN_CLR` | `1.6` / `0.2` / `0.3` | design choice | bezel panel; clearance to the lid's walls; window = kit window + 0.3 per side |
 | `PANEL_RIM` / `PANEL_SLOT` | `h 2.0, w 1.2` / `out 6.5, end 1.5, r 1.5` | design choice | locating rim around the kit; finger slots at the caps |
 | `PANEL_SCREWS` | `(±91, −37.5), (±91, 46), (−62, −39.5), (−62, 40)` | design choice | six M2×8 into the lid's bosses, clear of the housings |
+| `PANEL_SNAP` | `x (−23, 26), len 8, h 0.45, bump 0.45, peak 0.8, clr 0.05` | design choice | snap bumps on the panel's front and back edges, grooves in the lid's walls (tight: lower `bump`, panel only) |
 | `PANEL_DOVETAIL_Y` / `DOVETAIL_Y_KIT` | `(-37.6, 0, 40)` / `(-37, 5, 36)` | design choice | panel keys (the front one between the edge and the USB slot) / lid keys |
 | `PANEL_USB_SLOT` | `frame 2.2, half 6.6, r 1.5` | design choice | panel open over the USB-C plug path, from a 2.2 mm frame at the left edge to the kit (`None` = closed) |
 | `KIT_RIBS_X` / `USB_GUIDE_X` / `SPLIT_BLOCK` | `(-50, 0, 40)` / `(-84, None)` / `7 × 7 × 3.4` | design choice | ribs onto the kit's back; USB-C guide ribs; ceiling blocks around the lid keys |

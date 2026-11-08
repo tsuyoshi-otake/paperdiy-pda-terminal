@@ -961,7 +961,32 @@ def build_kit_lid_shell(usb="direct", blocks=True):
     cuts.append(box(-101.0 + SHELL_WALL, KIT_X0, KIT_USB_Y - USB_CH["w"] / 2, KIT_USB_Y + USB_CH["w"] / 2, -10.0, 60.0)
                 ^ half_space(top[0] - USB_CEIL, top[1], False))           # thinner ceiling over the plug path
     cuts += [cyl_z(SCREW_PILOT_D / 2, PANEL_Z1 - 0.1, PANEL_Z1 + TAP_SCREW_LEN - PANEL_T + 0.5, x, y) for x, y in PANEL_SCREWS]
+    cuts.append(panel_snaps(groove=True))                                    # grooves for the panel's snap bumps
     return L - union(cuts)
+
+
+def panel_snaps(groove=False):
+    """Snap detents on the panel's front and back edges (groove=False: the bumps, to add to the panel) or the grooves
+    for them in the lid's walls (groove=True: to cut from the lid), as prisms along x."""
+    g = PANEL_SNAP
+    if not (SHELL and g):
+        return M()
+    xb = shell_inner().bounds()                          # (x0, y0, x1, y1) of the lid's inner faces
+    h = g["h"] if groove else g["bump"]
+    half = g["len"] / 2 + (0.5 if groove else 0.0)
+    parts = []
+    for side, y_wall in ((-1, xb[1]), (1, xb[3])):
+        y_e = y_wall - side * PANEL_CLR                  # the panel's edge
+        e = 0.05     # the flanks start 0.3 mm inside the panel, so they cross its edge face away from any vertex
+        uv = [(-0.6, PANEL_Z0 + e), (-0.3, PANEL_Z0 + e), (h, PANEL_Z0 + g["peak"]), (-0.3, PANEL_Z1 - e), (-0.6, PANEL_Z1 - e)]
+        pts = [(y_e + side * u, v) for u, v in uv]
+        if sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(pts, pts[1:] + pts[:1])) < 0:
+            pts = pts[::-1]
+        cs = CS([pts])
+        if groove:
+            cs = cs.offset(g["clr"], m3.JoinType.Miter)
+        parts += [prism_x(cs, x - half, x + half) for x in g["x"]]
+    return union(parts)
 
 
 def build_kit_panel():
@@ -991,7 +1016,7 @@ def build_kit_panel():
         cuts.append(prism_z(rrect((xa + xb) / 2, KIT_USB_Y, xb - xa, 2 * u["half"], u["r"]), z0, z1))
     for x, y in PANEL_SCREWS:
         cuts += [cyl_z(M2_CLEAR / 2, z0, z1, x, y), cyl_z(CSK_D / 2, PANEL_Z0 - 0.01, PANEL_Z0 + 1.2, x, y, M2_CLEAR / 2 - 0.2)]
-    return P - union(cuts)
+    return (P + panel_snaps()) - union(cuts)
 
 
 def build_kit_lid():
@@ -1236,6 +1261,11 @@ def main_kit():
             interference(env, kit, f"{usb_variant_name(sp)}: panel-mount female vs kit", tol=0.05)
             interference(env, whole_pm[sp], f"{usb_variant_name(sp)}: panel-mount female vs the one-piece lid", tol=0.05)
         log(f"  panel-mount female: ears and body up to {usb_pm_room() - 0.2:.1f} mm tall fit between the panel and the ceiling")
+        if PANEL_SNAP:
+            g = PANEL_SNAP
+            log(f"  panel snaps: {2 * len(g['x'])} bumps ({g['len']:g} mm long, front and back edges at x = "
+                f"{', '.join(f'{x:+g}' for x in g['x'])}) {g['bump'] - PANEL_CLR:.2f} mm past the wall on the way in, then in "
+                f"{g['h'] - PANEL_CLR + g['clr']:.2f} mm grooves in the lid's {SHELL_WALL} mm walls; seated, they touch nothing")
     interference(la, lb, "lid A vs B (dovetail)"); interference(ta, tb, "tray A vs B (dovetail)")
     h_fixed, h_moving = hinge_envelope(0.0)
     interference(h_fixed, tray, "hinge (tray leaf + barrel) vs tray"); interference(h_moving, lid, "hinge (lid leaf) vs lid")
