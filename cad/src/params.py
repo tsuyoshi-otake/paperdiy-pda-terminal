@@ -93,7 +93,7 @@ KIT_GAP = 0.2                 # behind the kit (its back plate is flat; the ESP3
 # Manufacturing (kit design): PLA on a Bambu Lab A1 mini (0.4 nozzle, 0.2 layers): thin shells, stiffened by bosses and
 # ribs instead of thick walls; clearances for a tuned FDM printer; no supports. No chamfers; corner radii half of the
 # original (r 6 -> 3).
-WALL = 1.2                    # lid and tray walls, lid ceiling, tray floor (3 lines / 6 layers)
+WALL = 1.2                    # lid and tray walls, lid ceiling, tray floor (3 lines of a 0.4 nozzle, 5 of a 0.2 nozzle)
 CORNER_R = 3.0 if PD_MOUNT == "kit" else 6.0   # plan corners of lid and tray (the original's r 6, halved)
 RIB_T = 1.2                   # ribs, guides and guard rings (3 lines)
 # keyboard tray (kit): a new thin shell with the original's outline and parting. Ribs on the inside of the walls stand

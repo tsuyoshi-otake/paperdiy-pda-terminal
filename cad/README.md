@@ -67,7 +67,7 @@ log is written to `out/build_log.txt`.
 
 ### Manufacturing basis
 PLA on a Bambu Lab A1 mini (0.4 mm nozzle, 0.2 mm layers), split parts on its 180 mm bed or one-piece parts on a bigger
-one. Lid and tray are thin shells: **1.2 mm walls, ceiling and floor** (`WALL`: 3 lines, 6 layers), stiffened by screw
+one. Lid and tray are thin shells: **1.2 mm walls, ceiling and floor** (`WALL`: 3 lines of a 0.4 mm nozzle, 5 of a 0.2 mm nozzle), stiffened by screw
 bosses and ribs (`RIB_T` = 1.2) instead of thick walls. Clearances are for a tuned FDM printer: 0.2 mm around the kit and
 the panel (`KIT_FIT`, `PANEL_CLR`), 0.15 mm around the covers (`COVER_POCKET_CLR`), 0.25 mm in the hinge mortises
 (`HINGE_CLR`). No supports. No chamfers anywhere; the plan corners of lid and tray are r 3 (`CORNER_R`, the original's
@@ -253,9 +253,17 @@ that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits
   25 g): 109 g and 2 h 40 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
 * **Orientation:** lid top face down (the export tilts the sloped top plane level first, `LAY_TOP` from `assembly.json`),
   panel visible face down, tray floor down, covers visible face down (the cones face up), splice plates flat. No supports.
-* **Settings** (Bambu Studio): 0.20 mm Standard, PLA, textured PEI, **3 wall loops** (material around the screw pilots),
-  15 % gyroid, brim Auto. Times and masses above are PrusaSlicer estimates with an approximation of that profile
-  (`tools/a1mini_pla_020.ini`, `out/print_report.md`); Bambu Studio's own numbers differ somewhat.
+* **Settings, 0.4 mm nozzle** (Bambu Studio): 0.20 mm Standard, PLA, textured PEI, **3 wall loops** (material around
+  the screw pilots), 15 % gyroid, brim Auto. Times and masses above are PrusaSlicer estimates with an approximation of
+  that profile (`tools/a1mini_pla_020.ini`, `out/print_report.md`); Bambu Studio's own numbers differ somewhat.
+* **Settings, 0.2 mm nozzle** (the author's A1 mini; the panel was sent to print with them): Cool Plate (SuperTack), PLA Basic,
+  0.14mm Extra Draft @BBL A1M 0.2 nozzle with three changes in Quality: elephant-foot compensation 0.1 mm (the visible
+  face is the first layer; keeps the window and slot edges and the 0.2 mm lid clearance), precise Z height on (the 1.6 mm
+  panel and the 0.6 / 0.8 mm splice pockets come out exact), Arachne walls (fills the 1.2 mm walls, ribs and guards).
+  The rest as in the profile (4 walls, 7 top / 5 bottom layers: the panel prints solid). Bambu Studio, 2026-11-08,
+  including ~8 min of preparation: plate 0 1 h 11 min 5.7 g, plate 1 6 h 29 min 45.2 g, plate 2 5 h 45 min 40.0 g,
+  plate 3 3 h 42 min 25.3 g: 15 h 56 min and 110.4 g for plates 1–3, 5–6 × the 0.4 mm nozzle's time for the same PLA.
+  The 3MFs carry no print settings; pick these after opening.
 * **Slicer warnings:** none on any plate. Thin-wall notes: the USB-C ceiling (0.8 mm), the panel's snap ridges, the
   covers' countersink edges, and the splice pockets (half the wall until the plate is glued in).
 * **Test coupons** (`plate0_test_coupons.3mf`, cut from the real parts in print orientation): hinge seats from tray and lid
@@ -354,7 +362,7 @@ published drawing and structure files.
 | `KIT_SCREW_D` | `20.0` | measured | [M:K159-B STL] back-plate hole over the M2 standoff, toward the USB end |
 | `KIT_MASS_G` | `43.1` | measured | [M: docs.m5stack.com K159-B] |
 | `KIT_CX` / `KIT_FIT` / `KIT_GAP` | `-4.0` / `0.2` / `0.2` | design choice | window centred; clearance around the kit per side / behind |
-| `WALL` / `CORNER_R` / `RIB_T` | `1.2` / `3.0` (bare `6.0`) / `1.2` | design choice | walls, ceiling and floor (3 lines, 6 layers); plan corner radius (the original's halved); ribs, guides, guard rings |
+| `WALL` / `CORNER_R` / `RIB_T` | `1.2` / `3.0` (bare `6.0`) / `1.2` | design choice | walls, ceiling and floor (3 lines of a 0.4 mm nozzle, 6 layers of 0.2 mm); plan corner radius (the original's halved); ribs, guides, guard rings |
 | `TRAY_FLOOR` / `TRAY_KB_RIBS` / `TRAY_PORT` | `WALL` (bare `3.0`) / `front x ±40, ±80; back x ±25, −85; ends y ±25` / `x 72.9…89.1, 3.0 above the floor` | design choice | the kit tray: floor top; keyboard-locating ribs out to the original inner faces; charge-port opening |
 | `KB_THICK` / `KB_TOP_Z` / `KB_CLR` | `11.5` / `TRAY_FLOOR + KB_THICK` (12.7) / `0.5` | ASSUMED | keyboard thickness over the keycaps -> MEASURE; its highest point; clearance under the panel |
 | `KB_SIZE` / `KB_PAD` | `None` / `clr 0.15, w 6, 4 front + 4 back + 2 per end` | ASSUMED | keyboard body width × depth -> MEASURE; pads on the tray's inner walls take up the play (`None` = no pads) |
