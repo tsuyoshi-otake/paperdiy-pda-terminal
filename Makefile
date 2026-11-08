@@ -45,6 +45,7 @@ render:
 	$(PYTHON) docs/hinge_figure.py docs/images/hinge_screws.png
 	$(PYTHON) docs/coupons_figure.py docs/images/plate0_coupons.png
 	$(PYTHON) docs/kit_figure.py docs/images/kit_mount.png
+	$(PYTHON) docs/snap_figure.py docs/images/panel_snap.png
 	$(PYTHON) docs/latch_figure.py docs/images/latch.png
 
 test:

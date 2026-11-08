@@ -104,9 +104,9 @@ def dovetail_cs(X, yc, d=DOVETAIL):
     return CS([[[X - 1.0, yc - n], [X, yc - n], [X + L, yc - h], [X + L, yc + h], [X, yc + n], [X - 1.0, yc + n]]])
 
 
-def split_dovetail(part, X, ys, z0, z1):
-    keys = union(prism_z(dovetail_cs(X, y), z0 - 0.5, z1 + 0.5) for y in ys)
-    keys_c = union(prism_z(dovetail_cs(X, y).offset(DOVETAIL["clr"], m3.JoinType.Miter), z0 - 0.5, z1 + 0.5) for y in ys)
+def split_dovetail(part, X, ys, z0, z1, d=DOVETAIL):
+    keys = union(prism_z(dovetail_cs(X, y, d), z0 - 0.5, z1 + 0.5) for y in ys)
+    keys_c = union(prism_z(dovetail_cs(X, y, d).offset(d["clr"], m3.JoinType.Miter), z0 - 0.5, z1 + 0.5) for y in ys)
     A = (part ^ box(-BIG, X, -BIG, BIG, -BIG, BIG)) + (part ^ keys)
     B = (part ^ box(X, BIG, -BIG, BIG, -BIG, BIG)) - keys_c
     return A, B
@@ -1205,11 +1205,16 @@ def main_kit():
     ta, tb = split_dovetail(tray, SPLIT_X_TRAY, DOVETAIL_Y, 0.0, 3.0)
     pieces = {"lid_A_left": la, "lid_B_main": lb, "tray_A_left": ta, "tray_B_main": tb}
     if SHELL:
-        pa, pb = split_dovetail(panel, SPLIT_X_PANEL, PANEL_DOVETAIL_Y, PANEL_Z0, PANEL_Z1)
+        pa, pb = split_dovetail(panel, SPLIT_X_PANEL, PANEL_DOVETAIL_Y, PANEL_Z0, PANEL_Z1, PANEL_DOVETAIL)
         pieces.update(panel_A_left=pa, panel_B_main=pb)
     for k, v in pieces.items():
         tm = export(v, f"{SPLIT_DIR}/{k}.stl")
         assert max(tm.extents) <= MAX_PIECE, (k, tm.extents)
+    if SHELL:   # no part of a panel piece may hang on a web narrower than 2 mm (eroded by 1 mm it must stay in one piece)
+        for k in ("panel_A_left", "panel_B_main"):
+            n = len(pieces[k].slice((PANEL_Z0 + PANEL_Z1) / 2).offset(-1.0, m3.JoinType.Miter).decompose())
+            log(f"  {k}: eroded by 1 mm at mid-thickness -> {n} piece(s)")
+            assert n == 1, (k, "a web narrower than 2 mm", n)
     usb_variants = {}
     if SHELL:
         log(f"== lid A for a screw-ear panel-mount female USB-C (swap only lid A; room inside the end wall {usb_pm_room():.1f} mm)")
@@ -1409,6 +1414,11 @@ def main():
     for k, v in pieces.items():
         tm = export(v, f"{SPLIT_DIR}/{k}.stl")
         assert max(tm.extents) <= MAX_PIECE, (k, tm.extents)
+    if SHELL:   # no part of a panel piece may hang on a web narrower than 2 mm (eroded by 1 mm it must stay in one piece)
+        for k in ("panel_A_left", "panel_B_main"):
+            n = len(pieces[k].slice((PANEL_Z0 + PANEL_Z1) / 2).offset(-1.0, m3.JoinType.Miter).decompose())
+            log(f"  {k}: eroded by 1 mm at mid-thickness -> {n} piece(s)")
+            assert n == 1, (k, "a web narrower than 2 mm", n)
         out[k] = tm
 
     log("== lid A variants for other USB-C panel-mount hole spacings (only lid A changes)")

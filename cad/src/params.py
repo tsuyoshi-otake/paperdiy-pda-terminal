@@ -129,9 +129,14 @@ PANEL_USB_SLOT = dict(frame=2.2, half=6.6, r=1.5)   # None = closed; frame left 
 # (peak above the visible face), so it goes in and comes out (prised at the finger slots) alike.
 # "h" sets the grooves (lid), "bump" the bumps (panel): tight -> lower "bump" and reprint the panel only.
 PANEL_SNAP = dict(x=(-23.0, 26.0), len=8.0, h=0.45, bump=0.45, peak=0.8, clr=0.05)
-PANEL_DOVETAIL_Y = (-37.6, 0.0, 40.0)        # keys between the front edge (y -44.7) and the USB slot (-30.6), 1.8 mm each side; clear of the power slot (16.4..30.3)
+# panel keys: smaller than DOVETAIL so every web around them is >= 2.8 mm (build.py checks >= 2 mm). The front key sits
+# between the front edge (y -44.7) and the USB slot (-30.6), 3.3-3.4 mm each side; the back one between the power slot
+# (top 30.3) and the hinge-housing cut-out (y > 43.3 from x -65.7), 2.8 mm each side, so the corner beside the housing
+# keeps a 2.8 mm neck (with the full-size key at y 40 it hung on a 0.2 mm sliver)
+PANEL_DOVETAIL = dict(neck=4.5, head=7.0, depth=5.0, clr=0.2)
+PANEL_DOVETAIL_Y = (-37.6, 0.0, 36.8)
 KIT_RIBS_X = (-50.0, 0.0, 40.0)              # ribs from the ceiling onto the kit's back (clear of the ESP32 window)
-USB_GUIDE_X = (-84.0, None)                  # USB-C guide ribs from x = -84 to the kit, either side of the plug path
+USB_GUIDE_X = (-99.6, None)                  # USB-C guide ribs from the end wall (inner face -99.4) to the kit, either side of the plug path
 SPLIT_BLOCK = dict(dx=7.0, dy=7.0, h=3.4)    # thicker ceiling around the lid's dovetail keys
 # USB-C at the left end: "direct" = a straight cable into the kit's port through the end-wall opening (default);
 # lid A also comes for a screw-ear panel-mount female (USB_PM_*), at y = USB_PM_Y, so the end can be swapped later.

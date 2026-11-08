@@ -5,19 +5,21 @@
   lid 16.6 mm thick at the front face, 14.2 at the back; closed case 24.6 mm tall at the front, 27.2 at the back (was 30.0 / 30.0)
 == building
 == exports (bounding boxes are axis-aligned in the assembly frame)
-  out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=43724 mm3
+  out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=43993 mm3
   out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=79293 mm3
   out/paperdiy_kit_envelope.stl: bbox 121.3 x 68.2 x 6.3 mm, watertight=True, winding_ok=True, bodies=1, vol=50716 mm3
   out/display_panel_kit.stl: bbox 198.4 x 96.8 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=18751 mm3
   out/hinge_cover_lid_x2.stl: bbox 24.1 x 1.7 x 9.9 mm, watertight=True, winding_ok=True, bodies=1, vol=226 mm3
   out/hinge_cover_tray_x2.stl: bbox 24.1 x 1.7 x 9.2 mm, watertight=True, winding_ok=True, bodies=1, vol=209 mm3
 == split pieces for A1 mini (limit 175 mm)
-  out/split/lid_A_left.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=8050 mm3
+  out/split/lid_A_left.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=8319 mm3
   out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=35640 mm3
   out/split/tray_A_left.stl: bbox 35.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=13254 mm3
   out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=65997 mm3
-  out/split/panel_A_left.stl: bbox 33.2 x 95.9 x 1.6 mm, watertight=True, winding_ok=True, bodies=1, vol=3843 mm3
-  out/split/panel_B_main.stl: bbox 171.2 x 96.8 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=14887 mm3
+  out/split/panel_A_left.stl: bbox 32.2 x 95.9 x 1.6 mm, watertight=True, winding_ok=True, bodies=1, vol=3750 mm3
+  out/split/panel_B_main.stl: bbox 171.2 x 96.8 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=14984 mm3
+  panel_A_left: eroded by 1 mm at mid-thickness -> 1 piece(s)
+  panel_B_main: eroded by 1 mm at mid-thickness -> 1 piece(s)
 == lid A for a screw-ear panel-mount female USB-C (swap only lid A; room inside the end wall 8.0 mm)
   out/split/usb_variants/lid_A_left_usb_noscrew.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=7873 mm3
     lid_A_left_usb_noscrew: opening 13.0 x 7.0 mm at y = 20, z = 20.6, no screw holes (glue)
@@ -36,7 +38,7 @@
   out/split/usb_variants/lid_A_left_usb30mm.stl: bbox 35.0 x 99.5 x 19.2 mm, watertight=True, winding_ok=True, bodies=1, vol=7844 mm3
     lid_A_left_usb30mm: opening 13.0 x 7.0 mm at y = 20, z = 20.6, M3 holes 30 mm apart
 == whole parts for printers with a 220 mm bed or bigger (no split, no dovetails, nothing to glue)
-  out/whole/lid.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42481 mm3
+  out/whole/lid.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42750 mm3
   out/whole/tray.stl: bbox 202.0 x 99.5 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=79293 mm3
   out/whole/panel.stl: bbox 198.4 x 96.8 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=18751 mm3
   out/whole/usb_variants/lid_usb_noscrew.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42286 mm3
@@ -47,7 +49,7 @@
   out/whole/usb_variants/lid_usb25mm.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42257 mm3
   out/whole/usb_variants/lid_usb28mm.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42257 mm3
   out/whole/usb_variants/lid_usb30mm.stl: bbox 202.0 x 99.5 x 22.8 mm, watertight=True, winding_ok=True, bodies=1, vol=42257 mm3
-  lid without the dovetail blocks: 42.48 cm3 (split lid 43.72 cm3)
+  lid without the dovetail blocks: 42.75 cm3 (split lid 43.99 cm3)
 == test coupons (cut from the real parts; print these first)
   out/coupons/coupon_hinge_tray.stl: bbox 27.0 x 17.0 x 12.8 mm, watertight=True, winding_ok=True, bodies=1, vol=2988 mm3
   out/coupons/coupon_hinge_lid.stl: bbox 27.0 x 17.0 x 14.4 mm, watertight=True, winding_ok=True, bodies=1, vol=2983 mm3

@@ -112,7 +112,7 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
   chamfers, hollowed to `SHELL_WALL` = 1.6 walls and a `SHELL_CEIL` = 1.2 ceiling. Inside: the two hinge housings
   (9.5 mm deep, 27 mm wide), six screw bosses (Ø6) for the panel with Ø1.8 pilots, three ribs from the
   ceiling to 0.1 mm above the kit's back (x −50 / 0 / 40, clear of the ESP32 window), two guide ribs either side of the
-  plug path, thicker ceiling blocks (3.4 mm) around the dovetail keys, and a relief that leaves 0.8 mm of ceiling over the
+  plug path (from the end wall, beside the opening, to the kit; cut at the split like everything else), thicker ceiling blocks (3.4 mm) around the dovetail keys, and a relief that leaves 0.8 mm of ceiling over the
   plug. Plate 1 went from 87 g / 2 h 45 min (solid) to 52 g / 1 h 18 min.
 * **Bezel panel** (`PANEL_*`): 1.6 mm, inside the lid's walls (0.2 mm clear of them and the housings). Screen
   window = the kit's window + 0.3 per side with a 1.0 mm chamfer on the visible face; a locating rim (2.0 high, 1.2 wide,
@@ -140,7 +140,10 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
   (1.15 mm before the covers went flush) and the seam stays 0.8–0.9 mm (90–150°; it was 2.3–2.6). Same hinges. The cost:
   with the keyboard's charge plug in, the lid opens to 91°.
 * **Split**: at x = −72 like before, three dovetail keys in the lid's ceiling blocks at y −37, 5, 36 and in the panel at
-  y −36, 0, 40 (clear of the plug path and the slots).
+  y −37.6, 0, 36.8. The panel's keys are smaller (`PANEL_DOVETAIL`: neck 4.5, head 7, 5 deep, 0.2 clearance) so every
+  web around them is ≥ 2.8 mm: with full-size keys the strip between the front key and the USB slot was 1.8 mm, and the
+  corner beside the left hinge housing hung on a 0.2 mm sliver next to the back key. `build.py` erodes each panel piece
+  by 1 mm at mid-thickness and asserts it stays in one piece (no web under 2 mm).
 * **Print**: lid pieces top face down (the 3MF export first tilts the top plane level, `LAY_TOP`, from `assembly.json`);
   panel pieces visible face down.
 
@@ -331,9 +334,10 @@ published drawing and structure files.
 | `PANEL_RIM` / `PANEL_SLOT` | `h 2.0, w 1.2` / `out 6.5, end 1.5, r 1.5` | design choice | locating rim around the kit; finger slots at the caps |
 | `PANEL_SCREWS` | `(±91, −37.5), (±91, 46), (−62, −39.5), (−62, 40)` | design choice | six M2×8 into the lid's bosses, clear of the housings |
 | `PANEL_SNAP` | `x (−23, 26), len 8, h 0.45, bump 0.45, peak 0.8, clr 0.05` | design choice | snap bumps on the panel's front and back edges, grooves in the lid's walls (tight: lower `bump`, panel only) |
-| `PANEL_DOVETAIL_Y` / `DOVETAIL_Y_KIT` | `(-37.6, 0, 40)` / `(-37, 5, 36)` | design choice | panel keys (the front one between the edge and the USB slot) / lid keys |
+| `PANEL_DOVETAIL_Y` / `DOVETAIL_Y_KIT` | `(-37.6, 0, 36.8)` / `(-37, 5, 36)` | design choice | panel keys (front: between the edge and the USB slot; back: between the power slot and the housing cut-out) / lid keys |
+| `PANEL_DOVETAIL` | `neck 4.5, head 7, depth 5, clr 0.2` | design choice | smaller keys for the panel (webs ≥ 2.8 mm) |
 | `PANEL_USB_SLOT` | `frame 2.2, half 6.6, r 1.5` | design choice | panel open over the USB-C plug path, from a 2.2 mm frame at the left edge to the kit (`None` = closed) |
-| `KIT_RIBS_X` / `USB_GUIDE_X` / `SPLIT_BLOCK` | `(-50, 0, 40)` / `(-84, None)` / `7 × 7 × 3.4` | design choice | ribs onto the kit's back; USB-C guide ribs; ceiling blocks around the lid keys |
+| `KIT_RIBS_X` / `USB_GUIDE_X` / `SPLIT_BLOCK` | `(-50, 0, 40)` / `(-99.6, None)` / `7 × 7 × 3.4` | design choice | ribs onto the kit's back; USB-C guide ribs from the end wall to the kit; ceiling blocks around the lid keys |
 | `USB_PM_Y_KIT` | `20.0` | design choice | panel-mount female opening in the lid-A variants (clear of the split blocks and the power slot) |
 | `LATCH` | `w 18, t 1.0, slot 0.8, root 9, below 3.6, bump 0.45 @ 2.0, clr 0.15, 45° / 35°` | design choice | snap tab (see "Snap tab") |
 | `PANEL_Z_FRONT` | `15.0` | measured | [M:Display Panel.stl] screen-side face |
