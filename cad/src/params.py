@@ -88,15 +88,14 @@ KIT_USB_Z = (2.44, 5.6)       # [M:K159-B STL] port depth behind the front face
 KIT_SCREW_D = 20.0            # [M:K159-B STL] back-plate hole (4.2) over the M2 standoff, toward the USB end, centred
 KIT_MASS_G = 43.1             # [M: docs.m5stack.com K159-B] with case, acrylic and 140 mAh cell
 KIT_CX = -KIT_WIN_OFF         # [D] case centre x in the lid: puts the window centre at x = 0
-KIT_FIT = 0.5 if PD_MOUNT == "kit" else 0.2   # around the kit (pocket / panel rim), per side: JLC FDM assembly clearance
+KIT_FIT = 0.2                 # around the kit (pocket / panel rim), per side
 KIT_GAP = 0.2                 # behind the kit (its back plate is flat; the ESP32 module sits in a window in it)
-# Manufacturing (kit design): printed in PLA on a Bambu Lab A1 mini for the prototype and ordered from JLC3DP for the
-# product, so the design follows JLC's FDM guide: walls 2.0 mm, 0.5 mm clearance between assembled parts (+-0.3 mm
-# tolerance), features >= 1.5 mm, no supports. Bezel panel and hinge covers (too small for JLC FDM: 30 x 30 x 10 mm
-# minimum) go to SLA resin or MJF there. No chamfers; corner radii half of the original (r 6 -> 3).
-WALL = 2.0                    # lid and tray walls, lid ceiling, tray floor (JLC FDM: >= 2.0 mm at 100 mm)
+# Manufacturing (kit design): PLA on a Bambu Lab A1 mini (0.4 nozzle, 0.2 layers): thin shells, stiffened by bosses and
+# ribs instead of thick walls; clearances for a tuned FDM printer; no supports. No chamfers; corner radii half of the
+# original (r 6 -> 3).
+WALL = 1.2                    # lid and tray walls, lid ceiling, tray floor (3 lines / 6 layers)
 CORNER_R = 3.0 if PD_MOUNT == "kit" else 6.0   # plan corners of lid and tray (the original's r 6, halved)
-RIB_T = 1.6                   # ribs, guides and guard rings (JLC FDM: features >= 1.5 mm)
+RIB_T = 1.2                   # ribs, guides and guard rings (3 lines)
 # keyboard tray (kit): a new thin shell with the original's outline and parting. Ribs on the inside of the walls stand
 # out to the original's inner faces (x +-98, y +-43.5), so the keyboard sits as it did; the charge-port opening in the
 # back wall (x 72.9..89.1) starts 3.0 above the floor, as in the original.
@@ -127,15 +126,15 @@ DOVETAIL_Y_KIT = (-37.0, 5.0, 36.0)   # lid keys clear of the USB channel (y -30
 KIT_LID = "shell"
 SHELL_WALL = WALL
 SHELL_CEIL = WALL
-USB_CEIL = 1.5                # ceiling left over the USB-C plug path (a relief from inside)
-PANEL_T = 2.0                 # bezel panel (resin / MJF at JLC; countersunk M2x8 heads 1.2 deep)
-PANEL_CLR = 0.5               # panel to the lid's walls and hinge pads
-PANEL_WIN_CLR = 0.5           # window = the kit's window + 0.5 per side (the kit can shift by KIT_FIT), square edges
-PANEL_RIM = dict(h=2.0, w=1.6)   # locating rim on the panel's back around the kit (below the caps at 2.1 mm)
+USB_CEIL = 0.8                # ceiling left over the USB-C plug path (a relief from inside, 4 layers)
+PANEL_T = 1.6                 # bezel panel (countersunk M2x8 heads: 1.2 deep)
+PANEL_CLR = 0.2               # panel to the lid's walls and hinge pads
+PANEL_WIN_CLR = 0.3           # window = the kit's window + 0.3 per side (the kit can shift by KIT_FIT), square edges
+PANEL_RIM = dict(h=2.0, w=1.2)   # locating rim on the panel's back around the kit (below the caps at 2.1 mm)
 PANEL_SLOT = dict(out=8.0, end=3.0, r=0.75)  # finger slots through the panel in front of the caps (KEY) and the power cap
 # guard rings on the panel's back around the finger slots, up to the kit's back: whatever falls in a slot stays in that
 # pocket (ring + the kit's edge) instead of getting into the lid
-PANEL_GUARD = dict(t=1.6, clr=0.5)
+PANEL_GUARD = dict(t=RIB_T, clr=0.5)
 PANEL_SCREWS = ((-91.0, -37.5), (91.0, -37.5), (-91.0, 46.0), (91.0, 46.0), (-62.0, -39.5), (-62.0, 40.0))  # clear of the housings
 # The panel is open over the USB-C plug path (left edge to the kit's port, like the button slots): a plug can be
 # guided into the port by hand, and a panel-mount female's inner plug goes in and out without taking the panel off.
@@ -143,26 +142,26 @@ PANEL_USB_SLOT = dict(frame=2.2, half=6.6, r=0.75)  # None = closed; frame left 
 # snap detents: bumps on the panel's front and back edges click into shallow grooves in the lid's walls (which flex
 # outward as the panel goes in), so the panel stays in without its screws. x: between the wall ribs, clear of the latch,
 # the KEY slot and the hinge pads. Profile across the edge: a ridge with its peak h out from the panel edge at
-# mid-thickness, so it goes in and comes out (prised at the finger slots) alike; h - PANEL_CLR = 0.35 mm past the wall.
+# mid-thickness, so it goes in and comes out (prised at the finger slots) alike; h - PANEL_CLR = 0.25 mm past the wall.
 # "h" sets the grooves (lid), "bump" the bumps (panel): tight -> lower "bump" and reprint the panel only.
-PANEL_SNAP = dict(x_front=(-60.0, 26.0), x_back=(-23.0, 26.0), len=8.0, h=0.85, bump=0.85, clr=0.05)
+PANEL_SNAP = dict(x_front=(-60.0, 26.0), x_back=(-23.0, 26.0), len=8.0, h=0.45, bump=0.45, clr=0.05)
 # panel keys (split version for the A1 mini only): smaller than DOVETAIL so every web around them is >= 2.5 mm (build.py
-# checks >= 2 mm): the front key between the front edge (y -44.0) and the USB slot (-30.6), the back one between the
-# power slot's guard and the back edge (y 50.5). The panel is split at SPLIT_X_PANEL = -75, clear of the power slot.
+# checks >= 2 mm): the front key between the front edge (y -45.1) and the USB slot (-30.6), the back one between the
+# power slot (top 31.8) and the back edge (y 51.6). The panel is split at SPLIT_X_PANEL, clear of the power slot.
 PANEL_DOVETAIL = dict(neck=4.5, head=7.0, depth=5.0, clr=0.2)
 PANEL_DOVETAIL_Y = (-37.3, 0.0, 42.0)
 KIT_RIBS_X = (-50.0, 0.0, 40.0)              # ribs from the ceiling onto the kit's back (clear of the ESP32 window)
 USB_GUIDE_X = (-99.6, None)                  # USB-C guide ribs from the end wall (inner face -99.4) to the kit, either side of the plug path
 SPLIT_BLOCK = None if PD_MOUNT == "kit" else dict(dx=7.0, dy=7.0, h=3.4)   # bare: thicker ceiling around the lid's keys
-# A1 mini split pieces (prototype only; the JLC product is one piece): thin splice plates glued from the hidden side
-# across each seam (on top of the tray floor under the keyboard, inside the lid's ceiling, on the panel's back), each in
-# a pocket half the wall deep in both halves, so they sit flush; the pockets face up in print (no bridging).
+# A1 mini split pieces (the one-piece parts have none): thin splice plates glued from the hidden side across each seam
+# (on top of the tray floor under the keyboard, inside the lid's ceiling, on the panel's back), each t thick in a pocket
+# half the wall deep in both halves, so they sit flush; the pockets face up in print (no bridging).
 # x0/x1: the plate's ends relative to the split; y: the plates (clear of the USB-C channel, the slots, the rim and the
 # screw bosses).
-SPLICE = dict(t=1.0, clr=0.15,
-              tray=dict(x0=-10.0, x1=10.0, y=((-43.2, 50.5),)),
-              lid=dict(x0=-10.0, x1=6.0, y=((-44.0, -33.0), (-15.0, 50.5))),
-              panel=dict(x0=-10.0, x1=8.4, y=((-42.35, -32.25), (-15.75, 13.25), (33.45, 48.85))))   # >= 1.5 mm from edges / slots
+SPLICE = dict(clr=0.15,
+              tray=dict(t=WALL / 2, x0=-10.0, x1=10.0, y=((-43.2, 50.5),)),
+              lid=dict(t=WALL / 2, x0=-10.0, x1=6.0, y=((-44.0, -33.0), (-15.0, 50.5))),
+              panel=dict(t=PANEL_T / 2, x0=-10.0, x1=8.4, y=((-42.35, -32.25), (-15.75, 13.25), (33.45, 48.85))))   # >= 1.5 mm from edges / slots
 # USB-C at the left end: "direct" = a straight cable into the kit's port through the end-wall opening (default);
 # lid A also comes for a screw-ear panel-mount female (USB_PM_*), at y = USB_PM_Y, so the end can be swapped later.
 USB_PM_Y_KIT = 20.0            # clear of the lid's split blocks (y 5, 36) and the power slot
@@ -170,8 +169,8 @@ USB_PM_Y_KIT = 20.0            # clear of the lid's split blocks (y 5, 36) and t
 # the tray's front face; a bump on its inside drops into a groove in the recess. It bends outward (free air), so the
 # keyboard's position does not matter. Force ~ 3 E I delta / L^3; strain 1.5 t delta / L^2 (bent across the layers in
 # print: keep it under ~0.5 %).
-# Kit design: off centre (x 6) so the KEY slot's guard clears it; 1.5 mm tab (JLC: snaps >= 1.5 mm), 0.3 mm clearance.
-LATCH = dict(x=6.0, w=18.0, t=1.5, slot=0.8, root=13.0, below=3.6, bump=0.6, bump_at=2.0, clr=0.3,
+# Kit design: off centre (x 6) so the KEY slot's guard clears it.
+LATCH = dict(x=6.0, w=18.0, t=1.0, slot=0.8, root=9.0, below=3.6, bump=0.45, bump_at=2.0, clr=0.15,
              close_deg=45.0, open_deg=35.0, tray_wall_min=1.2)
 
 # ---------------------------------------------------------------- layout choices (lid frame)
@@ -294,7 +293,7 @@ KB_SW_BOTTOM_Z = 5.5          # [A] TODO notch bottom (wall top there is ~z 9.6)
 # A1 mini splitting
 SPLIT_X_LID = -72.0           # clear of hinge knuckle (|x|<=44) and camera window (x>=-68.9)
 SPLIT_X_TRAY = -72.0          # clear of tray hinge ears (|x| 46..61) and rear opening (x 72.9..89.1)
-SPLIT_X_PANEL = -75.0 if PD_MOUNT == "kit" else -72.0   # kit: clear of the power slot (x >= -72.5); bare: of the window bevel
+SPLIT_X_PANEL = -74.2 if PD_MOUNT == "kit" else -72.0   # kit: 2.2 mm clear of the power slot (x >= -72.0), panel B 173.8 mm; bare: of the window bevel
 MAX_PIECE = 175.0
 WHOLE_BED = 220.0   # the unsplit plates are laid out on a 220 x 220 mm bed (fits 220 mm beds and bigger)
 DOVETAIL = dict(neck=6.0, head=10.0, depth=6.0, clr=0.2)   # glued dovetail keys (0.4 total clearance)
@@ -324,7 +323,7 @@ COVER_SCREWED = COVER_FLUSH   # held by the hinge screws (bare design: glued)
 COVER_T = 1.0                 # plate thickness (kit: flush in the back face; bare: proud of it)
 COVER_RIM = 1.5               # overlap onto the case around the leaf mortise
 COVER_R0 = 3.6                # covers start this far from the axis (barrel + clearance for rotation)
-COVER_POCKET_CLR = 0.5        # kit: pocket around each cover, per side (JLC assembly clearance)
+COVER_POCKET_CLR = 0.15       # kit: pocket around each cover, per side
 COVER_R = 0.5 if COVER_FLUSH else 1.0   # plan corner radius of the covers (kit: halved)
 # kit: 90 deg countersink for the M2 flat head (dk 3.5-3.8) at the outer face, clearance hole, and the cone under it that
 # fills the leaf's countersink (catalogue 4.2, assumed 90 deg) with 0.1 mm radial clearance
@@ -335,9 +334,9 @@ HINGE_SINK = COVER_T if COVER_FLUSH else 0.0   # the leaves sit this much deeper
 # the outer face, so the interference grows from 0 to h - COVER_POCKET_CLR (0.15 mm) per side as the cover goes in.
 # The ribs are on the covers, so the fit is tuned by reprinting them (tight: lower h; loose: raise it).
 COVER_RIBS = dict(per_side=2, h=COVER_POCKET_CLR + 0.15, r=0.9) if COVER_FLUSH else None
-# kit: a 1.0 mm wide lip on each side edge of a cover reaches 1.1 mm further into a deeper strip of the pocket (outside the
-# leaf's mortise): it stiffens the cover and makes it 2.1 mm deep overall, over the 2 mm minimum of JLC's resin / MJF
-COVER_LIP = dict(w=1.0, d=1.1, clr=0.2) if COVER_FLUSH else None
+# optional: a lip on each side edge of a cover, reaching d further into a deeper strip of the pocket (outside the leaf's
+# mortise), e.g. dict(w=1.0, d=1.1, clr=0.2) for a 2.1 mm deep cover (SLA / MJF minimums). None: a plain 1 mm plate.
+COVER_LIP = None
 HINGE_MODEL = "Sugatsune HG-MF08-BL x2 (free-stop, 0.0784 N*m +-25% each, POM)"
 # [M] Sugatsune spec table (global.sugatsune.com, 21651_t): HG-MF08 L 20, W 25, t 2, W2 16, H2 10, holes 2.4 / csk 4.2
 HINGE_LEN = 20.0              # [M] L: length along the axis
@@ -353,7 +352,7 @@ HINGE_HOLE_OFF = 8.0          # [M] W2 16 / 2: hole centres from the axis
 HINGE_SCREW = ("M2x8 countersunk tapping screws x8, heads in the covers, through the leaf holes (2.4 / csk 4.2)"
                if COVER_SCREWED else "M2x8 countersunk tapping screws x8 (leaf holes 2.4 / csk 4.2)")
 HINGE_X = 52.0                # hinge centres at x = +-52: clear of the lid/tray split (x=-72) and the tray rear opening (x>=72.9)
-HINGE_CLR = 0.4 if PD_MOUNT == "kit" else 0.25   # mortise clearance per side
+HINGE_CLR = 0.25              # mortise clearance per side
 HINGE_PILOT_HOLES = True      # print pilot holes at the catalogue hole positions
 HINGE_PILOT_D = 1.8           # for M2 tapping screws in PLA
 BACK_OLD_Y = 46.5             # [M] original outer back face of lid and tray
@@ -374,7 +373,7 @@ HOUSING_HALF = 13.5           # housing half-length along x: cover 23.5 mm + 1.7
 # kit (thin shells): instead of a solid 9.5 mm housing, each hinge sits on a pad (the cover pocket + WALL around it, the
 # mortise + WALL deep) with a screw boss behind each pilot hole, out to the screw tip + 1.5 mm and down (tray) / up (lid)
 # to the floor / ceiling as a rib
-HINGE_PAD = dict(boss_wall=2.0, skin=1.5)
+HINGE_PAD = dict(boss_wall=1.6, skin=1.5)
 # kit: the lid's lower back edge and the tray's upper back edge (along the parting, at the hinge axis) are rounded with
 # this radius. With the axis only 0.15 mm outside the back face (flush covers), the square edges would rub as soon as
 # the real axis sits a little lower than the catalogue model suggests; the radius gives that room.

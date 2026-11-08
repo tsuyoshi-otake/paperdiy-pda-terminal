@@ -774,7 +774,7 @@ def splice_parts(kind, X):
     """Splice plates for a split piece: [(name, plate, pocket)] in the assembly position. kind: tray (top of the floor),
     lid (inside the ceiling) or panel (on its back). The pockets are cut from both halves after splitting."""
     g = SPLICE[kind]
-    t, c = SPLICE["t"], SPLICE["clr"]
+    t, c = g["t"], SPLICE["clr"]
     out = []
     for i, (y0, y1) in enumerate(g["y"]):
         xa, xb = X + g["x0"], X + g["x1"]
@@ -1338,7 +1338,8 @@ def main_kit():
             log(f"  {k}: eroded by 1 mm (visible half) -> {n} piece(s)")
             assert n == 1, (k, "a web narrower than 2 mm", n)
     if splices:
-        log(f"== splice plates for the split pieces ({SPLICE['t']:g} mm, glued from the hidden side into pockets in both halves)")
+        log("== splice plates for the split pieces (" + ", ".join(f"{k} {SPLICE[k]['t']:g} mm" for k in ("tray", "lid", "panel"))
+            + "; glued from the hidden side into pockets in both halves)")
         for kind, items in splices.items():
             for name, plate, _ in items:
                 export(plate, f"{SPLIT_DIR}/splice/{name}.stl")
@@ -1358,7 +1359,7 @@ def main_kit():
             usb_variants[sp] = va + lb
             log(f"    {name}: opening {usb_pm_opening_w(sp):.1f} x {USB_PM_H:.1f} mm at y = {USB_PM_Y_KIT:g}, z = {usb_pm_zc():.1f}"
                 + (f", M3 holes {sp:g} mm apart" if sp > 0 else ", no screw holes (glue)"))
-        # Whole parts for printers with a bed of WHOLE_BED or more and for JLC3DP: no split, no dovetail keys, no splice
+        # Whole parts for printers with a bed of WHOLE_BED or more (or a print service): no split, no dovetail keys, no splice
         # pockets (and no SPLIT_BLOCK ceiling blocks, if any). Each is the checked part minus material (asserted), so the
         # interference checks below hold for them too.
         log(f"== whole parts for printers with a {WHOLE_BED:.0f} mm bed or bigger (no split, no dovetails, nothing to glue)")

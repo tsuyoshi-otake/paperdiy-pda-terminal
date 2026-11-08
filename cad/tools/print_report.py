@@ -59,6 +59,9 @@ if PD_MOUNT == "kit":
     THIN_NOTE["lid_A_left"] = (f"the ceiling over the USB-C channel is {USB_CEIL:g} mm (USB_CEIL), printed as the first "
                                "layers on the bed")
     THIN_NOTE["panel_B_main"] = "the snap bumps on its front and back edges come to a ridge"
+    _sp = "the splice-plate pockets at the seam leave half the wall until the plate is glued in"
+    for _p in ("lid_A_left", "lid_B_main", "tray_A_left", "tray_B_main", "panel_A_left", "panel_B_main"):
+        THIN_NOTE[_p] = (THIN_NOTE[_p] + "; " + _sp) if _p in THIN_NOTE else _sp
     for _c in ("hinge_cover_lid_x2", "hinge_cover_tray_x2"):
         THIN_NOTE[_c] = ("a 1 mm plate; the thin spots are the edges of the screw countersinks and of the cones under "
                          "them, which the screw head and the hinge's countersink hold from both sides")

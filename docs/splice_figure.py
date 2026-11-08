@@ -95,7 +95,8 @@ def seam_section(ax):
     for mesh, fc, ec, z in ((a, A_C, A_E, 1), (b, B_C, B_E, 1), (plate, P_C, P_E, 3)):
         for poly in section(mesh, [0, y, 0], [0, 1, 0], xz):
             add_polygon(ax, poly, fc, ec, lw=1.0, z=z)
-    X, g, t = SPLIT_X_TRAY, SPLICE["tray"], SPLICE["t"]
+    X, g = SPLIT_X_TRAY, SPLICE["tray"]
+    t = g["t"]
 
     def note(xy, txt, xytext):
         ax.annotate(txt, xy=xy, xytext=xytext, fontsize=10.5, ha="left", va="center", color=INK,

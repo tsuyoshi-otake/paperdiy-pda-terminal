@@ -7,7 +7,7 @@
  "HINGE_WIDTH": 25.0,
  "HINGE_LEAF_T": 2.0,
  "HINGE_BARREL_D": 5.5,
- "HINGE_CLR": 0.4,
+ "HINGE_CLR": 0.25,
  "HINGE_COVER": true,
  "COVER_T": 1.0,
  "COVER_RIM": 1.5,
@@ -16,7 +16,7 @@
  "COVER_FLUSH": true,
  "COVER_Y_OUT": 53.0,
  "HINGE_SINK": 1.0,
- "TRAY_FLOOR": 2.0,
+ "TRAY_FLOOR": 1.2,
  "HINGE_HOLE_OFF": 8.0,
  "HINGE_HOLE_PITCH_X": 10.0,
  "HINGE_MOUNT": "face",
@@ -44,18 +44,18 @@
  },
  "PD_MOUNT": "kit",
  "LID_TOP": [
-  25.629640718562875,
-  0.017365269461077835
+  24.368862275449104,
+  0.03832335329341321
  ],
  "LID_UNDER": [
   10.4417,
   0.05376
  ],
  "PANEL": true,
- "COVER_LID_Z1": 26.55,
+ "COVER_LID_Z1": 26.400000000000002,
  "KIT": {
   "cx": -4.0,
-  "z0": 16.0,
+  "z0": 14.799999999999999,
   "L": 120.0,
   "W": 67.0,
   "T": 6.3,
