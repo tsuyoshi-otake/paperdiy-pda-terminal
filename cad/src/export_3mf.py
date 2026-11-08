@@ -1,7 +1,7 @@
 """Write print-ready 3MF files for a Bambu Lab A1 mini (180 x 180 mm bed), one file per plate, and (kit design) the
 same plates with the lid, tray and panel in one piece each for printers with a bed of 220 mm or more (3mf/large/).
 
-Every part is turned into its print orientation (see README "Print orientation") and laid out on the
+Every part is turned into its print orientation (see cad/README.md, "Printing") and laid out on the
 plate, so the files can be opened in Bambu Studio / OrcaSlicer / PrusaSlicer and sliced directly.
 Kit design (PD_MOUNT = "kit", default): plate 0 = test coupons (print first), plate 1 = lid (navy), plate 2 = tray
 (cream). The earlier design ("bare") adds plate 3 (panel, strap, push-rods), plates 4-5 (front clip, magnet jigs) and
