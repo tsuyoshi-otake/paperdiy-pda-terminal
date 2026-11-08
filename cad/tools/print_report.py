@@ -58,6 +58,11 @@ THIN_NOTE = {"panel_B_main": "the screen-window bevel ends in a sharp edge (as i
 if PD_MOUNT == "kit":
     THIN_NOTE["lid_A_left"] = ("the ceiling over the USB-C channel is 0.8 mm (USB_CEIL), printed as the first four "
                                "layers on the bed")
+    THIN_NOTE["lid_B_main"] = ("above each flush hinge cover the 0.8 mm top chamfer leaves a thin lip, printed as the "
+                               "first layers on the bed")
+    for _c in ("hinge_cover_lid_x2", "hinge_cover_tray_x2"):
+        THIN_NOTE[_c] = ("a 1 mm plate; the thin spots are the edges of the screw countersinks and of the cones under "
+                         "them, which the screw head and the hinge's countersink hold from both sides")
 
 LID_PARTS = [("lid_A_left", 1), ("lid_B_main", 1), ("panel_A_left", 1), ("panel_B_main", 1), ("paperdiy_strap", 1),
              ("key_pushrod_x2", 2), ("power_pushrod", 1), ("hinge_cover_lid_x2", 2), ("top_plate_blank", 1)]
@@ -244,7 +249,9 @@ def main():
     base_cg = base_mc / base_m
 
     tray = trimesh.load(stl("keyboard_tray") if os.path.exists(os.path.join(OUT_DIR, "keyboard_tray.stl")) else stl("tray_B_main"))
-    pivot_y = float(tray.vertices[tray.vertices[:, 2] < 0.05][:, 1].max())   # rearmost point touching the table
+    feet = [tray] + ([trimesh.load(stl("hinge_cover_tray_x2"))]                 # flush tray covers reach the table
+                     if os.path.exists(os.path.join(OUT_DIR, "hinge_cover_tray_x2.stl")) else [])
+    pivot_y = max(float(m.vertices[m.vertices[:, 2] < 0.05][:, 1].max(initial=-1e9)) for m in feet)   # rearmost point on the table
     lid = trimesh.load(os.path.join(OUT_DIR, "display_lid_usbc.stl"))
     lv = np.asarray(lid.vertices)
     def lowest(deg):                                  # lowest lid point at this opening (all vertices)

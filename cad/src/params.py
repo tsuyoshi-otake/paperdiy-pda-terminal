@@ -103,7 +103,7 @@ KB_PAD = dict(clr=0.15, w=6.0, z0=3.0, top_below_rim=1.0, lead=1.5, front_x=(-60
 LID_UNDER = (10.4417, 0.05376)  # [M] lid underside (parting) plane z = a + b * y, fitted to the original (resid < 0.001)
 LID_SKIN = 1.2                # least skin over a pocket or channel
 LID_CHAMFER = 0.8             # top edge and seam chamfer
-COVER_TOP_RIM = 0.8           # lid hinge covers: glue land above the leaf mortise (sides keep COVER_RIM)
+COVER_TOP_RIM = 0.8           # lid hinge covers: rim above the leaf mortise (sides keep COVER_RIM)
 KIT_NOTCH = dict(out=7.0, depth=5.6, end=1.5, r=2.0)   # finger notches at the caps: 7 mm out from the pocket, 5.6 deep
 USB_CH = dict(w=13.0, h=7.6)  # channel for a straight USB-C plug (overmold ~12 x 6.5) from the left end to the port
 KIT_SCREW_SEAT = 1.6          # lid skin under the countersunk M2x4 head -> 2.2 mm into the kit (M5Stack: < 3 mm)
@@ -275,12 +275,23 @@ LID_PAD = dict(half_len=6.0, depth=12.0, z0=19.3, dowel_off=3.0, dowel_z=22.6, i
 #                         barrels show at the back edge). Needs back walls >= 12.5 mm deep -> back face +11.5 mm.
 # HINGE_MOUNT = "face":    leaves flush in the outer back face (visible plates on the back), back face +3.5 mm.
 HINGE_MOUNT = "face"
-# face mounting + covers: thin printed plates (case colour) glued over each leaf so only the barrels show,
-# open or closed. They stand 1.0 mm proud of the back face (a flush cover would push the axis inside the face).
+# face mounting + covers: printed plates (case colour) over each leaf so only the barrels show, open or closed.
+# Kit design: 1.0 mm covers sit flush in a pocket in the back face, and the leaves sit COVER_T deeper, so the hinge axis
+# stays 0.15 mm outside the back face (clear to 180 deg; a thicker flush cover would put the axis inside the face and the
+# lid's and tray's back edges would collide when opening). Under each screw hole a cone on the cover fills the leaf's
+# countersink, so the hinge's own M2x8 screws, countersunk in the cover, hold cover and leaf together: no glue.
+# Bare design: 1.0 mm covers glued on top of the back face (1.0 mm proud).
 HINGE_COVER = True
-COVER_T = 1.0                 # plate thickness, proud of the back face
-COVER_RIM = 1.5               # overlap onto the case around the leaf mortise (glue land)
+COVER_FLUSH = PD_MOUNT == "kit"
+COVER_SCREWED = COVER_FLUSH   # held by the hinge screws (bare design: glued)
+COVER_T = 1.0                 # plate thickness (kit: flush in the back face; bare: proud of it)
+COVER_RIM = 1.5               # overlap onto the case around the leaf mortise
 COVER_R0 = 3.6                # covers start this far from the axis (barrel + clearance for rotation)
+COVER_POCKET_CLR = 0.15       # kit: pocket around each cover, per side
+# kit: 90 deg countersink for the M2 flat head (dk 3.5-3.8) at the outer face, clearance hole, and the cone under it that
+# fills the leaf's countersink (catalogue 4.2, assumed 90 deg) with 0.1 mm radial clearance
+COVER_CSK = dict(top_d=4.0, hole_d=2.3, cone_d=4.1, cone_h=0.7)
+HINGE_SINK = COVER_T if COVER_FLUSH else 0.0   # the leaves sit this much deeper than in a plain mortise
 HINGE_MODEL = "Sugatsune HG-MF08-BL x2 (free-stop, 0.0784 N*m +-25% each, POM)"
 # [M] Sugatsune spec table (global.sugatsune.com, 21651_t): HG-MF08 L 20, W 25, t 2, W2 16, H2 10, holes 2.4 / csk 4.2
 HINGE_LEN = 20.0              # [M] L: length along the axis
@@ -288,11 +299,13 @@ HINGE_WIDTH = 25.0            # [M] W: both leaves + barrel, open flat
 HINGE_LEAF_T = 2.0            # [M] t
 HINGE_BARREL_D = 5.5          # [M: Sugatsune 3D viewer, end view ~5.4-5.5] not in the spec table (channel takes ~6.2)
 # [M: Sugatsune 3D viewer] the back of the hinge is flat; the barrel stands on the front only, its axis ~3.2 mm above
-# the flat back (barrel top ~5.9). Seated flat-side-down in the 2.05 mm mortise, the axis is ~1.15 mm OUTSIDE the back face.
+# the flat back (barrel top ~5.9). Seated flat-side-down in a 2.05 mm mortise, the axis is ~1.15 mm OUTSIDE the back face;
+# with the leaves sunk under flush covers (kit), ~0.15 mm.
 HINGE_AXIS_ABOVE_BACK = 3.2
 HINGE_HOLE_PITCH_X = 10.0     # [M] H2: hole pitch along the axis
 HINGE_HOLE_OFF = 8.0          # [M] W2 16 / 2: hole centres from the axis
-HINGE_SCREW = "M2x8 countersunk tapping screws x8 (leaf holes 2.4 / csk 4.2)"
+HINGE_SCREW = ("M2x8 countersunk tapping screws x8, heads in the covers, through the leaf holes (2.4 / csk 4.2)"
+               if COVER_SCREWED else "M2x8 countersunk tapping screws x8 (leaf holes 2.4 / csk 4.2)")
 HINGE_X = 52.0                # hinge centres at x = +-52: clear of the lid/tray split (x=-72) and the tray rear opening (x>=72.9)
 HINGE_CLR = 0.25              # mortise clearance per side
 HINGE_PILOT_HOLES = True      # print pilot holes at the catalogue hole positions
@@ -300,8 +313,8 @@ HINGE_PILOT_D = 1.8           # for M2 tapping screws in PLA
 BACK_OLD_Y = 46.5             # [M] original outer back face of lid and tray
 BACK_EXTRA = 11.5 if HINGE_MOUNT == "parting" else 6.5   # back walls 3.0 -> 14.5 mm (parting) / 9.5 mm (face: M2x8 + 1.5 mm skin)
 Y_BACK = BACK_OLD_Y + BACK_EXTRA   # new outer back face (the leaves sit flush in it)
-HINGE_AXIS_Y = (Y_BACK - HINGE_LEAF_T - 0.05 + HINGE_AXIS_ABOVE_BACK if HINGE_MOUNT == "face"   # real rotation axis,
-                else Y_BACK)                                                                # ~Y_BACK + 1.15
+HINGE_AXIS_Y = (Y_BACK - HINGE_SINK - HINGE_LEAF_T - 0.05 + HINGE_AXIS_ABOVE_BACK if HINGE_MOUNT == "face"   # real axis,
+                else Y_BACK)                                    # ~Y_BACK + 0.15 (kit, leaves sunk) / + 1.15 (bare)
 Z_PART = 12.85                # [M] parting line at the back (lid underside 12.78..12.89, tray top 12.83..12.89)
 # Only the hinges need the 9.5 mm back wall (2 mm leaf mortise + 6 mm of M2x8 + 1.5 mm). "housings" keeps the original
 # 3 mm back wall everywhere else and puts a 9.5 mm deep housing behind each hinge, blended into the wall by a tapered
@@ -328,6 +341,10 @@ LID_HINGE_BOSS = dict(w=18.0, depth=4.0, z0=18.5, z1=LID_CEILING_Z + 0.05)  # on
 FASTENING = "tapping"
 SCREW_PILOT_D = 1.8           # M2 tapping screw in PLA
 TAP_SCREW_LEN = 8.0           # the one tapping-screw length used everywhere (M2x8)
+# hinge screws: head flush in the back face either way (kit: in the cover; bare: in the leaf countersink), so the tip ends
+# at the same place; past the leaf seat that is 5 mm (kit: cover 1 + leaf 2) or 6 mm (bare)
+HINGE_SCREW_LEN = TAP_SCREW_LEN
+HINGE_SCREW_DEPTH = HINGE_SCREW_LEN - HINGE_SINK - HINGE_LEAF_T
 LID_CORNER_HOLES = [(sx * 92.8, sy * 38.78) for sx in (-1, 1) for sy in (-1, 1)]   # [M] panel screw bosses in the lid
 LID_FILL_CAMERA = True        # fill the Boox Palma camera window (x -67..-25, y -32..-20.5 + 1.6 mm bevel)
 CAMERA_FILL = (-69.5, -22.5, -34.8, -17.8)

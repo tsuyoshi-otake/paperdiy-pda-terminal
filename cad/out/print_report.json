@@ -4,25 +4,25 @@
    "Low bed adhesion: coupon_latch_tray, coupon_latch_lid"
   ],
   "ok": true,
-  "time": "22m 14s",
-  "grams": 9.36,
-  "metres": 3.13898
+  "time": "22m 39s",
+  "grams": 9.15,
+  "metres": 3.0678400000000003
  },
  "plate1_lid.3mf": {
   "warnings": [
    "Floating bridge anchors: lid_B_main"
   ],
   "ok": true,
-  "time": "1h 17m 50s",
-  "grams": 52.37,
-  "metres": 17.558310000000002
+  "time": "1h 18m 11s",
+  "grams": 52.08,
+  "metres": 17.4617
  },
  "plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 37m 51s",
-  "grams": 63.96,
-  "metres": 21.44384
+  "time": "1h 38m 42s",
+  "grams": 63.85,
+  "metres": 21.40743
  },
  "plate3_panel.3mf": {
   "warnings": [],
@@ -34,16 +34,16 @@
  "large/plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 10m 41s",
-  "grams": 51.12,
-  "metres": 17.14062
+  "time": "1h 11m 9s",
+  "grams": 50.84,
+  "metres": 17.04523
  },
  "large/plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 33m 33s",
-  "grams": 63.14,
-  "metres": 21.170080000000002
+  "time": "1h 34m 22s",
+  "grams": 63.04,
+  "metres": 21.134619999999998
  },
  "large/plate3_panel.3mf": {
   "warnings": [],
@@ -52,19 +52,19 @@
   "grams": 23.34,
   "metres": 7.82553
  },
- "large_total_g": 137.6,
- "large_total_min": 195,
- "total_g": 139.67,
- "total_min": 208,
- "lid_g": 125.74000000000001,
- "base_g": 67.96000000000001,
+ "large_total_g": 137.22,
+ "large_total_min": 197,
+ "total_g": 139.27,
+ "total_min": 210,
+ "lid_g": 125.44,
+ "base_g": 67.85,
  "lid_cg": [
-  -2.0413590945549904,
-  5.773695184246794,
-  19.895778723369695
+  -1.99057980653091,
+  5.505368068167453,
+  19.896893155748494
  ],
- "pivot_y": 50.95000076293945,
- "table_contact_deg": 160.5,
- "table_limit": 160,
- "keyboard_min_g": 76.15191822228576
+ "pivot_y": 53.0,
+ "table_contact_deg": 157.3,
+ "table_limit": 157,
+ "keyboard_min_g": 59.79350739589639
 }

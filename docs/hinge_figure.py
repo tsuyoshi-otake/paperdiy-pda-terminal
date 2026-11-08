@@ -19,8 +19,9 @@ from matplotlib.path import Path                                    # noqa: E402
 HERE = os.path.dirname(os.path.abspath(__file__))
 CAD = os.path.join(HERE, "..", "cad")
 sys.path.insert(0, os.path.join(CAD, "src"))
-from params import (COVER_R0, COVER_T, HINGE_AXIS_Y, HINGE_BARREL_D, HINGE_HOLE_OFF, HINGE_HOLE_PITCH_X,  # noqa: E402
-                    HINGE_LEAF_T, HINGE_LEN, HINGE_WIDTH, HINGE_X, HOUSING_HALF, TAP_SCREW_LEN, Y_BACK, Z_PART)
+from params import (BACK_EXTRA, COVER_SCREWED, COVER_T, HINGE_AXIS_Y, HINGE_BARREL_D, HINGE_HOLE_OFF,  # noqa: E402
+                    HINGE_HOLE_PITCH_X, HINGE_LEAF_T, HINGE_LEN, HINGE_SCREW_LEN, HINGE_SINK, HINGE_WIDTH, HINGE_X,
+                    HOUSING_HALF, Y_BACK, Z_PART)
 
 LID_C, LID_E = "#33508f", "#1d2f57"
 TRAY_C, TRAY_E = "#ece6d6", "#8f8770"
@@ -29,11 +30,6 @@ SCREW, SCREW_E = "#5a5f66", "#2b2e33"
 INK = "#222222"
 
 
-def _extent_z(name):
-    return float(trimesh.load(os.path.join(CAD, "out", name)).extents[2])
-
-
-COVER_H_LID, COVER_H_TRAY = _extent_z("hinge_cover_lid_x2.stl"), _extent_z("hinge_cover_tray_x2.stl")
 _LID = trimesh.load(os.path.join(CAD, "out", "display_lid_usbc.stl"))
 LID_TOP_BACK = float(_LID.vertices[_LID.vertices[:, 1] > Y_BACK - 3.0][:, 2].max())   # lid top at the back face
 
@@ -66,8 +62,8 @@ def add_polygon(ax, poly, fc, ec):
     ax.add_patch(PathPatch(Path(verts, codes), fc=fc, ec=ec, lw=1.0, zorder=1))
 
 
-def screw_side(ax, zc, y_face=Y_BACK, length=TAP_SCREW_LEN, head_d=3.8, head_h=1.2, d=2.0):
-    """Countersunk screw along -y, head flush with the leaf face."""
+def screw_side(ax, zc, y_face=Y_BACK, length=HINGE_SCREW_LEN, head_d=3.8, head_h=1.2, d=2.0):
+    """Countersunk screw along -y, head flush with the back face (in the cover, or in the leaf's countersink)."""
     tip = y_face - length
     shank = [(y_face - head_h, zc + d / 2), (tip + 0.6, zc + d / 2), (tip, zc), (tip + 0.6, zc - d / 2),
              (y_face - head_h, zc - d / 2)]
@@ -116,26 +112,29 @@ def section_view(ax, lid, tray):
         add_polygon(ax, poly, TRAY_C, TRAY_E)
     for poly in section(lid, xs):
         add_polygon(ax, poly, LID_C, LID_E)
-    ax.add_patch(Rectangle((Y_BACK - HINGE_LEAF_T, Z_PART - HINGE_WIDTH / 2), HINGE_LEAF_T, HINGE_WIDTH,
+    ax.add_patch(Rectangle((Y_BACK - HINGE_SINK - HINGE_LEAF_T, Z_PART - HINGE_WIDTH / 2), HINGE_LEAF_T, HINGE_WIDTH,
                            fc=METAL, ec=METAL_E, lw=1.0, zorder=4))
     ax.add_patch(Circle((HINGE_AXIS_Y, Z_PART), HINGE_BARREL_D / 2, fc=BARREL, ec=METAL_E, lw=1.0, zorder=5))
-    ax.add_patch(Rectangle((Y_BACK, Z_PART + COVER_R0), COVER_T, COVER_H_LID, fc=LID_C, ec=LID_E, lw=0.9, zorder=5))
-    ax.add_patch(Rectangle((Y_BACK, Z_PART - COVER_R0 - COVER_H_TRAY), COVER_T, COVER_H_TRAY,
-                           fc=TRAY_C, ec=TRAY_E, lw=0.9, zorder=5))
+    for name, fc, ec in (("hinge_cover_lid_x2", LID_C, LID_E), ("hinge_cover_tray_x2", TRAY_C, TRAY_E)):
+        cov = trimesh.load(os.path.join(CAD, "out", f"{name}.stl"))          # the built cover, cut through a screw hole
+        for poly in section(cov, cov.bounds[:, 0].mean() - HINGE_HOLE_PITCH_X / 2):
+            add_polygon(ax, poly, fc, ec)
     for zc in (Z_PART + HINGE_HOLE_OFF, Z_PART - HINGE_HOLE_OFF):
         screw_side(ax, zc)
-    depth = TAP_SCREW_LEN - HINGE_LEAF_T
-    skin = Y_BACK - HINGE_LEAF_T - depth - 43.5           # 43.5 = inner face of the back wall
+    skin = 3.0 + BACK_EXTRA - HINGE_SCREW_LEN             # back wall 9.5 mm, screw head flush with the back face
 
     def note(xy, txt, xytext):
         ax.annotate(txt, xy=xy, xytext=xytext, fontsize=10.5, ha="left", va="center", color=INK,
                     arrowprops=dict(arrowstyle="-", color=INK, lw=0.8, shrinkA=2, shrinkB=1))
     note((46.0, Z_PART - HINGE_HOLE_OFF - 0.9),
-         f"M2×{TAP_SCREW_LEN:.0f} 皿タッピングねじ（下穴 Ø1.8 は印刷済み）\n"
+         f"M2×{HINGE_SCREW_LEN:.0f} 皿タッピングねじ（下穴 Ø1.8 は印刷済み）\n"
          f"ねじ先は内側の面の {skin:.1f} mm 手前で止まる", (34.8, -4.6))
-    note((Y_BACK - 1.0, Z_PART - 11.6), "ヒンジの板（溝に面一）", (57.2, -1.2))
+    note((Y_BACK - HINGE_SINK - 1.0, Z_PART - 11.6),
+         "ヒンジの板（カバーの厚さ分沈める）" if HINGE_SINK else "ヒンジの板（溝に面一）", (55.2, -1.2))
     note((HINGE_AXIS_Y + 2.3, Z_PART + 1.5), "筒", (58.5, 16.5))
-    note((Y_BACK + 0.6, Z_PART + COVER_R0 + 8.8), f"カバー（{COVER_T:.0f} mm・接着）", (57.2, 27.0))
+    note((Y_BACK - 0.5, Z_PART + HINGE_HOLE_OFF + 3.5),
+         f"カバー（{COVER_T:.0f} mm・面一、ヒンジのねじで共締め）" if COVER_SCREWED else f"カバー（{COVER_T:.0f} mm・接着）",
+         (50.5, 29.5))
     ax.annotate("", xy=(Y_BACK - 9.5, 31.6), xytext=(Y_BACK, 31.6), arrowprops=dict(arrowstyle="<->", color=INK, lw=0.9))
     ax.text(Y_BACK - 4.75, 32.4, "ヒンジ受け（壁の厚い部分）9.5 mm", ha="center", va="bottom", fontsize=10.5, color=INK)
     ax.text(36.0, 19.0, "蓋", color=LID_E, fontsize=12, va="center")

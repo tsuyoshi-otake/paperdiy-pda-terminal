@@ -219,8 +219,10 @@ function legendMat(lab, kw, kd) {
 // hinge, cover and kit positions come from cad/out/assembly.json (written by cad/src/build.py)
 const A = await (await fetch('models/assembly.json')).json();
 const KITMODE = A.PD_MOUNT === 'kit';     // PaperDIY Complete Kit in its own case, in a pocket in a solid lid
-const NAMES = KITMODE ? ['display_lid_usbc', 'paperdiy_kit_envelope', 'keyboard_tray'].concat(A.PANEL ? ['display_panel_kit'] : [])
-  : ['display_lid_usbc', 'display_panel_paperdiy', 'paperdiy_strap', 'key_pushrod_x2', 'power_pushrod', 'keyboard_tray'];
+const COVER_STL = !!A.COVER_SCREWED;   // flush covers held by the hinge screws: drawn from their STLs
+const NAMES = (KITMODE ? ['display_lid_usbc', 'paperdiy_kit_envelope', 'keyboard_tray'].concat(A.PANEL ? ['display_panel_kit'] : [])
+  : ['display_lid_usbc', 'display_panel_paperdiy', 'paperdiy_strap', 'key_pushrod_x2', 'power_pushrod', 'keyboard_tray'])
+  .concat(COVER_STL ? ['hinge_cover_lid_x2', 'hinge_cover_tray_x2'] : []);
 const G = {};
 (await Promise.all(NAMES.map(n => loadSTL(`models/${n}.stl`)))).forEach((g, i) => { G[NAMES[i]] = g; });
 const P = {};          // named parts, for the exploded view
@@ -282,9 +284,20 @@ for (const cx of [-HINGE_X, HINGE_X]) {
   if (VIEW === 'hinge') {         // show the leaves (they are under the covers otherwise)
     for (const s of [-1, 1]) {
       const leaf = box(H_LEN, A.HINGE_LEAF_T, H_W / 2 - H_BD / 2, pla('#26262a', 0.4), cx,
-                       HINGE_Y - A.HINGE_LEAF_T / 2 - 0.05, HINGE_Z + s * (H_BD / 2 + (H_W / 2 - H_BD / 2) / 2));
+                       HINGE_Y - (A.HINGE_SINK ?? 0) - A.HINGE_LEAF_T / 2 - 0.05, HINGE_Z + s * (H_BD / 2 + (H_W / 2 - H_BD / 2) / 2));
       P.hinges.add(leaf);
     }
+  }
+  if (COVER_STL) {                // the STLs hold the covers of the hinge at x = -HINGE_X (symmetric in x)
+    const lc = mesh(G.hinge_cover_lid_x2, M.lid); lc.position.x = cx + HINGE_X; P.lidCovers.add(lc);
+    const tc = mesh(G.hinge_cover_tray_x2, M.cream); tc.position.x = cx + HINGE_X; P.trayCovers.add(tc);
+    const steel = new THREE.MeshStandardMaterial({ color: '#8d939b', roughness: 0.35, metalness: 0.6 });
+    for (const s of [1, -1]) for (const hx of [-A.HINGE_HOLE_PITCH_X / 2, A.HINGE_HOLE_PITCH_X / 2]) {
+      const head = mesh(new THREE.CylinderGeometry(1.85, 1.85, 0.3, 32), steel);   // M2 flat head, flush in the cover
+      head.position.set(cx + hx, A.COVER_Y_OUT - 0.2, HINGE_Z + s * A.HINGE_HOLE_OFF);
+      (s > 0 ? P.lidCovers : P.trayCovers).add(head);
+    }
+    continue;
   }
   const w = H_LEN + 2 * (H_CLR + COVER_RIM), end = H_W / 2 + H_CLR + COVER_RIM;
   const lz0 = HINGE_Z + COVER_R0, lz1 = A.COVER_LID_Z1 ?? Math.min(HINGE_Z + end, 26.8);
