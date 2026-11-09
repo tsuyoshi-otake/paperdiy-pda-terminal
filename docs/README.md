@@ -4,7 +4,7 @@ README と組み立て手順に使っている画像（`images/`）と、それ�
 
 | ファイル | 描くもの | 作り直し方 |
 | --- | --- | --- |
-| `render/`（three.js、ヘッドレス Chromium） | 完成予想（`render_open` / `closed` / `back` / `exploded` / `hinge`）と、黒・カーキ・ミックスの色違い（`render_{open,closed}_{black,khaki,mix}`） | `make render`（Node.js が要る。npm のパッケージと Chromium も取ってくる） |
+| `render/`（three.js、ヘッドレス Chromium） | 完成予想（`render_open` / `closed` / `back` / `exploded` / `hinge`、閉じた形を正面・左端から水平に見た `render_front` / `end`、右手前斜めの `render_diag`、開いて左から見た `render_side`）と、黒・カーキ・ミックスの色違い（`render_{open,closed}_{black,khaki,mix}`） | `make render`（Node.js が要る。npm のパッケージと Chromium も取ってくる） |
 | `kit_figure.py` | PaperDIY と化粧パネルの取り付け図（`kit_mount.png`） | `python3 docs/kit_figure.py` |
 | `snap_figure.py` | 化粧パネルの突起と溝の位置と断面（`panel_snap.png`） | `python3 docs/snap_figure.py` |
 | `splice_figure.py` | 分割版の継ぎ板の位置と、継ぎ目の断面（`splice_plates.png`） | `python3 docs/splice_figure.py` |

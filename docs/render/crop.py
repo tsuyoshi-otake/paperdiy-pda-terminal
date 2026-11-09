@@ -6,7 +6,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 IMG = os.path.join(HERE, "..", "images")
 BG = (243, 241, 236)
 import glob
-WIDTH = {"open": 1600, "closed": 1200, "back": 1200, "exploded": 1200, "hinge": 1200}
+WIDTH = {"open": 1600, "closed": 1200, "back": 1200, "exploded": 1200, "hinge": 1200, "front": 1600, "end": 1000,
+         "diag": 1200, "side": 1200}
 for path in sorted(glob.glob(os.path.join(IMG, "render_*_raw.png"))):
     view = os.path.basename(path)[len("render_"):-len("_raw.png")]       # e.g. "open" or "open_black"
     width = WIDTH[view.split("_")[0]]

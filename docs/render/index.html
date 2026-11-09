@@ -34,7 +34,9 @@ const PAL = PALETTES[params.get('palette') || 'default'] || PALETTES.default;
 const W = window.innerWidth, H = window.innerHeight;
 
 // ---------------------------------------------------------------- renderer / scene
-const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+// level views: no MSAA (edge-on inner walls leaked through the outer faces as 1 px streaks); render.js supersamples
+const LEVEL = VIEW === 'front' || VIEW === 'end';
+const renderer = new THREE.WebGLRenderer({ antialias: !LEVEL, preserveDrawingBuffer: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(W, H);
 renderer.shadowMap.enabled = true;
@@ -452,6 +454,16 @@ if (FIGURES[VIEW]) {
   pivot.rotation.x = THREE.MathUtils.degToRad(-112);
   camera.position.set(-420, -40, 120);
   camera.lookAt(0, 30, 40);
+} else if (VIEW === 'front' || VIEW === 'end') {   // closed, level, from far away with a narrow lens (near orthographic)
+  pivot.rotation.x = 0;
+  camera.fov = 5.2;
+  camera.near = 2300; camera.far = 2900;          // keep the depth buffer fine at this distance
+  if (VIEW === 'front') { camera.position.set(0, -2600, 13); camera.lookAt(0, 3, 13); }
+  else { camera.position.set(-2600, 3, 13); camera.lookAt(0, 3, 13); }
+} else if (VIEW === 'diag') {                      // closed, from the front right, low
+  pivot.rotation.x = 0;
+  camera.position.set(290, -330, 120);
+  camera.lookAt(4, 6, 10);
 }
 camera.updateProjectionMatrix();
 renderer.render(scene, camera);
