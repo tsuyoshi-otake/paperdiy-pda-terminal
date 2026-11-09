@@ -34,6 +34,13 @@
   "grams": 2.83,
   "metres": 0.95035
  },
+ "plate5_kb_shims.3mf": {
+  "warnings": [],
+  "ok": true,
+  "time": "5m 40s",
+  "grams": 1.38,
+  "metres": 0.46317
+ },
  "large/plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
@@ -58,7 +65,7 @@
  "large/plate4_kb_bezel.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "6m 29s",
+  "time": "6m 27s",
   "grams": 2.83,
   "metres": 0.95031
  },

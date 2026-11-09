@@ -75,9 +75,12 @@ if PD_MOUNT == "kit":
 BASE_PARTS = [("tray_A_left", 1), ("tray_B_main", 1), ("hinge_cover_tray_x2", 2)]
 # optional add-ons: checked for wall thickness, left out of the tipping estimate (it errs on the safe side without them)
 EXTRA_PARTS = [(n, 1) for n in ("kb_bezel_A_left", "kb_bezel_B_right") if os.path.exists(os.path.join(SPLIT_DIR, f"{n}.stl"))]
-for _b in EXTRA_PARTS:
+EXTRA_PARTS += [(f"kb_shim_{t:.1f}mm", 1) for t in (0.5, 1.0, 1.5, 2.0) if os.path.exists(os.path.join(OUT_DIR, f"kb_shim_{t:.1f}mm.stl"))]
+for _b in [e for e in EXTRA_PARTS if e[0].startswith("kb_bezel")]:
     THIN_NOTE[_b[0]] = ("a 1.2 mm frame; the notches over the tray's ribs (it rests on them) leave 0.5-1.0 mm of plate, "
                         "and the strips beside the keyboard are 1.4 mm wide")
+for _b in [e for e in EXTRA_PARTS if e[0].startswith("kb_shim")]:
+    THIN_NOTE[_b[0]] = "a tiny cap; the face toward the keyboard is the shim's thickness (0.5-2.0 mm), its side walls 0.8 mm"
 
 
 def stl(name):
@@ -180,7 +183,7 @@ def main():
         if PD_MOUNT == "kit":
             n = len([p for p in plates if os.path.basename(p)[:6] in ("plate1", "plate2", "plate3")])
             lines += ["", f"Plates 1-{n} together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
-                      "of printing (plate 0, the test coupons, and the optional plate 4, the keyboard bezel, come on top).", ""]
+                      "of printing (plate 0, the test coupons, and the optional plates 4 and 5, the keyboard bezel and shims, come on top).", ""]
         else:
             lines += ["", f"Plates 1-3 together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
                       "of printing (plate 0, the test coupons, and the optional plates 4 and 5, front clip and magnet jigs, come on top).", ""]

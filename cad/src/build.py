@@ -862,6 +862,35 @@ def build_kb_bezel(bumps=True):
     return B
 
 
+def kb_shim_print(t):
+    """One keyboard shim in print orientation: the face toward the keyboard (t thick) on the bed, the side walls up."""
+    g = KB_SHIM
+    hw = RIB_T / 2 + g["clr"]
+    walls = (box(-hw - g["side"], hw + g["side"], 0.0, g["h"], t - 0.01, t + g["reach"])
+             - box(-hw, hw, -1.0, g["h"] + 1.0, t, t + g["reach"] + 1.0))
+    return box(-g["face_w"] / 2, g["face_w"] / 2, 0.0, g["h"], 0.0, t) + walls
+
+
+def kb_shims_placed(t):
+    """Shims of thickness t on every keyboard-locating rib (closed assembly frame), for the checks."""
+    g, rk = KB_SHIM, TRAY_KB_RIBS
+    hw, z0, z1 = RIB_T / 2 + g["clr"], TRAY_FLOOR, TRAY_FLOOR + g["h"]
+    def cap(axis, sign, pos):        # rib face toward the keyboard at `sign * face` along `axis`; rib centre at `pos`
+        face = LID_INNER_Y if axis == "y" else LID_INNER_X
+        f0, f1 = sorted((sign * (face - t), sign * face))                     # the face against the keyboard
+        a0, a1 = sorted((sign * (face - 0.01), sign * (face + g["reach"])))   # side walls along the rib
+        s0, s1 = sorted((sign * face, sign * (face + g["reach"] + 1.0)))       # the slot
+        fw, ws = g["face_w"] / 2, hw + g["side"]
+        if axis == "y":
+            return (box(pos - fw, pos + fw, f0, f1, z0, z1)
+                    + (box(pos - ws, pos + ws, a0, a1, z0, z1) - box(pos - hw, pos + hw, s0, s1, z0 - 1.0, z1 + 1.0)))
+        return (box(f0, f1, pos - fw, pos + fw, z0, z1)
+                + (box(a0, a1, pos - ws, pos + ws, z0, z1) - box(s0, s1, pos - hw, pos + hw, z0 - 1.0, z1 + 1.0)))
+    caps = [cap("y", -1.0, x) for x in rk["front_x"]] + [cap("y", 1.0, x) for x in rk["back_x"]]
+    caps += [cap("x", sx, y) for sx in (-1.0, 1.0) for y in rk["end_y"]]
+    return union(caps)
+
+
 def kb_bezel_split(bez):
     """A1 mini pieces: left of the back rib at KB_BEZEL['split_x'] behind the keyboard and of the snap tab in front."""
     left = box(-BIG, KB_BEZEL["split_x"], 0.0, BIG, -BIG, BIG) + box(-BIG, LATCH["x"], -BIG, 0.0, -BIG, BIG)
@@ -1574,6 +1603,26 @@ def main_kit():
             f"{101.0 - WALL - g['clr'] - LID_INNER_X - g['kb_clr']:.1f} mm, behind it {yb - LID_INNER_Y - g['kb_clr']:.1f} mm; "
             f"A1 mini pieces split at the back rib x = {g['split_x']:g} and at the snap tab")
 
+    if SHELL and KB_SHIM:
+        g = KB_SHIM
+        rk = TRAY_KB_RIBS
+        n = len(rk["front_x"]) + len(rk["back_x"]) + 2 * len(rk["end_y"])
+        log(f"== keyboard shims (optional add-on; the tray is unchanged): caps over the {n} keyboard ribs, "
+            f"{', '.join(f'{t:g}' for t in g['t'])} mm toward the keyboard, {g['h']:g} mm tall from the floor, "
+            f"a {g['face_w']:g} mm wide face, side walls {g['side']:g} mm over {g['reach']:g} mm of rib ({g['clr']:g} mm per side)")
+        for t in g["t"]:
+            export(kb_shim_print(t), f"{OUT_DIR}/kb_shim_{t:.1f}mm.stl")
+        tmax = max(g["t"])
+        caps = kb_shims_placed(tmax)
+        interference(caps, tray, f"shims ({tmax:g} mm) on every rib vs tray")
+        if bez is not None:
+            gap = min(under_z(-LID_INNER_Y), Z_PART) - KB_BEZEL["drop"] - KB_BEZEL["t"] - TRAY_FLOOR - g["h"]
+            interference(caps, bez, f"shims vs keyboard bezel (its underside {gap:.2f} mm above them at the front ribs)")
+        interference(caps, lid, "shims vs lid (closed)")
+        kb_in = prism_z(rrect(0.0, 0.0, 2 * (LID_INNER_X - tmax) - 0.02, 2 * (LID_INNER_Y - tmax) - 0.02, 2.7),
+                        TRAY_FLOOR, KB_TOP_Z)
+        interference(caps, kb_in, f"shims vs the keyboard's room made {tmax:g} mm smaller on every side")
+
     log("== renders")
     C = dict(lid=(55, 75, 150), tray=(230, 220, 190), kit=(200, 200, 205), red=(210, 60, 50))
     def rend(name, items, view):
@@ -1586,6 +1635,8 @@ def main_kit():
     rend("keyboard_tray", [(tray, C["tray"])], (-130, 40))
     if bez is not None:
         rend("keyboard_bezel_in_tray", [(tray, C["tray"]), (bez, (205, 120, 80))], (-130, 40))
+    if SHELL and KB_SHIM:
+        rend("keyboard_shims_on_ribs", [(tray, C["tray"]), (kb_shims_placed(1.0), (60, 130, 210))], (-130, 40))
     rend("split_lid", [(la.translate([-12, 0, 0]), C["lid"]), (lb, (90, 110, 180))], (-60, -45))
     rend("split_tray", [(ta.translate([-12, 0, 0]), C["tray"]), (tb, (200, 190, 160))], (-60, 45))
     with open(os.path.join(OUT_DIR, "build_log.txt"), "w") as f:

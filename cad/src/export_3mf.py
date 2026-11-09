@@ -20,7 +20,7 @@ import numpy as np
 import trimesh
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from params import (CAD_DIR, KB_BEZEL, LID_INNER_X, LID_INNER_Y, OUT_DIR, SPLIT_DIR, USB_PM_SCREW_SPACING,  # noqa: E402
+from params import (CAD_DIR, KB_BEZEL, KB_SHIM, LID_INNER_X, LID_INNER_Y, OUT_DIR, SPLIT_DIR, USB_PM_SCREW_SPACING,  # noqa: E402
                     USB_PM_VARIANTS, WHOLE_BED, WHOLE_DIR)
 
 BED = 180.0
@@ -111,6 +111,14 @@ def placed_layout(items, nested=()):
     return items
 
 
+def kb_shim_rows():
+    """KB_SHIM['plate'] shims of each thickness: the most-used thickness in the first row, the others in the second."""
+    counts = sorted(KB_SHIM["plate"].items(), key=lambda kv: -kv[1])
+    def items(t, n):
+        return [(f"kb_shim_{t:.1f}mm_{i + 1:02d}", part(O(f"kb_shim_{t:.1f}mm"))) for i in range(n)]
+    return [items(*counts[0]), [it for t, n in counts[1:] for it in items(t, n)]]
+
+
 def kb_bezel_plate():
     """The two A1 mini pieces of the keyboard bezel, top face on the bed; piece B (turned) lies inside piece A's opening,
     the keyboard's room, which is open toward the split."""
@@ -180,7 +188,10 @@ def plates():
         } if os.path.exists(S("panel_B_main")) else {}) | ({
             # optional keyboard bezel (laid into the tray around the keyboard), top face on the bed; any colour
             "plate4_kb_bezel.3mf": ("Keyboard bezel (A + B, optional)", kb_bezel_plate()),
-        } if os.path.exists(S("kb_bezel_A_left")) else {}) | {
+        } if os.path.exists(S("kb_bezel_A_left")) else {}) | ({
+            # optional keyboard shims (caps over the tray's keyboard ribs), the face toward the keyboard on the bed
+            "plate5_kb_shims.3mf": ("Keyboard shims (optional): caps over the tray's keyboard ribs", kb_shim_rows()),
+        } if os.path.exists(O("kb_shim_1.0mm")) else {}) | {
             f"usb_variants/{usb_name(sp)}.3mf": (
                 f"Lid A for a USB-C panel mount with {sp:g} mm hole spacing" if sp > 0
                 else "Lid A, USB-C panel-mount opening only (glue the connector in)",

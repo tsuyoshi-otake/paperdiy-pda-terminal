@@ -170,4 +170,13 @@
   interference tray hinge cover 1 vs keyboard bezel: 0.000 mm3 OK
   lid + kit + panel + covers rotated 0-180 deg: no contact with the bezel
   frame widths: beside the keyboard 1.4 / 1.4 mm, behind it 7.9 mm; A1 mini pieces split at the back rib x = 25 and at the snap tab
+== keyboard shims (optional add-on; the tray is unchanged): caps over the 11 keyboard ribs, 0.5, 1, 1.5, 2 mm toward the keyboard, 5 mm tall from the floor, a 6 mm wide face, side walls 0.8 mm over 1.6 mm of rib (0.05 mm per side)
+  out/kb_shim_0.5mm.stl: bbox 6.0 x 5.0 x 2.1 mm, watertight=True, winding_ok=True, bodies=1, vol=28 mm3
+  out/kb_shim_1.0mm.stl: bbox 6.0 x 5.0 x 2.6 mm, watertight=True, winding_ok=True, bodies=1, vol=43 mm3
+  out/kb_shim_1.5mm.stl: bbox 6.0 x 5.0 x 3.1 mm, watertight=True, winding_ok=True, bodies=1, vol=58 mm3
+  out/kb_shim_2.0mm.stl: bbox 6.0 x 5.0 x 3.6 mm, watertight=True, winding_ok=True, bodies=1, vol=73 mm3
+  interference shims (2 mm) on every rib vs tray: 0.000 mm3 OK
+  interference shims vs keyboard bezel (its underside 0.30 mm above them at the front ribs): 0.000 mm3 OK
+  interference shims vs lid (closed): 0.000 mm3 OK
+  interference shims vs the keyboard's room made 2 mm smaller on every side: 0.000 mm3 OK
 == renders

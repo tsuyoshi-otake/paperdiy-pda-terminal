@@ -110,6 +110,13 @@ TRAY_PORT = dict(x=(72.9, 89.1), above_floor=3.0)
 KB_BEZEL = dict(t=1.2, drop=0.4, clr=0.2, kb_clr=0.2, kb_r=3.0, cut_clr=0.3, split_x=25.0, bump=dict(r=0.6, h=0.35),
                 bumps=dict(front_x=(-60.0, -20.0, 30.0, 60.0), back_x=(-94.0, -30.0, -10.0, 10.0, 32.0, 94.0),
                            end_y=(-10.0, 10.0)))
+# Keyboard shims (kit design; optional add-on, the tray is not changed): caps slid down over the keyboard-locating ribs,
+# so each rib's face toward the keyboard comes t closer; they take up the keyboard's play (pick t per side: half the
+# measured play on each side keeps it centred). A face `face_w` wide and t thick presses on the keyboard; side walls
+# `side` thick hug the rib (`clr` per side) for `reach` (the front and end ribs are only 1.8 mm long); h tall from the tray
+# floor, under the keyboard bezel. Printed with the face on the bed. `plate`: how many of each thickness go on the plate.
+KB_SHIM = dict(t=(0.5, 1.0, 1.5, 2.0), h=5.0, face_w=6.0, side=0.8, reach=1.6, clr=0.05,
+               plate={1.0: 11, 0.5: 4, 1.5: 4, 2.0: 4})
 TRAY_FLOOR = WALL if PD_MOUNT == "kit" else 3.0   # top of the tray floor (the original tray: 3.0)
 # Keyboard: the CACOE stands above the tray rim (the original lid's panel face was at z = 15). The lid's inner face
 # (and the kit's front face) is KB_CLR above the keyboard's highest point. MEASURE the keyboard's thickness over the
