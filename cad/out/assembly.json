@@ -11,12 +11,12 @@
  "HINGE_COVER": true,
  "COVER_T": 1.0,
  "COVER_RIM": 1.5,
- "COVER_R0": 3.6,
+ "COVER_R0": 4.0,
  "COVER_SCREWED": true,
  "COVER_FLUSH": true,
  "COVER_Y_OUT": 53.0,
  "HINGE_SINK": 1.0,
- "TRAY_FLOOR": 1.2,
+ "TRAY_FLOOR": 2.0,
  "KB_SIZE": [
   194.0,
   85.0
@@ -48,8 +48,8 @@
  },
  "PD_MOUNT": "kit",
  "LID_TOP": [
-  24.368862275449104,
-  0.03832335329341321
+  24.994002306805076,
+  0.026528258362168444
  ],
  "LID_UNDER": [
   10.4417,
@@ -59,7 +59,7 @@
  "COVER_LID_Z1": 26.400000000000002,
  "KIT": {
   "cx": -4.0,
-  "z0": 14.799999999999999,
+  "z0": 15.6,
   "L": 120.0,
   "W": 67.0,
   "T": 6.3,

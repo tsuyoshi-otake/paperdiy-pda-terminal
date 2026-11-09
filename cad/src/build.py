@@ -575,7 +575,12 @@ def hinge_covers(ribs=True):
     y1 = y0 + COVER_T
     for c in hinge_centres():
         for side, (z0, z1) in zip((1, -1), cover_spans()):
-            cov = prism_y(rrect(c, (z0 + z1) / 2, 2 * half_w, z1 - z0, COVER_R), y0, y1)
+            ch = COVER_EDGE_CHAMFER if COVER_FLUSH else 0.0    # round the outer face (on the bed in print)
+            outline = rrect(c, (z0 + z1) / 2, 2 * half_w, z1 - z0, COVER_R)
+            cov = prism_y(outline, y0, y1 - ch)
+            if ch:
+                cov = cov + M.batch_hull([prism_y(outline, y1 - ch - 0.01, y1 - ch),
+                                          prism_y(outline.offset(-ch, m3.JoinType.Round, 2.0, SEG), y1 - 0.01, y1)])
             yb = y0                    # back of the cover (deepest point of its sides)
             if COVER_LIP:              # lips along both side edges, into the pocket's deeper strips
                 lp = COVER_LIP
@@ -591,8 +596,8 @@ def hinge_covers(ribs=True):
                     xc = c + sx * (half_w - (rb["r"] - rb["h"]))
                     for i in range(n):
                         zr = z0 + 1.0 + (z1 - z0 - 2.0) * (i + 0.5) / n
-                        # protrusion COVER_POCKET_CLR at the back (just touches) -> h at the outer face
-                        cov = cov + (M.cylinder(y1 - yb, rb["r"] - rb["h"] + COVER_POCKET_CLR, rb["r"], SEG)
+                        # protrusion COVER_POCKET_CLR at the back (just touches) -> h where the outer chamfer starts
+                        cov = cov + (M.cylinder(y1 - ch - yb, rb["r"] - rb["h"] + COVER_POCKET_CLR, rb["r"], SEG)
                                      .rotate([-90, 0, 0]).translate([xc, yb, zr]))
             if COVER_SCREWED:
                 k = COVER_CSK
@@ -1031,7 +1036,14 @@ def hinge_pad_extent():
 
 
 def back_edge_relief(lid):
-    """Material to remove so the back edge along the parting (lid: lower, tray: upper) is rounded with HINGE_EDGE_R."""
+    """Material to remove along the back edge at the parting (lid: lower, tray: upper): the BACK_SEAM groove (round the
+    back corners, ending on the end faces), or a rounding with HINGE_EDGE_R."""
+    g = BACK_SEAM
+    if g:
+        plan = CS.batch_boolean(lid_plan_pieces(), m3.OpType.Add)
+        band = ((plan.offset(1.0, m3.JoinType.Round, 2.0, SEG) - plan.offset(-g["depth"], m3.JoinType.Round, 2.0, SEG))
+                ^ CS.square((2 * BIG, BIG)).translate((-BIG, Y_BACK - CORNER_R)))         # the back face and its corners
+        return prism_z(band, Z_PART - 1.0, Z_PART + g["h"]) if lid else prism_z(band, Z_PART - g["h"], Z_PART + 1.0)
     r = HINGE_EDGE_R
     if r <= 0:
         return M()
@@ -1138,7 +1150,8 @@ def build_kit_panel():
         slot = lambda grow: rrect((xa + xb) / 2, (ya + yb) / 2, xb - xa + 2 * grow, yb - ya + 2 * grow, g["r"] + grow)
         ring = (slot(gd["clr"] + gd["t"]) - slot(gd["clr"])) - kit_cs(KIT_FIT)
         P = P + (prism_z(ring, PANEL_Z1 - 0.01, KIT_Z0 + KIT_T) ^ prism_z(shell_inner().offset(-PANEL_CLR, m3.JoinType.Round,
-                                                                                               2.0, SEG), -BIG, BIG))
+                                                                                               2.0, SEG), -BIG, BIG)
+                 ^ half_space(LID_TOP[0] - SHELL_CEIL - PANEL_CLR, LID_TOP[1], False))   # and under the ceiling
     xe = KIT_CX - KIT_L / 2
     xa, xb, ya, yb = xe - g["out"], xe + 0.5, KIT_PWR_CAP_Y[0] - g["end"], KIT_PWR_CAP_Y[1] + g["end"]
     cuts.append(prism_z(rrect((xa + xb) / 2, (ya + yb) / 2, xb - xa, yb - ya, g["r"]), z0, z1))
@@ -1292,14 +1305,15 @@ def build_kit_coupons(lid, tray, ta, tb):
     dt_box = box(X - 12.0, X + 14.0, -9.0, 9.0, -1.0, 3.5)
     l = LATCH
     zf = under_z(-BACK_OLD_Y)
-    lx0, lx1 = l["x"] - l["w"] / 2 - 4.0, l["x"] + l["w"] / 2 + 4.0
+    hw = max(l["w"] / 2 + 4.0, 13.0)                      # at least 26 mm wide: stands on the bed without a brim
+    lx0, lx1 = l["x"] - hw, l["x"] + hw
     return {
         "coupon_hinge_tray": (tray ^ hinge_box, "tray"),
         "coupon_hinge_lid": (lid ^ hinge_box, "lid"),
         "coupon_dovetail_A": (ta ^ dt_box, "tray"),
         "coupon_dovetail_B": (tb ^ dt_box, "tray"),
-        "coupon_latch_lid": (lid ^ box(lx0, lx1, -BACK_OLD_Y - 1.0, -BACK_OLD_Y + 8.0, zf - 6.0, 60.0), "lid"),
-        "coupon_latch_tray": (tray ^ box(lx0, lx1, -BACK_OLD_Y - 1.0, -BACK_OLD_Y + 8.0, -1.0, 20.0), "tray"),
+        "coupon_latch_lid": (lid ^ box(lx0, lx1, -BACK_OLD_Y - 1.0, -BACK_OLD_Y + 12.0, zf - 6.0, 60.0), "lid"),
+        "coupon_latch_tray": (tray ^ box(lx0, lx1, -BACK_OLD_Y - 1.0, -BACK_OLD_Y + 12.0, -1.0, 20.0), "tray"),
     }
 
 
@@ -1503,11 +1517,12 @@ def main_kit():
             f"{k['cone_h']:g} in the leaf countersink, {HINGE_SCREW_DEPTH:g} mm past the leaf seat, tip "
             f"{HINGE_PAD['skin']:g} mm short of the end of its boss (Ø{HINGE_PILOT_D + 2 * HINGE_PAD['boss_wall']:g})")
         # tolerance: the axis height is read off the maker's 3D viewer (not in the catalogue): move it further in
-        for sh in (-0.15, -0.3):
+        need = -0.6 if BACK_SEAM else -0.3        # must stay clear to the table limit with the axis this much further in
+        for sh in ((-0.15, -0.3, -0.6, -0.9) if BACK_SEAM else (-0.15, -0.3)):
             fc = first_contact(lidset, traset, sh)
             log(f"  axis {-sh:g} mm further in ({HINGE_AXIS_Y + sh - Y_BACK:+.2f} mm from the back face): "
                 + (f"lid meets tray at {fc} deg" if fc is not None else "still clear to 180 deg"))
-            assert fc is None or max_open is None or fc > max_open, ("hinge tolerance: contact before the table limit", sh, fc)
+            assert sh < need or fc is None or max_open is None or fc > max_open, ("hinge tolerance: contact before the table limit", sh, fc)
     if hits and max_open is not None and hits[0][0] < max_open:
         log("  <-- CHECK: parts collide before the table limit")
     p = KB_PLUG

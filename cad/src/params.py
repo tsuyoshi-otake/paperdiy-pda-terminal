@@ -90,10 +90,10 @@ KIT_MASS_G = 43.1             # [M: docs.m5stack.com K159-B] with case, acrylic 
 KIT_CX = -KIT_WIN_OFF         # [D] case centre x in the lid: puts the window centre at x = 0
 KIT_FIT = 0.2                 # around the kit (pocket / panel rim), per side
 KIT_GAP = 0.2                 # behind the kit (its back plate is flat; the ESP32 module sits in a window in it)
-# Manufacturing (kit design): PLA on a Bambu Lab A1 mini (0.4 nozzle, 0.2 layers): thin shells, stiffened by bosses and
-# ribs instead of thick walls; clearances for a tuned FDM printer; no supports. No chamfers; corner radii half of the
-# original (r 6 -> 3).
-WALL = 1.2                    # lid and tray walls, lid ceiling, tray floor (3 lines of a 0.4 nozzle, 5 of a 0.2 nozzle)
+# Manufacturing (kit design): PLA on a Bambu Lab A1 mini (0.4 nozzle, 0.2 layers): 2 mm shells (1.2 mm ones printed
+# too flexible), bosses and ribs; clearances for a tuned FDM printer; no supports. No chamfers; corner radii half of
+# the original (r 6 -> 3).
+WALL = 2.0                    # lid and tray walls, lid ceiling, tray floor (5 lines of a 0.4 nozzle, 9 of a 0.2 nozzle)
 CORNER_R = 3.0 if PD_MOUNT == "kit" else 6.0   # plan corners of lid and tray (the original's r 6, halved)
 RIB_T = 1.2                   # ribs, guides and guard rings (3 lines)
 # keyboard tray (kit): a new thin shell with the original's outline and parting. Ribs on the inside of the walls stand
@@ -169,19 +169,21 @@ SPLIT_BLOCK = None if PD_MOUNT == "kit" else dict(dx=7.0, dy=7.0, h=3.4)   # bar
 # half the wall deep in both halves, so they sit flush; the pockets face up in print (no bridging).
 # x0/x1: the plate's ends relative to the split; y: the plates (clear of the USB-C channel, the slots, the rim and the
 # screw bosses; the tray's: inside the keyboard's room, so it goes in from above past the deck).
-SPLICE = dict(clr=0.15,
+SPLICE = dict(clr=0.3,                # per side (0.15 printed too tight: the plates print flat, with elephant foot)
               tray=dict(t=WALL / 2, x0=-10.0, x1=10.0, y=((-42.4, 42.4),)),
               lid=dict(t=WALL / 2, x0=-10.0, x1=6.0, y=((-44.0, -33.0), (-15.0, 50.5))),
               panel=dict(t=PANEL_T / 2, x0=-10.0, x1=8.4, y=((-42.35, -32.25), (-15.75, 13.25), (33.45, 48.85))))   # >= 1.5 mm from edges / slots
 # USB-C at the left end: "direct" = a straight cable into the kit's port through the end-wall opening (default);
 # lid A also comes for a screw-ear panel-mount female (USB_PM_*), at y = USB_PM_Y, so the end can be swapped later.
 USB_PM_Y_KIT = 20.0            # clear of the lid's split blocks (y 5, 36) and the power slot
-# Snap tab (no magnets): a tab in the middle of the lid's front skirt runs 3.6 mm below the parting into a recess in
+# Snap tab (no magnets): a tab in the middle of the lid's front skirt runs below the parting into a recess in
 # the tray's front face; a bump on its inside drops into a groove in the recess. It bends outward (free air), so the
 # keyboard's position does not matter. Force ~ 3 E I delta / L^3; strain 1.5 t delta / L^2 (bent across the layers in
 # print: keep it under ~0.5 %).
-# Kit design: off centre (x 6) so the KEY slot's guard clears it.
-LATCH = dict(x=6.0, w=18.0, t=1.0, slot=0.8, root=9.0, below=3.6, bump=0.45, bump_at=2.0, clr=0.15,
+# Kit design: off centre (x 6) so the KEY slot's guard clears it. Kept as short as the strain allows (the printed 18 mm
+# wide tab, 3.6 below the parting and 9 above it, was too long): 12 wide, 2.2 below, 7 above; bump 0.35 high, 1.4 below
+# the parting (0.75 mm of tray above its groove); free length 8.4 mm.
+LATCH = dict(x=6.0, w=12.0, t=1.0, slot=0.8, root=7.0, below=2.2, bump=0.35, bump_at=1.4, clr=0.15,
              close_deg=45.0, open_deg=35.0, tray_wall_min=1.2)
 
 # ---------------------------------------------------------------- layout choices (lid frame)
@@ -333,18 +335,19 @@ COVER_FLUSH = PD_MOUNT == "kit"
 COVER_SCREWED = COVER_FLUSH   # held by the hinge screws (bare design: glued)
 COVER_T = 1.0                 # plate thickness (kit: flush in the back face; bare: proud of it)
 COVER_RIM = 1.5               # overlap onto the case around the leaf mortise
-COVER_R0 = 3.6                # covers start this far from the axis (barrel + clearance for rotation)
-COVER_POCKET_CLR = 0.15       # kit: pocket around each cover, per side
+COVER_R0 = 4.0                # covers start this far from the axis (barrel + clearance; kit: 0.75 mm above the BACK_SEAM groove)
+COVER_POCKET_CLR = 0.25       # kit: pocket around each cover, per side (0.15 printed too tight)
+COVER_EDGE_CHAMFER = 0.3      # kit: 45 deg chamfer round the cover's outer face, which prints on the bed (elephant foot)
 COVER_R = 0.5 if COVER_FLUSH else 1.0   # plan corner radius of the covers (kit: halved)
 # kit: 90 deg countersink for the M2 flat head (dk 3.5-3.8) at the outer face, clearance hole, and the cone under it that
 # fills the leaf's countersink (catalogue 4.2, assumed 90 deg) with 0.1 mm radial clearance
 COVER_CSK = dict(top_d=4.0, hole_d=2.3, cone_d=4.1, cone_h=0.7)
 HINGE_SINK = COVER_T if COVER_FLUSH else 0.0   # the leaves sit this much deeper than in a plain mortise
 # kit: crush ribs on the side edges of each flush cover, so it stays in its pocket when pressed in, before (or without)
-# the screws. Each rib stands out COVER_POCKET_CLR at the inner face (just touching the pocket wall: the lead-in) and h at
-# the outer face, so the interference grows from 0 to h - COVER_POCKET_CLR (0.15 mm) per side as the cover goes in.
-# The ribs are on the covers, so the fit is tuned by reprinting them (tight: lower h; loose: raise it).
-COVER_RIBS = dict(per_side=2, h=COVER_POCKET_CLR + 0.15, r=0.9) if COVER_FLUSH else None
+# the screws. Each rib stands out COVER_POCKET_CLR at the inner face (just touching the pocket wall: the lead-in) and h
+# where the outer chamfer starts, so the interference grows from 0 to h - COVER_POCKET_CLR (0.1 mm) per side as the cover
+# goes in. The ribs are on the covers, so the fit is tuned by reprinting them (tight: lower h; loose: raise it).
+COVER_RIBS = dict(per_side=2, h=COVER_POCKET_CLR + 0.1, r=0.9) if COVER_FLUSH else None
 # optional: a lip on each side edge of a cover, reaching d further into a deeper strip of the pocket (outside the leaf's
 # mortise), e.g. dict(w=1.0, d=1.1, clr=0.2) for a 2.1 mm deep cover (SLA / MJF minimums). None: a plain 1 mm plate.
 COVER_LIP = None
@@ -385,10 +388,13 @@ HOUSING_HALF = 13.5           # housing half-length along x: cover 23.5 mm + 1.7
 # mortise + WALL deep) with a screw boss behind each pilot hole, out to the screw tip + 1.5 mm and down (tray) / up (lid)
 # to the floor / ceiling as a rib
 HINGE_PAD = dict(boss_wall=1.6, skin=1.5)
-# kit: the lid's lower back edge and the tray's upper back edge (along the parting, at the hinge axis) are rounded with
-# this radius. With the axis only 0.15 mm outside the back face (flush covers), the square edges would rub as soon as
-# the real axis sits a little lower than the catalogue model suggests; the radius gives that room.
-HINGE_EDGE_R = 1.5 if PD_MOUNT == "kit" else 0.0
+# kit: a groove along the back seam, `depth` into the back face and h above (lid) / below (tray) the parting, round the
+# back corners to the end faces; the outer size is unchanged. The hinge axis is only ~0.15 mm outside the back face
+# (flush covers), and the printed lid's and tray's back edges rubbed when opening (the real axis sat further in than the
+# catalogue model suggests; an R1.5 rounding of the edges was not enough). With the groove, the edges clear with the axis
+# up to ~depth further in; `build.py` sweeps the opening with the axis moved in. HINGE_EDGE_R: the earlier rounding.
+BACK_SEAM = dict(depth=1.0, h=3.0) if PD_MOUNT == "kit" else None
+HINGE_EDGE_R = 0.0
 HOUSING_GUSSET = 5.5          # tapered rib each side of a housing (plan view 5.5 mm long, 6.5 mm deep at the housing)
 # triangular ribs (gussets) inside the lid between the long walls and the ceiling, 1.6 mm thick (4 lines);
 # x positions stay clear of the strap (x -22.6), the key push-rods (x -17.1, -29.1) and the USB-C cable loop (x < -62)
