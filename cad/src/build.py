@@ -1036,14 +1036,7 @@ def hinge_pad_extent():
 
 
 def back_edge_relief(lid):
-    """Material to remove along the back edge at the parting (lid: lower, tray: upper): the BACK_SEAM groove (round the
-    back corners, ending on the end faces), or a rounding with HINGE_EDGE_R."""
-    g = BACK_SEAM
-    if g:
-        plan = CS.batch_boolean(lid_plan_pieces(), m3.OpType.Add)
-        band = ((plan.offset(1.0, m3.JoinType.Round, 2.0, SEG) - plan.offset(-g["depth"], m3.JoinType.Round, 2.0, SEG))
-                ^ CS.square((2 * BIG, BIG)).translate((-BIG, Y_BACK - CORNER_R)))         # the back face and its corners
-        return prism_z(band, Z_PART - 1.0, Z_PART + g["h"]) if lid else prism_z(band, Z_PART - g["h"], Z_PART + 1.0)
+    """Material to remove so the back edge along the parting (lid: lower, tray: upper) is rounded with HINGE_EDGE_R."""
     r = HINGE_EDGE_R
     if r <= 0:
         return M()
@@ -1517,12 +1510,11 @@ def main_kit():
             f"{k['cone_h']:g} in the leaf countersink, {HINGE_SCREW_DEPTH:g} mm past the leaf seat, tip "
             f"{HINGE_PAD['skin']:g} mm short of the end of its boss (Ø{HINGE_PILOT_D + 2 * HINGE_PAD['boss_wall']:g})")
         # tolerance: the axis height is read off the maker's 3D viewer (not in the catalogue): move it further in
-        need = -0.6 if BACK_SEAM else -0.3        # must stay clear to the table limit with the axis this much further in
-        for sh in ((-0.15, -0.3, -0.6, -0.9) if BACK_SEAM else (-0.15, -0.3)):
+        for sh in (-0.15, -0.3):
             fc = first_contact(lidset, traset, sh)
             log(f"  axis {-sh:g} mm further in ({HINGE_AXIS_Y + sh - Y_BACK:+.2f} mm from the back face): "
                 + (f"lid meets tray at {fc} deg" if fc is not None else "still clear to 180 deg"))
-            assert sh < need or fc is None or max_open is None or fc > max_open, ("hinge tolerance: contact before the table limit", sh, fc)
+            assert fc is None or max_open is None or fc > max_open, ("hinge tolerance: contact before the table limit", sh, fc)
     if hits and max_open is not None and hits[0][0] < max_open:
         log("  <-- CHECK: parts collide before the table limit")
     p = KB_PLUG

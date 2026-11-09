@@ -335,7 +335,7 @@ COVER_FLUSH = PD_MOUNT == "kit"
 COVER_SCREWED = COVER_FLUSH   # held by the hinge screws (bare design: glued)
 COVER_T = 1.0                 # plate thickness (kit: flush in the back face; bare: proud of it)
 COVER_RIM = 1.5               # overlap onto the case around the leaf mortise
-COVER_R0 = 4.0                # covers start this far from the axis (barrel + clearance; kit: 0.75 mm above the BACK_SEAM groove)
+COVER_R0 = 3.6                # covers start this far from the axis (barrel + clearance for rotation)
 COVER_POCKET_CLR = 0.25       # kit: pocket around each cover, per side (0.15 printed too tight)
 COVER_EDGE_CHAMFER = 0.3      # kit: 45 deg chamfer round the cover's outer face, which prints on the bed (elephant foot)
 COVER_R = 0.5 if COVER_FLUSH else 1.0   # plan corner radius of the covers (kit: halved)
@@ -388,13 +388,10 @@ HOUSING_HALF = 13.5           # housing half-length along x: cover 23.5 mm + 1.7
 # mortise + WALL deep) with a screw boss behind each pilot hole, out to the screw tip + 1.5 mm and down (tray) / up (lid)
 # to the floor / ceiling as a rib
 HINGE_PAD = dict(boss_wall=1.6, skin=1.5)
-# kit: a groove along the back seam, `depth` into the back face and h above (lid) / below (tray) the parting, round the
-# back corners to the end faces; the outer size is unchanged. The hinge axis is only ~0.15 mm outside the back face
-# (flush covers), and the printed lid's and tray's back edges rubbed when opening (the real axis sat further in than the
-# catalogue model suggests; an R1.5 rounding of the edges was not enough). With the groove, the edges clear with the axis
-# up to ~depth further in; `build.py` sweeps the opening with the axis moved in. HINGE_EDGE_R: the earlier rounding.
-BACK_SEAM = dict(depth=1.0, h=3.0) if PD_MOUNT == "kit" else None
-HINGE_EDGE_R = 0.0
+# kit: the lid's lower back edge and the tray's upper back edge (along the parting, at the hinge axis) are rounded with
+# this radius. With the axis only 0.15 mm outside the back face (flush covers), the square edges would rub as soon as
+# the real axis sits a little lower than the catalogue model suggests; the radius gives that room.
+HINGE_EDGE_R = 1.5 if PD_MOUNT == "kit" else 0.0
 HOUSING_GUSSET = 5.5          # tapered rib each side of a housing (plan view 5.5 mm long, 6.5 mm deep at the housing)
 # triangular ribs (gussets) inside the lid between the long walls and the ceiling, 1.6 mm thick (4 lines);
 # x positions stay clear of the strap (x -22.6), the key push-rods (x -17.1, -29.1) and the USB-C cable loop (x < -62)

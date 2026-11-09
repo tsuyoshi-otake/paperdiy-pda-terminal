@@ -91,10 +91,10 @@ r 6 halved), and the other small radii were halved too.
 | `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers + 1 tray splice plate, ~1 h 38 min, 63 g |
 | `3mf/plate3_panel.3mf` | panel A + B + 3 panel splice plates, ~38 min, 24 g |
 | `3mf/usb_variants/lid_A_left_usb*.3mf` | the lid-A variants, one per file |
-| `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 34 min 64 g, ~1 h 33 min 62 g, ~35 min 24 g (150 g, 3 h 40 min, nothing to glue) |
+| `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 34 min 65 g, ~1 h 33 min 62 g, ~35 min 24 g (151 g, 3 h 41 min, nothing to glue) |
 | `3mf/large/usb_variants/lid_usb*.3mf` | the panel-mount lids in one piece |
 
-Plates 1–3: about 151 g and 3 h 53 min with the 2.0 mm walls (118 g and 3 h 07 min with 1.2 mm walls; the version with the
+Plates 1–3: about 152 g and 3 h 54 min with the 2.0 mm walls (118 g and 3 h 07 min with 1.2 mm walls; the version with the
 original tray took 139 g and 3 h 29 min).
 
 ### The kit
@@ -169,11 +169,9 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
 * **Back**: `BACK_STYLE = "solid"` for lid and tray in the kit design: the whole back face is at the hinge plane
   (y = 53). With housings only behind the hinges, the lid's back edge between them was 7.65 mm in front of the hinge axis
   and swung 11–15 mm off the tray when opened, a slot between screen and keyboard; now the edge is 0.15 mm from the axis
-  and the seam stays ~2 mm when open. Along the parting the back face has a groove in lid and tray (`BACK_SEAM`: 1 mm
-  deep, 3 mm above / below the parting, round the back corners to the end faces; the outer size is unchanged): the
-  printed parts of the earlier version (edges only rounded r 1.5) rubbed when opening, the real axis sitting further in
-  than the catalogue model. With the groove the lid clears the tray to 164° with the axis 0.6 mm further in than modelled
-  (154° at 0.9 mm). The cost of the full-width back: with the keyboard's charge plug in, the lid opens to 95°.
+  and the seam stays 1.0–1.5 mm (1.45 at 90°, 1.26 at 130°, 0.96 at 150°). The lid's lower and the tray's upper back edge
+  along the parting are rounded r 1.5 (`HINGE_EDGE_R`), so a real axis a little lower than the catalogue model does not
+  make them rub. The cost of the full-width back: with the keyboard's charge plug in, the lid opens to 95°.
 * **Split** (A1 mini only): at x = −72 for lid and tray and −74.2 for the panel (2.2 mm clear of the power slot, panel B
   173.8 mm), three dovetail keys each: lid y −37, 5, 36 (in the 1.2 mm ceiling), tray y −25, 0, 25 (in the floor), panel y −37.3, 0, 42. The panel's
   keys are smaller (`PANEL_DOVETAIL`: neck 4.5, head 7, 5 deep, 0.2 clearance) so every web around them is ≥ 2.5 mm;
@@ -206,8 +204,7 @@ panel, tray), splice plates vs their pieces, hinge leaves / barrels / covers vs 
 a female-connector envelope (ears + body) vs lid, panel and kit: all 0 mm³ (the covers' crush ribs press 0.16 mm³ each into
 their pockets, logged apart). Lid + kit + panel + covers rotated 0–180° about the real hinge axis: no contact with the
 tray; the lid reaches the table at 162.2°. With the axis 0.15 mm further in (exactly at the back face) still none;
-0.3 mm further in, the lid meets the tray at 176°, 0.6 mm at 164° (asserted: beyond the table), 0.9 mm at 154°. With the
-keyboard's charge plug in, the lid opens to 95°.
+0.3 mm further in, the lid meets the tray at 170°. With the keyboard's charge plug in, the lid opens to 95°.
 
 ### Tipping
 Lid side 137 g (printed parts as sliced + kit 43.1 g + half the hinges), centre of mass 49.4 mm in front of the hinge
@@ -236,11 +233,11 @@ tray and panel): `docs/images/render_{open,closed}_{black,khaki,mix}.png`.
   (lid) or the floor (tray) by a 1.2 mm rib. Hinge centres at x = ±52 (`HINGE_X`), clear of the split at x = −72 and the
   tray's rear opening (x ≥ 72.9).
 * **Back face:** `BACK_STYLE = "solid"`: the whole back face of lid and tray is at the hinge plane, so the lid's lower back
-  edge is 0.15 mm from the axis and the seam between screen and keyboard stays ~2 mm from 90 to 150° (with housings
-  only behind the hinges it was 11–15 mm). Along the parting both back faces have the `BACK_SEAM` groove (see "Back").
+  edge is 0.15 mm from the axis and the seam between screen and keyboard stays 1.0–1.5 mm from 90 to 150° (with housings
+  only behind the hinges it was 11–15 mm). Both back edges along the parting are rounded r 1.5 (`HINGE_EDGE_R`).
 * **Covers** (`out/hinge_cover_lid_x2.stl`, `out/hinge_cover_tray_x2.stl`, 1.0 mm, case colour): flush in a pocket in the
   back face (0.25 mm clearance per side, r 0.5 corners; 0.3 mm chamfer round the outer face, which prints on the bed),
-  overlapping the case by 1.5 mm and starting 4.0 mm from the axis (0.75 mm above / below the seam groove);
+  overlapping the case by 1.5 mm and starting 3.6 mm from the axis;
   the tray's runs out through the bottom (`COVER_LIP` can add side lips for a deeper, stiffer cover; off). Each has two Ø4.0 × 90° countersinks over the leaf holes and under each a cone
   (Ø4.1, 0.7 mm) that fills the leaf's countersink, so the hinge screw clamps cover and leaf through a conical washer: no
   glue. Two crush ribs on each side edge (`COVER_RIBS`: 0.25 → 0.35 mm proud from the inner face to the chamfer, so up to
@@ -262,10 +259,10 @@ that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits
 ### Printing
 * **Plates** (`3mf/`, A1 mini, 180 × 180 mm): `plate0_test_coupons` (23 min, 9 g, print first), `plate1_lid` (lid A + B,
   2 lid covers, 2 splice plates, 1 h 39 min, 65 g), `plate2_tray` (tray A + B, 2 tray covers, 1 splice plate, 1 h 38 min,
-  63 g), `plate3_panel` (panel A + B, 3 splice plates, 38 min, 24 g): 151 g and 3 h 53 min for plates 1–3.
+  63 g), `plate3_panel` (panel A + B, 3 splice plates, 38 min, 24 g): 152 g and 3 h 54 min for plates 1–3.
   `3mf/usb_variants/` holds lid A for a panel-mount female.
-* **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 34 min, 64 g), tray (1 h 33 min, 62 g), panel (35 min,
-  24 g): 150 g and 3 h 40 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
+* **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 34 min, 65 g), tray (1 h 33 min, 62 g), panel (35 min,
+  24 g): 151 g and 3 h 41 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
 * **Orientation:** lid top face down (the export tilts the sloped top plane level first, `LAY_TOP` from `assembly.json`),
   panel visible face down, tray floor down, covers visible face down (the cones face up), splice plates flat. No supports.
 * **Settings, 0.4 mm nozzle** (Bambu Studio): 0.20 mm Standard, PLA, textured PEI, **3 wall loops** (material around
@@ -507,7 +504,7 @@ published drawing and structure files.
 | `BACK_EXTRA` | `6.5` | design choice | hinge housings 3.0 -> 9.5 mm deep; new back face / axis plane y = 53.0 |
 | `BACK_STYLE` | `"solid"` (kit) / `"housings"` (bare) | design choice | whole back face at the hinge plane (`"housings"`: 9.5 mm only behind the hinges) |
 | `HOUSING_HALF` / `HOUSING_GUSSET` | `13.5` / `5.5` | design choice | bare design: housing 27 mm wide; tapered rib 5.5 mm long each side |
-| `HINGE_PAD` / `HINGE_EDGE_R` / `BACK_SEAM` | `boss_wall 1.6, skin 1.5` / `0` / `depth 1.0, h 3.0` (kit) | design choice | kit: hinge pad + a boss per screw (out to 1.5 past the tip) + rib; (earlier) radius on the back edges along the parting; groove along the back seam in lid and tray |
+| `HINGE_PAD` / `HINGE_EDGE_R` | `boss_wall 1.6, skin 1.5` / `1.5` (bare `0`) | design choice | kit: hinge pad + a boss per screw (out to 1.5 past the tip) + rib; radius on the back edges along the parting |
 | `LID_RIBS` | `t 1.6, depth 7.0, drop 7.5`, 7 + 7 x positions | design choice | ribs between the long walls and the lid ceiling |
 | `STRAP_RAILS` | `x_end 52.3, width 6.0, rib 1.6 deep to z 20.4, feet x 18 / 49` | design choice | rails off the strap hold down the display's far end |
 | `STRAP_LEGS` | `gap 0.2, t 2.0, legs y ±22…29, arms y ±20…29.5` | design choice | two legs just past the PCB's inner end (x = −12.1) stop the loose Assembly Kit PCB turning about its single standoff |
@@ -521,7 +518,7 @@ published drawing and structure files.
 | `CORNER_C` | `(95.0, 40.5)` | measured | [M] centre of the r 6 back-corner arcs |
 | `LID_HINGE_BOSS` | `w 18, depth 4, z 18.5..27` | design choice | screw boss inside the lid per hinge |
 | `HINGE_MOUNT` | `"face"` | design choice | leaves flush in the back face ("parting": folded in the parting plane) |
-| `HINGE_COVER` / `COVER_T` / `COVER_RIM` / `COVER_R0` | `True` / `1.0` / `1.5` / `4.0` | design choice | printed covers over the leaves |
+| `HINGE_COVER` / `COVER_T` / `COVER_RIM` / `COVER_R0` | `True` / `1.0` / `1.5` / `3.6` | design choice | printed covers over the leaves |
 | `COVER_FLUSH` / `COVER_SCREWED` / `HINGE_SINK` | `True` / `True` / `1.0` (kit) | design choice | covers flush in a pocket, leaves sunk by `COVER_T`, covers clamped by the hinge screws (bare: glued on top) |
 | `COVER_POCKET_CLR` / `COVER_EDGE_CHAMFER` / `COVER_R` / `COVER_CSK` | `0.25` / `0.3` / `0.5` / `top_d 4.0, hole_d 2.3, cone_d 4.1, cone_h 0.7` | design choice | pocket clearance per side; chamfer round the outer face (on the bed in print); plan corner radius; countersink for the M2 head, cone into the leaf's 4.2 countersink |
 | `COVER_RIBS` / `COVER_LIP` | `per_side 2, h 0.35, r 0.9` / `None` | design choice | tapered crush ribs on the covers' side edges: press fit in the pocket (tight: lower `h`; loose: raise it); optional side lips for a deeper cover |
