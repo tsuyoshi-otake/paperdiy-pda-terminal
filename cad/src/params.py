@@ -200,18 +200,18 @@ SPLICE = dict(clr=0.3,                # per side (0.15 printed too tight: the pl
 # USB-C at the left end: "direct" = a straight cable into the kit's port through the end-wall opening (default);
 # lid A also comes for a screw-ear panel-mount female (USB_PM_*), at y = USB_PM_Y, so the end can be swapped later.
 USB_PM_Y_KIT = 20.0            # clear of the lid's split blocks (y 5, 36) and the power slot
-# Snap tab (no magnets): a tab in the middle of the lid's front skirt runs below the parting into a recess in
-# the tray's front face; a bump on its inside drops into a groove in the recess. It bends outward (free air), so the
-# keyboard's position does not matter. It is bent across the print layers (the lid prints ceiling down), so what
-# matters is the strain at its stiffest point: keep it under ~0.5 %.
-# Kit design: off centre (x 6) so the KEY slot's guard clears it. Below the parting it stays short (the printed 18 mm
-# wide tab, 3.6 below the parting, was too long): 12 wide, 2.2 below; bump 0.35 high, 1.4 below the parting (0.75 mm
-# of tray above its groove). Above the parting (hidden in the wall, only its two slits show) it tapers from t at the
-# parting to t_root = the full wall at its root, so there is no step there: the 1.0 mm tab of uniform thickness that
-# stepped to the 2.0 mm wall at a square corner put a stress raiser right at its most strained point. Free length
-# 12.4 mm (root 11 above the parting): peak strain 0.24 % (was 0.43 % plus the corner), an outward pull of ~15 N at the
-# tip to reach PLA's strength across the layers (was ~3 N), to open ~6 N (was 4.5). Slot ends rounded (r = slot/2).
-LATCH = dict(x=6.0, w=12.0, t=1.0, t_root=WALL, slot=0.8, root=11.0, below=2.2, bump=0.35, bump_at=1.4, clr=0.15,
+# Snap (no magnets, no slits): a lip in the middle of the lid's front wall runs below the parting into a recess in the
+# tray's front face; a bump on its inside drops into a groove in the recess. The lip is not cut free: the printed tabs
+# freed by two slits breaks from the slit ends (the strain gathers there, on a layer line: the lid prints ceiling
+# down). Instead the front wall is thinned from inside over a zone round the lip (`flex`: x0..x1, to t, stopping `top`
+# below the ceiling, 45 deg chamfers back to the full wall), and that zone bends outward as a plate (free air, so the
+# keyboard's position does not matter). build.py solves it as a Kirchhoff plate (src/latch_plate.py): keep the strain
+# across the layers under ~0.5 %. A plain 2.0 wall would need ~17 N to open; the 1.2 zone ~5 N.
+# Kit design: off centre (x 6) so the KEY slot's guard clears it; the zone stops short of the panel's snap groove at
+# x 22..30. Lip 12 wide, 2.2 below the parting, 1.0 thick (the tray's recess and groove are unchanged); bump 0.35
+# high, 1.4 below the parting (0.75 mm of tray above its groove).
+LATCH = dict(x=6.0, w=12.0, t=1.0, below=2.2, bump=0.35, bump_at=1.4, clr=0.15,
+             flex=dict(x0=-14.0, x1=20.0, t=1.2, top=2.0),
              close_deg=45.0, open_deg=35.0, tray_wall_min=1.2)
 
 # ---------------------------------------------------------------- layout choices (lid frame)

@@ -15,7 +15,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt                       # noqa: E402
 from matplotlib import font_manager                   # noqa: E402
-from matplotlib.patches import FancyArrowPatch, PathPatch  # noqa: E402
+from matplotlib.patches import FancyArrowPatch, PathPatch, Rectangle  # noqa: E402
 from matplotlib.path import Path                      # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -82,25 +82,30 @@ def front_view(ax, lid, tray):
         add_polygon(ax, p, LID_C, LID_E)
     l = B.LATCH
     zf = B.under_z(-B.BACK_OLD_Y)
-    note(ax, (l["x"] + l["w"] / 2 - 2.0, zf - l["below"] + 1.0), f"ツメ（幅 {l['w']:g} mm、蓋と一体）", (16.0, 1.0))
-    note(ax, (l["x"] + l["w"] / 2 + l["slot"] / 2, zf + 4.0), f"両脇の切れ目（上へ {l['root']:g} mm、端は丸め）", (16.0, 13.5))
+    g = l["flex"]
+    zr = B.top_z(-B.BACK_OLD_Y + B.SHELL_WALL) - B.SHELL_CEIL - g["top"]
+    ax.add_patch(Rectangle((g["x0"], zf), g["x1"] - g["x0"], zr - zf, fill=False, ec="white", lw=1.2, ls=(0, (4, 3)),
+                           zorder=6))
+    note(ax, (l["x"] + l["w"] / 2 - 2.0, zf - l["below"] + 1.0), f"ツメ（幅 {l['w']:g} mm、壁と一体、切れ目なし）", (16.0, 1.0))
+    note(ax, (g["x1"] - 0.5, zr - 2.0), f"点線の帯：壁を内側から {g['t']:g} mm に薄くしてあり、\nここが板としてたわむ（外からは見えない）",
+         (22.0, 17.5))
     ax.text(-27.0, zf + 5.0, "蓋", color="white", fontsize=11, va="center")
     ax.text(-27.0, zf - 4.0, "トレイ", color=INK, fontsize=10.5, va="center")
     finish(ax, (-28, 40), (-1, 23), "① 閉じた状態を手前から見たところ")
 
 
 def section_view(ax, lid, tray):
-    for p in cut(tray, [0.0, 0, 0], [1, 0, 0], YZ):
+    for p in cut(tray, [B.LATCH["x"], 0, 0], [1, 0, 0], YZ):
         add_polygon(ax, p, TRAY_C, TRAY_E)
-    for p in cut(lid, [0.0, 0, 0], [1, 0, 0], YZ):
+    for p in cut(lid, [B.LATCH["x"], 0, 0], [1, 0, 0], YZ):
         add_polygon(ax, p, LID_C, LID_E)
     l = B.LATCH
     zf = B.under_z(-B.BACK_OLD_Y)
     zb = zf - l["bump_at"]
     yt = -B.BACK_OLD_Y + l["t"]
     note(ax, (yt + 0.1, zb - 0.2), f"出っ張り {l['bump']:g} mm が\nトレイの溝に入る", (-64.5, zb - 3.0))
-    yt5 = -B.BACK_OLD_Y + (l["t"] + (l["t_root"] - l["t"]) * 5.0 / l["root"]) / 2
-    note(ax, (yt5, zf + 5.0), f"ツメ（厚さ {l['t']:.1f} mm、\n根元へ {l['t_root']:.1f} mm に太る）", (-54.5, zf + 9.0))
+    g = l["flex"]
+    note(ax, (-B.BACK_OLD_Y + g["t"] / 2, zf + 7.0), f"壁（ここだけ {g['t']:g} mm）が\n外へたわむ", (-50.0, zf + 11.0), ha="right")
     ax.add_patch(FancyArrowPatch((-49.5, zf - 1.0), (-49.5, zf + 4.0), arrowstyle="-|>", mutation_scale=11,
                                  color=RED, lw=1.4, zorder=8))
     ax.text(-50.0, zf + 4.8, "蓋の手前を持ち上げると外れる", color=RED, fontsize=9.5, ha="right", va="bottom")

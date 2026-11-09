@@ -5,7 +5,7 @@
   lid 15.8 mm thick at the front face, 13.4 at the back; closed case 23.8 mm tall at the front, 26.4 at the back (was 30.0 / 30.0)
 == building
 == exports (bounding boxes are axis-aligned in the assembly frame)
-  out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=57127 mm3
+  out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56887 mm3
   out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=64245 mm3
   out/paperdiy_kit_envelope.stl: bbox 121.3 x 68.2 x 6.3 mm, watertight=True, winding_ok=True, bodies=1, vol=50716 mm3
   out/display_panel_kit.stl: bbox 197.6 x 96.0 x 7.9 mm, watertight=True, winding_ok=True, bodies=1, vol=19332 mm3
@@ -15,7 +15,7 @@
   out/tpu_damper.stl: bbox 10.0 x 1.9 x 1.6 mm, watertight=True, winding_ok=True, bodies=1, vol=21 mm3
 == split pieces for A1 mini (limit 175 mm)
   out/split/lid_A_left.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=9140 mm3
-  out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=46696 mm3
+  out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=46456 mm3
   out/split/tray_A_left.stl: bbox 29.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=9891 mm3
   out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=52595 mm3
   out/split/panel_A_left.stl: bbox 24.6 x 95.1 x 1.6 mm, watertight=True, winding_ok=True, bodies=1, vol=2783 mm3
@@ -59,22 +59,22 @@
   out/split/usb_variants/lid_A_left_usb30mm.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8684 mm3
     lid_A_left_usb30mm: opening 13.0 x 7.0 mm at y = 20, z = 19.3, M3 holes 30 mm apart
 == whole parts for printers with a 220 mm bed or bigger (no split, no dovetails, nothing to glue)
-  out/whole/lid.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=57127 mm3
+  out/whole/lid.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56887 mm3
   out/whole/tray.stl: bbox 202.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=64245 mm3
   out/whole/panel.stl: bbox 197.6 x 96.0 x 7.9 mm, watertight=True, winding_ok=True, bodies=1, vol=19332 mm3
-  out/whole/usb_variants/lid_usb_noscrew.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56706 mm3
-  out/whole/usb_variants/lid_usb16mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56709 mm3
-  out/whole/usb_variants/lid_usb18mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56681 mm3
-  out/whole/usb_variants/lid_usb20mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56670 mm3
-  out/whole/usb_variants/lid_usb22mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56670 mm3
-  out/whole/usb_variants/lid_usb25mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56670 mm3
-  out/whole/usb_variants/lid_usb28mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56670 mm3
-  out/whole/usb_variants/lid_usb30mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56670 mm3
-  one-piece lid 57.13 cm3 (the checked lid 57.13 cm3)
+  out/whole/usb_variants/lid_usb_noscrew.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56467 mm3
+  out/whole/usb_variants/lid_usb16mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56470 mm3
+  out/whole/usb_variants/lid_usb18mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56442 mm3
+  out/whole/usb_variants/lid_usb20mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56430 mm3
+  out/whole/usb_variants/lid_usb22mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56430 mm3
+  out/whole/usb_variants/lid_usb25mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56430 mm3
+  out/whole/usb_variants/lid_usb28mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56430 mm3
+  out/whole/usb_variants/lid_usb30mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56430 mm3
+  one-piece lid 56.89 cm3 (the checked lid 56.89 cm3)
 == test coupons (cut from the real parts; print these first)
   out/coupons/coupon_hinge_tray.stl: bbox 30.0 x 17.0 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=3344 mm3
   out/coupons/coupon_hinge_lid.stl: bbox 30.0 x 17.0 x 13.5 mm, watertight=True, winding_ok=True, bodies=1, vol=1970 mm3
-  out/coupons/coupon_latch_lid.stl: bbox 26.0 x 12.0 x 18.3 mm, watertight=True, winding_ok=True, bodies=1, vol=1268 mm3
+  out/coupons/coupon_latch_lid.stl: bbox 26.0 x 12.0 x 18.3 mm, watertight=True, winding_ok=True, bodies=1, vol=1115 mm3
   out/coupons/coupon_latch_tray.stl: bbox 26.0 x 12.0 x 8.1 mm, watertight=True, winding_ok=True, bodies=1, vol=1029 mm3
 == interference checks (closed)
   interference kit (case + caps) vs lid: 0.000 mm3 OK
@@ -133,7 +133,7 @@
   interference lid_A_left_usb30mm: panel-mount female vs the one-piece lid: 0.000 mm3 OK
   panel-mount female: ears and body up to 7.2 mm tall fit between the panel and the ceiling
   panel snaps: 4 bumps (8 mm long; front edge x = -60, +26, back edge x = -23, +26) 0.25 mm past the wall on the way in, then in 0.30 mm grooves in the lid's 2.0 mm walls; seated, they touch nothing
-  interference lid A vs B (straight): -0.000 mm3 OK
+  interference lid A vs B (straight): 0.000 mm3 OK
   interference tray A vs B (straight): 0.000 mm3 OK
   interference hinge (tray leaf + barrel) vs tray: -0.000 mm3 OK
   interference hinge (lid leaf) vs lid: 0.000 mm3 OK
@@ -156,10 +156,10 @@
     (-62, -39.5): +x gusset 3.0, -y tie 2.6
     (-62, 40): +x gusset 3.0, +y tie 5.6, -y gusset 1.6
   skin over the kit 2.00..3.79 mm, over the USB-C channel 0.98 mm
-== snap tab (latch)
-  tab 12 wide, 1 mm thick below the parting tapering to 2 (the wall) at its root 11 above it, slits 0.8 with round ends; free length 12.4 mm -> 24.6 N/mm
-  bump 0.35 - clearance 0.15 = 0.20 mm; on the real opening arc the tab bends at most 0.19 mm (at 0.1 deg)
-  peak strain 0.22 % at 8.2 mm above the parting (bent across the print layers: keep < 0.5 %); an outward pull of ~16 N at the bump reaches ~25 MPa there; to open ~6.2 N at the tab (+ the hinges' friction), to close ~8.7 N
+== snap (latch): a lip on a thinned zone of the front wall, no slits
+  lip 12 wide, 1 thick, 2.2 below the parting, not slit: the front wall is thinned from inside to 1.2 over x -14..20 (to 2 below the ceiling, 45 deg chamfers) and bends as a plate
+  plate model (Kirchhoff, ceiling and end walls rigid, so the real wall is somewhat softer): 20.5 N/mm at the bump; bump 0.35 - clearance 0.15 = 0.20 mm; on the real opening arc the lip moves out at most 0.19 mm (at 0.1 deg)
+  peak strain 0.18 % (x 19.8, z 8.0, 1.20 thick; across the print layers: keep < 0.5 %), spread over the zone, no slit ends; an outward pull of ~16 N at the bump reaches ~25 MPa; to open ~5.2 N at the lip (+ the hinges' friction), to close ~7.2 N
   tray front wall left behind the recess 1.85 mm, behind the groove 1.60 mm
 == hinge motion (lid + kit + panel + covers rotated about the real axis y=53.15, z=12.85; tray fixed)
   no collision with the tray from 0 to 180 deg

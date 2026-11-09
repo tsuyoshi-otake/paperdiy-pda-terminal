@@ -951,12 +951,11 @@ SKIN = SHELL_CEIL if SHELL else LID_SKIN
 
 def kit_lid_top():
     """Top plane z = a + b * y, as low as possible: it passes through what the hinge needs at the back face (leaf +
-    cover rim + chamfer) and through the most demanding of the kit pocket, the USB-C channel and the latch root."""
+    cover rim + chamfer) and through the most demanding of the kit pocket and the USB-C channel."""
     z_back = Z_PART + HINGE_WIDTH / 2 + HINGE_CLR + COVER_TOP_RIM + LID_CHAMFER
     ch = KIT_Z0 + USB_CH["h"] + (USB_CEIL if SHELL else SKIN)
     need = [(KIT_Y0, KIT_Z1 + SKIN, "kit pocket (front edge)"), (KIT_Y1, KIT_Z1 + SKIN, "kit pocket (back edge)"),
-            (KIT_USB_Y - USB_CH["w"] / 2, ch, "USB-C channel"), (KIT_USB_Y + USB_CH["w"] / 2, ch, "USB-C channel"),
-            (-BACK_OLD_Y, under_z(-BACK_OLD_Y) + LATCH["root"] + 1.5 + LID_CHAMFER, "latch root")]
+            (KIT_USB_Y - USB_CH["w"] / 2, ch, "USB-C channel"), (KIT_USB_Y + USB_CH["w"] / 2, ch, "USB-C channel")]
     b, why = min(((z_back - z) / (Y_BACK - y), w) for y, z, w in need)
     return z_back - b * Y_BACK, b, why
 
@@ -1008,36 +1007,31 @@ def latch_bump_cs(grow=0.0):
 
 
 def latch_lid_parts():
-    """(cut, tab): the cut frees a tab in the middle of the lid's front skirt (two slits with round ends, and the inside
-    of the wall between them down to the tab's taper); the tab is what is left of the wall, plus its part below the
-    parting (with the bump) that runs into the tray's recess."""
-    l = LATCH
+    """(cut, lip): the cut thins the lid's front wall from inside over the flex zone (45 deg chamfers at its ends and
+    top), so that zone bends as a plate; the lip (with the bump) carries on below the parting into the tray's recess.
+    Nothing is slit."""
+    l, g = LATCH, LATCH["flex"]
     zf, yo = under_z(-BACK_OLD_Y), -BACK_OLD_Y
-    x0, x1, s = l["x"] - l["w"] / 2, l["x"] + l["w"] / 2, l["slot"]
-    zr, yi = zf + l["root"], -LID_INNER_Y + 0.01
-    cut = [box(xa, xb, yo - 1.0, yi, zf - 6.0, zr - s / 2) for xa, xb in ((x0 - s, x0), (x1, x1 + s))]
-    cut += [cyl_y(s / 2, yo - 1.0, yi, xc, zr - s / 2) for xc in (x0 - s / 2, x1 + s / 2)]
-    taper = poly_cs([(yo + l["t"], zf - 6.0), (yi, zf - 6.0), (yi, zr), (yo + l["t_root"], zr), (yo + l["t"], zf)])
-    cut.append(prism_x(taper, x0 - 0.01, x1 + 0.01))
-    tab = box(x0, x1, yo, yo + l["t"], zf - l["below"], zf + 0.5)
-    tab = tab - prism_x(poly_cs([(yo + l["t"] - 0.5, zf - l["below"] - 0.01), (yo + l["t"] + 0.01, zf - l["below"] - 0.01),
+    x0, x1 = l["x"] - l["w"] / 2, l["x"] + l["w"] / 2
+    ch, e = SHELL_WALL - g["t"], 0.3                 # chamfer run; carried e past the inner face (no coplanar faces)
+    zr = top_z(yo + SHELL_WALL) - SHELL_CEIL - g["top"]
+    floor = box(g["x0"], g["x1"], yo + g["t"], yo + g["t"] + 0.01, zf - 1.0, zr)
+    mouth = box(g["x0"] - ch - e, g["x1"] + ch + e, yo + SHELL_WALL + e, yo + SHELL_WALL + e + 0.01, zf - 1.0, zr + ch + e)
+    cut = M.batch_hull([floor, mouth])
+    lip = box(x0, x1, yo, yo + l["t"], zf - l["below"], zf + 0.5)
+    lip = lip - prism_x(poly_cs([(yo + l["t"] - 0.5, zf - l["below"] - 0.01), (yo + l["t"] + 0.01, zf - l["below"] - 0.01),
                                  (yo + l["t"] + 0.01, zf - l["below"] + 0.5)]), x0 - 1, x1 + 1)     # lead-in at the tip
-    tab = tab + prism_x(latch_bump_cs(), x0, x1)
-    return union(cut), tab
+    lip = lip + prism_x(latch_bump_cs(), x0, x1)
+    return cut, lip
 
 
-def latch_beam(n=4001):
-    """The tab as a cantilever from its root to the bump (thickness t below the parting, tapering to t_root at the
-    root): (stiffness N/mm, peak bending strain per mm of deflection, its height above the bump, force per mm of
-    deflection that puts PLA's strength across the layers, ~25 MPa, at the peak)."""
-    l = LATCH
-    L, a = l["root"] + l["bump_at"], l["bump_at"]
-    sv = np.linspace(1e-6, L, n)                           # distance from the bump toward the root
-    t = np.where(sv < a, l["t"], l["t"] + (l["t_root"] - l["t"]) * (sv - a) / (L - a))
-    k = 1.0 / np.trapezoid(sv ** 2 / (3500.0 * l["w"] * t ** 3 / 12), sv)
-    sig = 6 * k * sv / (l["w"] * t ** 2)                   # MPa at the surface per mm of deflection
-    i = int(np.argmax(sig))
-    return k, sig[i] / 3500.0, sv[i], 25.0 / sig[i]
+def latch_plate():
+    """The flex zone as a plate (src/latch_plate.py): (stiffness N/mm at the bump, strain per N, where it peaks)."""
+    from latch_plate import wall_plate
+    l, g = LATCH, LATCH["flex"]
+    yo = -BACK_OLD_Y
+    return wall_plate(under_z(yo), top_z(yo + SHELL_WALL) - SHELL_CEIL, 202.0 / 2 - SHELL_WALL, SHELL_WALL, (g["x0"], g["x1"], g["t"], g["top"]), (l["x"] - l["w"] / 2, l["x"] + l["w"] / 2),
+                      l["bump_at"])
 
 
 def kb_pads():
@@ -1669,24 +1663,26 @@ def main_kit():
     log(f"  skin over the kit {skin:.2f}..{max(top_z(y) - KIT_Z1 for y in (KIT_Y0, KIT_Y1)):.2f} mm, over the USB-C channel "
         f"{min(top_z(KIT_USB_Y + s * USB_CH['w'] / 2) for s in (-1, 1)) - KIT_Z0 - USB_CH['h']:.2f} mm")
 
-    log("== snap tab (latch)")
-    l = LATCH
-    L_free = l["root"] + l["bump_at"]
-    k, eps_mm, at_s, d_break = latch_beam()
+    log("== snap (latch): a lip on a thinned zone of the front wall, no slits")
+    l, g = LATCH, LATCH["flex"]
+    k, eps_n, (ex, ez, et) = latch_plate()
     d_static = l["bump"] - l["clr"]
     d_path, at = latch_path(lid, tray)
     mu = 0.3
     to, tc = np.tan(np.radians(l["open_deg"])), np.tan(np.radians(l["close_deg"]))
     f_open = k * d_static * (to + mu) / (1 - mu * to)
     f_close = k * d_path * (tc + mu) / (1 - mu * tc)
-    log(f"  tab {l['w']:g} wide, {l['t']:g} mm thick below the parting tapering to {l['t_root']:g} (the wall) at its root "
-        f"{l['root']:g} above it, slits {l['slot']:g} with round ends; free length {L_free:.1f} mm -> {k:.1f} N/mm")
-    log(f"  bump {l['bump']} - clearance {l['clr']} = {d_static:.2f} mm; on the real opening arc the tab bends at most "
-        f"{d_path:.2f} mm (at {at:.1f} deg)")
-    log(f"  peak strain {100 * eps_mm * max(d_static, d_path):.2f} % at {at_s - l['bump_at']:.1f} mm above the parting "
-        f"(bent across the print layers: keep < 0.5 %); an outward pull of ~{k * d_break:.0f} N at the bump reaches "
-        f"~25 MPa there; to open ~{f_open:.1f} N at the tab (+ the hinges' friction), to close ~{f_close:.1f} N")
-    assert 100 * eps_mm * max(d_static, d_path) < 0.5, "latch strain"
+    eps = 100 * eps_n * k * max(d_static, d_path)
+    log(f"  lip {l['w']:g} wide, {l['t']:g} thick, {l['below']:g} below the parting, not slit: the front wall is thinned "
+        f"from inside to {g['t']:g} over x {g['x0']:g}..{g['x1']:g} (to {g['top']:g} below the ceiling, 45 deg chamfers) and "
+        f"bends as a plate")
+    log(f"  plate model (Kirchhoff, ceiling and end walls rigid, so the real wall is somewhat softer): {k:.1f} N/mm at the "
+        f"bump; bump {l['bump']} - clearance {l['clr']} = {d_static:.2f} mm; on the real opening arc the lip moves out at "
+        f"most {d_path:.2f} mm (at {at:.1f} deg)")
+    log(f"  peak strain {eps:.2f} % (x {ex:.1f}, z {ez:.1f}, {et:.2f} thick; across the print layers: keep < 0.5 %), "
+        f"spread over the zone, no slit ends; an outward pull of ~{0.714 / (100 * eps_n):.0f} N at the bump reaches ~25 MPa; "
+        f"to open ~{f_open:.1f} N at the lip (+ the hinges' friction), to close ~{f_close:.1f} N")
+    assert eps < 0.5, "latch strain"
     recess_back = -BACK_OLD_Y + l["t"] + l["clr"]
     log(f"  tray front wall left behind the recess {-LID_INNER_Y - recess_back:.2f} mm, behind the groove "
         f"{-LID_INNER_Y - recess_back - (l['bump'] - l['clr'] + 0.05):.2f} mm")

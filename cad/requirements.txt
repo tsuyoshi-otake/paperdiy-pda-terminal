@@ -11,3 +11,4 @@ networkx==3.7
 lxml==6.1.3
 pillow==12.3.0
 matplotlib==3.11.2  # docs/hinge_figure.py only
+scikit-fem==12.0.2  # src/latch_plate.py: the snap's flex zone as a plate
