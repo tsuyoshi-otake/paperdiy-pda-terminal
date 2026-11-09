@@ -82,22 +82,19 @@ r 6 halved), and the other small radii were halved too.
 | `out/paperdiy_kit_envelope.stl` | the kit as placed (case 120.0 × 67.0 × 6.3, r 3, KEY and power caps): checks and renders |
 | `out/hinge_cover_lid_x2.stl`, `out/hinge_cover_tray_x2.stl` | print 2 of each |
 | `out/split/lid_A_left.stl`, `lid_B_main.stl`, `panel_A_left.stl`, `panel_B_main.stl`, `tray_A_left.stl`, `tray_B_main.stl` | A1 mini pieces (≤ 175 mm), with dovetail keys and the splice-plate pockets |
-| `out/keyboard_bezel.stl`, `out/split/kb_bezel_A_left.stl`, `kb_bezel_B_right.stl`, `out/whole/kb_bezel.stl` | optional keyboard bezel laid into the tray (see "Keyboard bezel"): assembled, A1 mini pieces, one piece |
 | `out/split/splice/{lid,tray,panel}_splice_N.stl` | splice plates for the split pieces (2 lid and 1 tray, 0.6 mm; 3 panel, 0.8 mm) |
 | `out/split/usb_variants/lid_A_left_usb*.stl` | lid A for a panel-mount female USB-C: M3 ears 16 / 18 / 20 / 22 / 25 / 28 / 30 mm apart, or none (glue) |
 | `out/whole/lid.stl`, `tray.stl`, `panel.stl`, `out/whole/usb_variants/lid_usb*.stl` | one-piece parts for a bed of 220 mm or more: no split, no keys, no pockets (each asserted to be the checked part minus material; the panel-mount lids are also checked against the connector) |
 | `out/coupons/*.stl` | hinge seat (lid, tray), dovetail key (A, B), snap tab (lid) + recess (tray) |
 | `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~19 min, 6 g |
 | `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers + 2 lid splice plates, ~1 h 12 min, 45 g |
-| `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers + 1 tray splice plate, ~1 h 03 min, 40 g |
+| `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers + 1 tray splice plate, ~1 h 17 min, 49 g |
 | `3mf/plate3_panel.3mf` | panel A + B + 3 panel splice plates, ~39 min, 25 g |
-| `out/kb_shim_{0.5,1.0,1.5,2.0}mm.stl`, `3mf/plate5_kb_shims.3mf` | optional keyboard shims (see "Keyboard shims"), in print orientation; the plate holds 11 × 1.0 mm and 4 each of 0.5 / 1.5 / 2.0 mm, ~6 min, 1 g |
-| `3mf/plate4_kb_bezel.3mf`, `3mf/large/plate4_kb_bezel.3mf` | optional keyboard bezel: A + B (B nested inside A's opening), ~6 min, 3 g; one piece on a 220 mm bed |
 | `3mf/usb_variants/lid_A_left_usb*.3mf` | the lid-A variants, one per file |
-| `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 07 min 45 g, ~58 min 40 g, ~36 min 25 g (109 g, 2 h 40 min, nothing to glue) |
+| `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 07 min 45 g, ~1 h 12 min 48 g, ~36 min 25 g (118 g, 2 h 55 min, nothing to glue) |
 | `3mf/large/usb_variants/lid_usb*.3mf` | the panel-mount lids in one piece |
 
-Plates 1–3: about 109 g and 2 h 53 min (the version with the original tray took 139 g and 3 h 29 min; one with 2 mm
+Plates 1–3: about 118 g and 3 h 07 min (109 g and 2 h 53 min before the tray's deck; the version with the original tray took 139 g and 3 h 29 min; one with 2 mm
 walls, 152 g and 4 h 01 min).
 
 ### The kit
@@ -130,10 +127,19 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
   keys sit in the plain 1.2 mm ceiling (`SPLIT_BLOCK = None`: no thicker blocks around them any more).
 * **Tray shell**: a new part instead of the original `Keyboard.stl`: the same plan outline (r 3) cut by the original
   parting plane and `Z_PART`, hollowed to 1.2 walls over a 1.2 floor (`TRAY_FLOOR`; the original had 3 mm walls and floor).
-  Ribs on the inside of the walls (`TRAY_KB_RIBS`: 4 front, 3 back, 2 per end, 1.2 thick) stand out to the original inner
-  faces (x ±98, y ±43.5), so the keyboard sits where it did; they stop 1 mm below the rim. Also: hinge pads and bosses, a
+  Ribs (`TRAY_KB_RIBS`: 4 front, 5 back, 2 per end, 1.2 thick) stand out to the keyboard's faces, `KB_SIZE` + `KB_FIT`
+  (0.15 mm a side): x ±97.15, y ±42.65 for the estimated 194 × 85 mm (the original's 196 × 87 room less the ~2 mm play
+  reported both ways; MEASURE), so it sits without play; they stop 1 mm below the rim. Also: hinge pads and bosses, a
   pad behind the snap-tab recess, and the original's charge-port opening in the back wall (x 72.9–89.1, from 3.0 above
   the floor: `TRAY_PORT`).
+* **Tray deck** (`TRAY_DECK`): a 1.2 mm face flush with the rim closes the gaps around the keyboard and the strip behind
+  it, so the hinge bosses and pads no longer show. Its opening is 0.5 mm larger than the rib faces on every side
+  (195.3 × 86.3 mm, r 3): a keyboard up to 0.5 mm a side bigger than `KB_SIZE` goes in once the rib tips are filed.
+  Along the front and end walls it is 2.15 mm wide on a 45° fillet; behind the keyboard it tops a strip that is solid from
+  the floor up (8.65 mm deep; it takes in the hinge bosses and pads, the slicer fills it with infill) and carries the back
+  ribs. Over the charge-port opening it is open (16.2 mm), so the plug, and a switch there, stay reachable from above.
+  No supports, no slicer warnings (the first try, a deck bridged over ribs, gave long-bridge warnings). The tray's splice
+  plate now stays inside the keyboard's room (y ±42.4, 84.8 mm), so it goes in through the opening.
 * **Bezel panel** (`PANEL_*`): 1.6 mm, inside the lid's walls (0.2 mm clear of them and the hinge pads). Screen window =
   the kit's window + 0.3 per side, square edges (no chamfer); a locating rim (2.0 high, 1.2 wide, 0.2 clear, below the
   caps at 2.1) around the kit on its back; six countersunk M2×8 holes (6.4 mm into the bosses); a gap in the rim for the
@@ -173,32 +179,12 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
 * **Splice plates** (`SPLICE`): with 1.2 mm walls the keys and the butt joint alone make a weak seam, so each seam is
   also bridged on its hidden side by plates half the wall thick (0.6 mm; 0.8 on the 1.6 mm panel) glued into pockets cut
   half the wall deep into both halves (0.15 mm clear), flush when in (until they are glued, the wall under a pocket is
-  only half as thick, hence the thin-wall notes in the print report): one 20 × 93.7 mm plate on top of the tray floor (under the keyboard), two (16 × 11 and 16 × 65.5 mm) in
+  only half as thick, hence the thin-wall notes in the print report): one 20 × 84.8 mm plate on top of the tray floor (under the keyboard, inside the deck's opening), two (16 × 11 and 16 × 65.5 mm) in
   the lid's ceiling from the inside (parallel to the sloping top, clear of the USB-C relief), three (18.4 × 10.1 / 29.0 /
   15.4 mm) on the panel's back (between the slots, ≥ 1.5 mm from edges and slots). All pockets face up in print, so they
   need no bridging; the plates print flat. Plates vs their pieces: 0 mm³. The lid-A variants carry the same pockets.
 * **Print**: lid pieces top face down (the 3MF export first tilts the top plane level, `LAY_TOP`, from `assembly.json`);
   tray floor down; panel pieces visible face down.
-
-### Keyboard bezel (`KB_BEZEL`, optional; the tray is not changed)
-A 1.2 mm frame laid into the tray around the keyboard hides what shows of the tray's inside: the 7.9 mm strip behind the
-keyboard (hinge bosses, ribs) and the 1.4 mm gaps beside it. Its top is one plane, the rim's sloping plane 0.4 mm lower,
-so it stays under the flat rim behind the keyboard (0.03 mm at its back edge) and prints flat, top face down. It rests on
-the keyboard-locating ribs (notched over them; the notch roofs are the rib tops), leaves 0.3 mm around the hinge pads and
-the snap tab's pad (both flush with the rim), keeps 0.2 mm from the tray's walls and the keyboard's room, and is held by
-12 half-round bumps pressed 0.15 mm into the walls (1.35 mm³ of bump in the walls). Checks: 0 mm³ against tray (without
-the bumps), lid, panel, keyboard room, charge plug, hinge leaves and covers; lid + kit + panel + covers rotated 0–180°: no
-contact. The A1 mini pieces are split on the back rib at x = 25 (the seam rests on it) and in the gap at the snap tab;
-piece B prints nested inside piece A's opening (2.2 mm apart). Renders show it; `renders/keyboard_bezel_in_tray.png`.
-
-### Keyboard shims (`KB_SHIM`, optional; the tray is not changed)
-The keyboard sits between the ends of the 11 keyboard-locating ribs (196 × 87 mm); a smaller keyboard rattles. The shims
-are caps slid down over those rib ends: a 6 mm wide face, 0.5 / 1.0 / 1.5 / 2.0 mm thick, against the keyboard, and two
-0.8 mm side walls that hug the 1.2 mm rib (0.05 mm per side) over 1.6 mm of its length (the front and end ribs are 1.8 mm
-long). They stand 5 mm tall on the tray floor, 0.30 mm under the keyboard bezel at the front ribs. Half the measured play on
-each side keeps the keyboard centred. Checks with 2 mm shims on every rib: 0 mm³ against tray, bezel, lid and the keyboard's
-room made 2 mm smaller on every side. Printed face down (no supports, no slicer warnings);
-`renders/keyboard_shims_on_ribs.png`.
 
 ### Snap tab (`LATCH`)
 An 18 × 1.0 mm tab is freed from the lid's front wall at x = 6 (off centre, clear of the panel's KEY guard) by two
@@ -221,8 +207,9 @@ tray; the lid reaches the table at 162.2°. With the axis 0.15 mm further in (ex
 
 ### Tipping
 Lid side 118 g (printed parts as sliced + kit 43.1 g + half the hinges), centre of mass 48.8 mm in front of the hinge
-axis; base 42 g without the keyboard, resting on the tray's back edge (y = 53): a keyboard of **74 g** keeps it on its
-feet up to the table contact at 162.2° (`out/print_report.md`).
+axis; base 51 g without the keyboard, resting on the tray's back edge (y = 53): a keyboard of **77 g** keeps it on its
+feet up to the table contact at 162.2° (`out/print_report.md`; the tray's centre of mass is taken from its solid shape,
+which puts too much weight in the infilled strip behind the keyboard, so this errs on the safe side).
 
 ### Colour mock-ups
 `make render` also draws the closed and open views in three palettes: all black, all khaki, and a mix (khaki lid, black
@@ -263,17 +250,17 @@ tray and panel): `docs/images/render_{open,closed}_{black,khaki,mix}.png`.
 
 ### Keyboard charge port
 The original tray has an opening in its back wall at x 72.9–89.1, probably for the CACOE's charge port; the new tray
-keeps it (from 3.0 mm above the floor, `TRAY_PORT`). `build.py` checks a straight plug with a 12 × 6.5 mm overmold: 0 mm³
+keeps it (from 3.0 mm above the floor, `TRAY_PORT`), and the deck is open above it. `build.py` checks a straight plug with a 12 × 6.5 mm overmold: 0 mm³
 against tray and closed lid; **with the plug in, the lid opens to 99°** (the full-width back face meets the plug beyond
 that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits.
 
 ### Printing
-* **Plates** (`3mf/`, A1 mini, 180 × 180 mm): `plate0_test_coupons` (19 min, 6 g, print first), `plate1_lid` (lid A + B,
-  2 lid covers, 2 splice plates, 1 h 12 min, 45 g), `plate2_tray` (tray A + B, 2 tray covers, 1 splice plate, 1 h 03 min,
-  40 g), `plate3_panel` (panel A + B, 3 splice plates, 39 min, 25 g): 109 g and 2 h 53 min for plates 1–3.
+* **Plates** (`3mf/`, A1 mini, 180 × 180 mm): `plate0_test_coupons` (20 min, 7 g, print first), `plate1_lid` (lid A + B,
+  2 lid covers, 2 splice plates, 1 h 12 min, 45 g), `plate2_tray` (tray A + B, 2 tray covers, 1 splice plate, 1 h 17 min,
+  49 g), `plate3_panel` (panel A + B, 3 splice plates, 39 min, 25 g): 118 g and 3 h 07 min for plates 1–3.
   `3mf/usb_variants/` holds lid A for a panel-mount female.
-* **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 07 min, 45 g), tray (58 min, 40 g), panel (36 min,
-  25 g): 109 g and 2 h 40 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
+* **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 07 min, 45 g), tray (1 h 12 min, 48 g), panel (36 min,
+  25 g): 118 g and 2 h 55 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
 * **Orientation:** lid top face down (the export tilts the sloped top plane level first, `LAY_TOP` from `assembly.json`),
   panel visible face down, tray floor down, covers visible face down (the cones face up), splice plates flat. No supports.
 * **Settings, 0.4 mm nozzle** (Bambu Studio): 0.20 mm Standard, PLA, textured PEI, **3 wall loops** (material around
@@ -307,9 +294,9 @@ that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits
 ### Measure on the real parts
 * **Keyboard thickness** over the keycaps: `KB_THICK` (assumed 11.5 mm, as the original lid allowed; `KB_TOP_Z` =
   `TRAY_FLOOR` + `KB_THICK`). Every millimetre less comes off the lid.
-* **Keyboard width and depth**: the optional shims take up the play without reprinting the tray; `KB_SIZE = (w, d)`
-  adds pads on the tray's inner walls instead (`KB_PAD`).
-* **Keyboard weight**: 74 g or more keeps the device on its feet up to the table contact; see "Tipping".
+* **Keyboard width and depth**: the kit tray's ribs are placed for an estimated 194 × 85 mm (`KB_SIZE`); measure and
+  rebuild the tray. Up to 0.5 mm a side bigger: file the rib tips; smaller: tape on the rib tips.
+* **Keyboard weight**: 77 g or more keeps the device on its feet up to the table contact; see "Tipping".
 * **Hinge barrel and axis**: read off Sugatsune's 3D viewer, not a drawing; join the hinge coupons with a real hinge.
 * **The kit's printed case**: modelled from M5Stack's 3D file (120.0 × 67.0 × 6.3, r 3); the panel's rim has 0.2 mm clearance.
 * **CACOE charge port / switch** positions are inferred from the original tray's openings (`KB_CUTS_ENABLED` adds others).
@@ -329,7 +316,7 @@ outline (corner radii halved to 3 mm, no chamfers) and parting surface, with hin
 USB-C opening and guides, the hinge mortises and a snap tab; the bezel panel is new (window, rim, finger slots, KEY guard,
 countersunk holes, snap bumps). The tray is a new thin shell with the original tray's outline (r 3), parting, inner faces
 (as ribs) and rear opening, plus hinge pads and bosses and a recess + groove for the snap tab. New parts: 4 hinge covers,
-the splice plates, the optional keyboard bezel and shims, the lid-A variants and the test coupons.
+the splice plates, the lid-A variants and the test coupons.
 
 **Earlier design (`PD_MOUNT = "bare"`):**
 1. **Display Panel:** Palma window, Palma button slots and both vent grilles filled. New PaperDIY window, locating lip, strap
@@ -387,9 +374,10 @@ published drawing and structure files.
 | `KIT_MASS_G` | `43.1` | measured | [M: docs.m5stack.com K159-B] |
 | `KIT_CX` / `KIT_FIT` / `KIT_GAP` | `-4.0` / `0.2` / `0.2` | design choice | window centred; clearance around the kit per side / behind |
 | `WALL` / `CORNER_R` / `RIB_T` | `1.2` / `3.0` (bare `6.0`) / `1.2` | design choice | walls, ceiling and floor (3 lines of a 0.4 mm nozzle, 6 layers of 0.2 mm); plan corner radius (the original's halved); ribs, guides, guard rings |
-| `TRAY_FLOOR` / `TRAY_KB_RIBS` / `TRAY_PORT` | `WALL` (bare `3.0`) / `front x ±40, ±80; back x ±25, −85; ends y ±25` / `x 72.9…89.1, 3.0 above the floor` | design choice | the kit tray: floor top; keyboard-locating ribs out to the original inner faces; charge-port opening |
+| `TRAY_FLOOR` / `TRAY_KB_RIBS` / `TRAY_PORT` | `WALL` (bare `3.0`) / `front x ±40, ±80; back x 0, ±40, −80, 66; ends y ±25` / `x 72.9…89.1, 3.0 above the floor` | design choice | the kit tray: floor top; keyboard-locating ribs out to the keyboard's faces (`KB_FACE_*`); charge-port opening |
+| `TRAY_DECK` | `t 1.2, clr 0.5, r 3` (kit) | design choice | the kit tray's deck flush with the rim: thickness, opening beyond the rib faces, corner radius |
 | `KB_THICK` / `KB_TOP_Z` / `KB_CLR` | `11.5` / `TRAY_FLOOR + KB_THICK` (12.7) / `0.5` | ASSUMED | keyboard thickness over the keycaps -> MEASURE; its highest point; clearance under the panel |
-| `KB_SIZE` / `KB_PAD` | `None` / `clr 0.15, w 6, 4 front + 4 back + 2 per end` | ASSUMED | keyboard body width × depth -> MEASURE; pads on the tray's inner walls take up the play (`None` = no pads) |
+| `KB_SIZE` / `KB_FIT` / `KB_PAD` | `(194, 85)` (kit; bare `None`) / `0.15` / `clr 0.15, w 6, 4 front + 4 back + 2 per end` | ASSUMED | keyboard body width × depth -> MEASURE (kit: the original room 196 × 87 less the reported ~2 mm play); kit: the ribs stand `KB_FIT` off it; bare: pads on the tray's inner walls take up the play (`None` = no pads) |
 | `LID_UNDER` | `(10.4417, 0.05376)` | measured | [M] parting plane of the original lid, z = a + b y |
 | `LID_SKIN` / `LID_CHAMFER` / `COVER_TOP_RIM` | `1.2` / `0.0` (bare `0.8`) / `0.8` | design choice | least skin; edge chamfers (none in the kit design); lid-cover rim above the leaf |
 | `KIT_NOTCH` | `out 7, depth 5.6, end 1.5, r 2` | design choice | finger notches at the caps (`KIT_LID = "solid"`) |
@@ -405,8 +393,6 @@ published drawing and structure files.
 | `PANEL_DOVETAIL` | `neck 4.5, head 7, depth 5, clr 0.2` | design choice | smaller keys for the panel (webs ≥ 2.5 mm) |
 | `PANEL_USB_SLOT` | `frame 2.2, half 6.6, r 0.75` | design choice | panel open over the USB-C plug path, from a 2.2 mm frame at the left edge to the kit (`None` = closed) |
 | `KIT_RIBS_X` / `USB_GUIDE_X` / `SPLIT_BLOCK` | `(-50, 0, 40)` / `(-99.6, None)` / `None` (bare `7 × 7 × 3.4`) | design choice | ribs onto the kit's back; USB-C guide ribs from the end wall to the kit; ceiling blocks around the lid keys (bare design only) |
-| `KB_BEZEL` | `t 1.2, drop 0.4, clr 0.2, kb_clr 0.2, cut_clr 0.3, split_x 25, bump r 0.6 h 0.35` | design choice | optional keyboard bezel: thickness, top under the rim's slope, clearances to walls / keyboard / pads, A1 mini seam, press-fit bumps |
-| `KB_SHIM` | `t 0.5 / 1.0 / 1.5 / 2.0, h 5, face_w 6, side 0.8, reach 1.6, clr 0.05` | design choice | optional keyboard shims over the ribs: thicknesses, height, face width, side walls, grip on the rib |
 | `SPLICE` | `clr 0.15`; tray 1, lid 2 plates (t `WALL / 2`), panel 3 (t `PANEL_T / 2`), x −10…+10 / +6 / +8.4 from the split | design choice | splice plates glued on the hidden side across each seam of the split pieces, flush in pockets in both halves |
 | `USB_PM_Y_KIT` | `20.0` | design choice | panel-mount female opening in the lid-A variants (clear of the lid keys and the power slot) |
 | `LATCH` | `x 6, w 18, t 1.0, slot 0.8, root 9, below 3.6, bump 0.45 @ 2.0, clr 0.15, 45° / 35°` | design choice | snap tab (see "Snap tab") |

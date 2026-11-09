@@ -2,9 +2,9 @@
  "plate0_test_coupons.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "18m 54s",
-  "grams": 5.77,
-  "metres": 1.93509
+  "time": "19m 53s",
+  "grams": 6.88,
+  "metres": 2.30727
  },
  "plate1_lid.3mf": {
   "warnings": [],
@@ -16,9 +16,9 @@
  "plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 3m 5s",
-  "grams": 39.61,
-  "metres": 13.28132
+  "time": "1h 17m 25s",
+  "grams": 48.56,
+  "metres": 16.28289
  },
  "plate3_panel.3mf": {
   "warnings": [],
@@ -26,20 +26,6 @@
   "time": "39m 11s",
   "grams": 25.0,
   "metres": 8.38132
- },
- "plate4_kb_bezel.3mf": {
-  "warnings": [],
-  "ok": true,
-  "time": "6m 25s",
-  "grams": 2.83,
-  "metres": 0.95035
- },
- "plate5_kb_shims.3mf": {
-  "warnings": [],
-  "ok": true,
-  "time": "5m 40s",
-  "grams": 1.38,
-  "metres": 0.46317
  },
  "large/plate1_lid.3mf": {
   "warnings": [],
@@ -51,9 +37,9 @@
  "large/plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "57m 38s",
-  "grams": 39.62,
-  "metres": 13.28542
+  "time": "1h 12m 0s",
+  "grams": 48.36,
+  "metres": 16.21444
  },
  "large/plate3_panel.3mf": {
   "warnings": [],
@@ -62,19 +48,12 @@
   "grams": 25.01,
   "metres": 8.3864
  },
- "large/plate4_kb_bezel.3mf": {
-  "warnings": [],
-  "ok": true,
-  "time": "6m 27s",
-  "grams": 2.83,
-  "metres": 0.95031
- },
- "large_total_g": 109.48,
- "large_total_min": 160,
- "total_g": 109.44,
- "total_min": 173,
+ "large_total_g": 118.22000000000001,
+ "large_total_min": 175,
+ "total_g": 118.39,
+ "total_min": 187,
  "lid_g": 118.19999999999999,
- "base_g": 42.17,
+ "base_g": 51.28,
  "lid_cg": [
   -0.1170401797011982,
   4.396701637124943,
@@ -83,5 +62,5 @@
  "pivot_y": 53.0,
  "table_contact_deg": 162.2,
  "table_limit": 162,
- "keyboard_min_g": 74.23482150267651
+ "keyboard_min_g": 77.27072523801812
 }

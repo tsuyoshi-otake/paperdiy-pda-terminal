@@ -97,26 +97,17 @@ WALL = 1.2                    # lid and tray walls, lid ceiling, tray floor (3 l
 CORNER_R = 3.0 if PD_MOUNT == "kit" else 6.0   # plan corners of lid and tray (the original's r 6, halved)
 RIB_T = 1.2                   # ribs, guides and guard rings (3 lines)
 # keyboard tray (kit): a new thin shell with the original's outline and parting. Ribs on the inside of the walls stand
-# out to the original's inner faces (x +-98, y +-43.5), so the keyboard sits as it did; the charge-port opening in the
-# back wall (x 72.9..89.1) starts 3.0 above the floor, as in the original.
-TRAY_KB_RIBS = dict(front_x=(-80.0, -40.0, 40.0, 80.0), back_x=(-25.0, 25.0, -85.0), end_y=(-25.0, 25.0))
+# out to the keyboard's faces (KB_FACE_*: the measured or estimated keyboard + KB_FIT), so it sits without play (behind
+# it they stand on the deck's solid back strip). The charge-port opening in the back wall (x 72.9..89.1) starts 3.0
+# above the floor, as in the original.
+TRAY_KB_RIBS = dict(front_x=(-80.0, -40.0, 40.0, 80.0), back_x=(-80.0, -40.0, 0.0, 40.0, 66.0), end_y=(-25.0, 25.0))
 TRAY_PORT = dict(x=(72.9, 89.1), above_floor=3.0)
-# Keyboard bezel (kit design; an optional add-on, the tray is not changed): a frame laid into the tray around the keyboard
-# that hides the ribs, the hinge bosses and the strip behind the keyboard. Its top is one plane `drop` below the rim's
-# sloping plane (so it stays under the flat rim behind the keyboard and prints flat on its top face); it is t thick,
-# rests on the keyboard-locating ribs (notched over them), leaves `cut_clr` around the hinge pads and the snap tab's pad
-# (both flush with the rim), and is held by small bumps pressed `bump.h - clr` into the tray's walls. Split for the
-# A1 mini at the back rib x = split_x (the seam rests on that rib) and in the gap at the snap tab's pad.
-KB_BEZEL = dict(t=1.2, drop=0.4, clr=0.2, kb_clr=0.2, kb_r=3.0, cut_clr=0.3, split_x=25.0, bump=dict(r=0.6, h=0.35),
-                bumps=dict(front_x=(-60.0, -20.0, 30.0, 60.0), back_x=(-94.0, -30.0, -10.0, 10.0, 32.0, 94.0),
-                           end_y=(-10.0, 10.0)))
-# Keyboard shims (kit design; optional add-on, the tray is not changed): caps slid down over the keyboard-locating ribs,
-# so each rib's face toward the keyboard comes t closer; they take up the keyboard's play (pick t per side: half the
-# measured play on each side keeps it centred). A face `face_w` wide and t thick presses on the keyboard; side walls
-# `side` thick hug the rib (`clr` per side) for `reach` (the front and end ribs are only 1.8 mm long); h tall from the tray
-# floor, under the keyboard bezel. Printed with the face on the bed. `plate`: how many of each thickness go on the plate.
-KB_SHIM = dict(t=(0.5, 1.0, 1.5, 2.0), h=5.0, face_w=6.0, side=0.8, reach=1.6, clr=0.05,
-               plate={1.0: 11, 0.5: 4, 1.5: 4, 2.0: 4})
+# Deck (kit): a t thick face flush with the tray's rim that closes the gaps around the keyboard, so no boss or pad shows.
+# Its opening is `clr` larger than the rib faces on every side (room to file the ribs if the keyboard is a little bigger
+# than KB_SIZE), corner radius r. Along the front and end walls it rests on a 45 deg fillet (no supports); behind the
+# keyboard it is the top of a solid strip from the floor up (the slicer fills it with infill; it takes in the hinge
+# bosses and pads), open over the charge-port opening (the plug, and a switch there, stay reachable from above).
+TRAY_DECK = dict(t=1.2, clr=0.5, r=3.0) if PD_MOUNT == "kit" else None
 TRAY_FLOOR = WALL if PD_MOUNT == "kit" else 3.0   # top of the tray floor (the original tray: 3.0)
 # Keyboard: the CACOE stands above the tray rim (the original lid's panel face was at z = 15). The lid's inner face
 # (and the kit's front face) is KB_CLR above the keyboard's highest point. MEASURE the keyboard's thickness over the
@@ -124,9 +115,13 @@ TRAY_FLOOR = WALL if PD_MOUNT == "kit" else 3.0   # top of the tray floor (the o
 KB_THICK = 11.5               # [A] from the original lid (panel face 15.0 over a 3.0 floor) -> MEASURE
 KB_TOP_Z = TRAY_FLOOR + KB_THICK
 KB_CLR = 0.5
-# The CACOE sits loose in the tray (reported): pads on the inner walls take up the play. KB_SIZE = (width x, depth y)
-# of the keyboard body, measured; None = no pads. Each pad stands (inner size - keyboard) / 2 - KB_PAD["clr"] off the wall.
-KB_SIZE = None                # [A] -> MEASURE, e.g. (194.0, 85.0)
+# The CACOE sits loose in the original tray (reported: about 2 mm both ways). KB_SIZE = (width x, depth y) of the keyboard
+# body. Kit: the tray's ribs stand KB_FIT off it (KB_FACE_*). Bare design: None = no pads; otherwise pads on the inner
+# walls stand (inner size - keyboard) / 2 - KB_PAD["clr"] off the wall.
+KB_SIZE = (194.0, 85.0) if PD_MOUNT == "kit" else None   # [A] kit: the original room (196 x 87) less the reported play -> MEASURE
+KB_FIT = 0.15                 # kit: keyboard to the ribs, per side
+KB_FACE_X, KB_FACE_Y = ((KB_SIZE[0] / 2 + KB_FIT, KB_SIZE[1] / 2 + KB_FIT) if PD_MOUNT == "kit" and KB_SIZE
+                        else (LID_INNER_X, LID_INNER_Y))   # the ribs' faces toward the keyboard
 KB_PAD = dict(clr=0.15, w=6.0, z0=3.0, top_below_rim=1.0, lead=1.5, front_x=(-60.0, -22.0, 22.0, 60.0),
               back_x=(-60.0, -22.0, 22.0, 60.0), end_y=(-20.0, 8.0))
 LID_UNDER = (10.4417, 0.05376)  # [M] lid underside (parting) plane z = a + b * y, fitted to the original (resid < 0.001)
@@ -173,9 +168,9 @@ SPLIT_BLOCK = None if PD_MOUNT == "kit" else dict(dx=7.0, dy=7.0, h=3.4)   # bar
 # (on top of the tray floor under the keyboard, inside the lid's ceiling, on the panel's back), each t thick in a pocket
 # half the wall deep in both halves, so they sit flush; the pockets face up in print (no bridging).
 # x0/x1: the plate's ends relative to the split; y: the plates (clear of the USB-C channel, the slots, the rim and the
-# screw bosses).
+# screw bosses; the tray's: inside the keyboard's room, so it goes in from above past the deck).
 SPLICE = dict(clr=0.15,
-              tray=dict(t=WALL / 2, x0=-10.0, x1=10.0, y=((-43.2, 50.5),)),
+              tray=dict(t=WALL / 2, x0=-10.0, x1=10.0, y=((-42.4, 42.4),)),
               lid=dict(t=WALL / 2, x0=-10.0, x1=6.0, y=((-44.0, -33.0), (-15.0, 50.5))),
               panel=dict(t=PANEL_T / 2, x0=-10.0, x1=8.4, y=((-42.35, -32.25), (-15.75, 13.25), (33.45, 48.85))))   # >= 1.5 mm from edges / slots
 # USB-C at the left end: "direct" = a straight cable into the kit's port through the end-wall opening (default);
