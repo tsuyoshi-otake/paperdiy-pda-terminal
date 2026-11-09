@@ -6,16 +6,18 @@
 == building
 == exports (bounding boxes are axis-aligned in the assembly frame)
   out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56672 mm3
-  out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=64700 mm3
+  out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=64245 mm3
   out/paperdiy_kit_envelope.stl: bbox 121.3 x 68.2 x 6.3 mm, watertight=True, winding_ok=True, bodies=1, vol=50716 mm3
   out/display_panel_kit.stl: bbox 197.6 x 96.0 x 7.9 mm, watertight=True, winding_ok=True, bodies=1, vol=19332 mm3
   out/hinge_cover_lid_x2.stl: bbox 24.2 x 1.7 x 9.9 mm, watertight=True, winding_ok=True, bodies=1, vol=224 mm3
   out/hinge_cover_tray_x2.stl: bbox 24.2 x 1.7 x 9.2 mm, watertight=True, winding_ok=True, bodies=1, vol=207 mm3
+  out/tpu_foot.stl: bbox 16.1 x 8.1 x 1.2 mm, watertight=True, winding_ok=True, bodies=1, vol=148 mm3
+  out/tpu_damper.stl: bbox 10.0 x 1.9 x 1.6 mm, watertight=True, winding_ok=True, bodies=1, vol=21 mm3
 == split pieces for A1 mini (limit 175 mm)
   out/split/lid_A_left.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8957 mm3
   out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=46424 mm3
-  out/split/tray_A_left.stl: bbox 29.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=10098 mm3
-  out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=52842 mm3
+  out/split/tray_A_left.stl: bbox 29.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=9891 mm3
+  out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=52595 mm3
   out/split/panel_A_left.stl: bbox 24.6 x 95.1 x 1.6 mm, watertight=True, winding_ok=True, bodies=1, vol=2783 mm3
   out/split/panel_B_main.stl: bbox 173.0 x 96.0 x 7.9 mm, watertight=True, winding_ok=True, bodies=1, vol=15693 mm3
   panel_A_left: eroded by 1 mm (visible half) -> 1 piece(s)
@@ -58,7 +60,7 @@
     lid_A_left_usb30mm: opening 13.0 x 7.0 mm at y = 20, z = 19.3, M3 holes 30 mm apart
 == whole parts for printers with a 220 mm bed or bigger (no split, no dovetails, nothing to glue)
   out/whole/lid.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56672 mm3
-  out/whole/tray.stl: bbox 202.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=64700 mm3
+  out/whole/tray.stl: bbox 202.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=64245 mm3
   out/whole/panel.stl: bbox 197.6 x 96.0 x 7.9 mm, watertight=True, winding_ok=True, bodies=1, vol=19332 mm3
   out/whole/usb_variants/lid_usb_noscrew.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56258 mm3
   out/whole/usb_variants/lid_usb16mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56261 mm3
@@ -81,6 +83,16 @@
   interference keyboard space (tray floor 2.0 to z 13.5) vs lid: 0.000 mm3 OK
   interference keyboard space vs tray (ribs, pads, hinge bosses): 0.000 mm3 OK
   keyboard 194 x 85 mm (estimate, MEASURE): ribs at x = +-97.15, y = +-42.65 (0.15 mm a side); deck 1.2 mm flush with the rim, opening 195.3 x 86.3 mm, 1.35 mm wide at the front and the ends (45 deg under), solid 7.85 mm behind it, open over the charge port (x 72.9..89.1)
+== TPU parts (feet and dampers)
+  feet: 4 pads 16 x 8 mm, 1.2 thick in 0.8 mm pockets (press fit 0.05 mm a side, 1.4 mm3 each), 0.4 mm proud; the rear ones end 0.5 mm in from the back edge (y = 52.5: the tipping edge); closed case on its feet 24.2 mm tall at the front, 26.8 at the back
+  interference foot vs lid: 0.000 mm3 OK
+  interference foot vs lid: 0.000 mm3 OK
+  interference foot vs lid: 0.000 mm3 OK
+  interference foot vs lid: 0.000 mm3 OK
+  interference damper at x = -70 vs tray (in its groove): 0.000 mm3 OK
+  damper at x = -70: bump 0.3 mm above the rim, pressed flush by the closed lid (0.94 mm3 overlap, by design); beam 6 mm span -> ~0.77 N/mm, ~0.23 N on the lid
+  interference damper at x = 70 vs tray (in its groove): 0.000 mm3 OK
+  damper at x = 70: bump 0.3 mm above the rim, pressed flush by the closed lid (0.94 mm3 overlap, by design); beam 6 mm span -> ~0.77 N/mm, ~0.23 N on the lid
   interference kit vs bezel panel: 0.000 mm3 OK
   interference bezel panel vs lid: -0.000 mm3 OK
   interference bezel panel vs tray: 0.000 mm3 OK
@@ -123,7 +135,7 @@
   panel snaps: 4 bumps (8 mm long; front edge x = -60, +26, back edge x = -23, +26) 0.25 mm past the wall on the way in, then in 0.30 mm grooves in the lid's 2.0 mm walls; seated, they touch nothing
   interference lid A vs B (straight): -0.000 mm3 OK
   interference tray A vs B (straight): 0.000 mm3 OK
-  interference hinge (tray leaf + barrel) vs tray: 0.000 mm3 OK
+  interference hinge (tray leaf + barrel) vs tray: -0.000 mm3 OK
   interference hinge (lid leaf) vs lid: 0.000 mm3 OK
   interference hinge barrel vs lid: 0.000 mm3 OK
   interference lid hinge cover 0 vs lid: 0.000 mm3 OK
@@ -143,7 +155,7 @@
   tray front wall left behind the recess 1.85 mm, behind the groove 1.60 mm
 == hinge motion (lid + kit + panel + covers rotated about the real axis y=53.15, z=12.85; tray fixed)
   no collision with the tray from 0 to 180 deg
-  on a table the lid reaches the table at 162.2 deg (opening limit)
+  on a table the lid reaches the table at 168.6 deg (opening limit)
   covers 1 mm, flush in the back face; leaves 1 mm deeper, axis 0.15 mm outside the back face
   hinge screws M2x8: head in the cover (Ø4 x 90°), cone Ø4.1 x 0.7 in the leaf countersink, 5 mm past the leaf seat, tip 1.5 mm short of the end of its boss (Ø5)
   axis 0.15 mm further in (+0.00 mm from the back face): still clear to 180 deg

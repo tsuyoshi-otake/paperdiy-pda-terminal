@@ -634,11 +634,11 @@ def first_contact(lidset, traset, axis_shift=0.0, tol=0.05):
 
 
 def table_angle(verts, step=0.1):
-    """First opening angle (deg) at which a lid-side vertex goes below the table (z = 0), or None."""
+    """First opening angle (deg) at which a lid-side vertex goes below the table (z = -FOOT_H: on the TPU feet), or None."""
     y, z = np.asarray(verts)[:, 1] - HINGE_AXIS_Y, np.asarray(verts)[:, 2] - Z_PART
     for i in range(int(round(180.0 / step)) + 1):
         a = np.radians(-i * step)
-        if (Z_PART + y * np.sin(a) + z * np.cos(a)).min() < 0:
+        if (Z_PART + y * np.sin(a) + z * np.cos(a)).min() < -FOOT_H:
             return round(i * step, 1)
     return None
 
@@ -850,7 +850,76 @@ def build_kit_tray():
     T = T + (union(adds) ^ outer)
     cuts = hinge_pocket_cuts() + hinge_pilots(False) + [latch_tray_cut(), back_edge_relief(False)]
     cuts.append(box(p["x"][0], p["x"][1], yi1 - 1.0, Y_BACK + 1.0, TRAY_FLOOR + p["above_floor"], 60.0))
+    cuts += [foot_pocket(o) for o in foot_outlines()]
+    cuts += [damper_groove(x) for x in (TPU_DAMPERS["x"] if TPU_DAMPERS else ())]
     return T - union(cuts)
+
+
+# ------------------------------------------------------------------ TPU feet and dampers (kit)
+def foot_outlines():
+    """Plan outlines of the TPU feet's pockets: rounded rectangles in the tray's bottom corners, concentric with the
+    corner radius and TPU_FEET["inset"] from the outer edges."""
+    f = TPU_FEET
+    if not f:
+        return []
+    x_out, r = 101.0 - f["inset"], CORNER_R - f["inset"]
+    out = []
+    for sx in (-1.0, 1.0):
+        for y_edge, sy in ((Y_BACK - f["inset"], -1.0), (-BACK_OLD_Y + f["inset"], 1.0)):
+            out.append(rrect(sx * (x_out - f["w"] / 2), y_edge + sy * f["d"] / 2, f["w"], f["d"], r))
+    return out
+
+
+def foot_pocket(outline):
+    f = TPU_FEET
+    c = f["chamfer"] - 0.1                    # mouth chamfer (the pocket's first layers spread less than the pad's)
+    return prism_z(outline, -1.0, f["pocket"]) + M.batch_hull([
+        prism_z(outline.offset(c, m3.JoinType.Round, 2.0, SEG), -1.0, 0.0), prism_z(outline, c - 0.01, c)])
+
+
+def tpu_foot(outline):
+    """The pad, in place (its top in the pocket's floor, its bottom FOOT_H under the tray); chamfered on the table side."""
+    f = TPU_FEET
+    o = outline.offset(f["fit"], m3.JoinType.Round, 2.0, SEG)
+    z0, z1, c = -FOOT_H, f["pocket"], f["chamfer"]
+    return prism_z(o, z0 + c, z1) + M.batch_hull([prism_z(o.offset(-c, m3.JoinType.Round, 2.0, SEG), z0, z0 + 0.01),
+                                                  prism_z(o, z0 + c - 0.01, z0 + c)])
+
+
+def damper_frame(x):
+    """(y0, y1, z_floor) of the damper groove at x: y from the tray's front face in by TPU_DAMPERS["edge"]."""
+    d = TPU_DAMPERS
+    y0 = -BACK_OLD_Y + d["edge"]
+    y1 = y0 + d["w"] + 2 * d["clr"]
+    return y0, y1, under_z((y0 + y1) / 2) - d["gap"] - d["t"]
+
+
+def damper_groove(x):
+    d = TPU_DAMPERS
+    y0, y1, zf = damper_frame(x)
+    return box(x - d["len"] / 2 - d["clr"], x + d["len"] / 2 + d["clr"], y0, y1, zf, 60.0)
+
+
+def damper_profile():
+    """Side view (u along the damper, v up from the groove floor): two feet, the beam on them, the bump on top."""
+    d = TPU_DAMPERS
+    L, h = d["len"], d["gap"] + d["t"]
+    parts = [rrect(d["foot"] / 2, h / 2, d["foot"], h, 0), rrect(L - d["foot"] / 2, h / 2, d["foot"], h, 0),
+             rrect(L / 2, d["gap"] + d["t"] / 2, L, d["t"], 0),
+             rrect(L / 2, h + d["proud"] / 2, d["nub"], d["proud"] + 0.02, 0).translate([0, -0.01])]
+    return CS.batch_boolean(parts, m3.OpType.Add)
+
+
+def tpu_damper(x):
+    """The damper in place, uncompressed (its bump stands TPU_DAMPERS["proud"] above the rim)."""
+    d = TPU_DAMPERS
+    y0, y1, zf = damper_frame(x)
+    return prism_y(damper_profile(), y0 + d["clr"], y0 + d["clr"] + d["w"]).translate([x - d["len"] / 2, 0, zf])
+
+
+def tpu_damper_print():
+    """One damper lying on its side, as printed (the side view on the bed, w up)."""
+    return damper_profile().extrude(TPU_DAMPERS["w"])
 
 
 # ------------------------------------------------------------------ KIT LID (PaperDIY Complete Kit in its own case)
@@ -1347,6 +1416,12 @@ def main_kit():
     lid_cov, tray_cov = hinge_covers()
     export(lid_cov[0], f"{OUT_DIR}/hinge_cover_lid_x2.stl")
     export(tray_cov[0], f"{OUT_DIR}/hinge_cover_tray_x2.stl")
+    feet = [tpu_foot(o) for o in foot_outlines()]
+    dampers = [tpu_damper(x) for x in (TPU_DAMPERS["x"] if TPU_DAMPERS else ())]
+    if feet:
+        export(feet[0].translate([0, 0, FOOT_H]), f"{OUT_DIR}/tpu_foot.stl")       # table side down, as printed
+    if dampers:
+        export(tpu_damper_print(), f"{OUT_DIR}/tpu_damper.stl")
     write_assembly_json()
     log("== split pieces for A1 mini (limit %.0f mm)" % MAX_PIECE)
     if not SHELL:
@@ -1435,6 +1510,25 @@ def main_kit():
             f"solid {Y_BACK - WALL - KB_FACE_Y - d['clr']:.2f} mm behind it, open over the charge port "
             f"(x {TRAY_PORT['x'][0]:g}..{TRAY_PORT['x'][1]:g})")
         assert (kb ^ tray).volume() < 1e-3 and (tray ^ lid).volume() < 1e-3
+    if feet or dampers:
+        log("== TPU parts (feet and dampers)")
+        f = TPU_FEET
+        fit = sum((ft ^ tray).volume() for ft in feet) / max(len(feet), 1)
+        log(f"  feet: {len(feet)} pads {f['w']:g} x {f['d']:g} mm, {f['t']:g} thick in {f['pocket']:g} mm pockets "
+            f"(press fit {f['fit']:g} mm a side, {fit:.1f} mm3 each), {FOOT_H:g} mm proud; the rear ones end "
+            f"{f['inset']:g} mm in from the back edge (y = {Y_BACK - f['inset']:.1f}: the tipping edge); closed case "
+            f"on its feet {top_z(-BACK_OLD_Y) + FOOT_H:.1f} mm tall at the front, {top_z(Y_BACK) + FOOT_H:.1f} at the back")
+        for ft in feet:
+            interference(ft, lid, "foot vs lid")
+        d = TPU_DAMPERS
+        L = d["len"] - 2 * d["foot"]
+        k = 48 * 26.0 * (d["w"] * d["t"] ** 3 / 12) / L ** 3                    # simply supported, E ~26 MPa (TPU 95A)
+        for x, dm in zip(d["x"], dampers):
+            interference(dm, tray, f"damper at x = {x:g} vs tray (in its groove)")
+            pre = (dm ^ lid).volume()
+            assert 0 < pre < d["nub"] * d["w"] * (d["proud"] + 0.05), ("damper preload", x, pre)
+            log(f"  damper at x = {x:g}: bump {d['proud']:g} mm above the rim, pressed flush by the closed lid "
+                f"({pre:.2f} mm3 overlap, by design); beam {L:g} mm span -> ~{k:.2f} N/mm, ~{k * d['proud']:.2f} N on the lid")
     if SHELL:
         interference(kit, panel, "kit vs bezel panel"); interference(panel, lid, "bezel panel vs lid")
         interference(panel, tray, "bezel panel vs tray"); interference(plug, panel, "USB-C plug vs bezel panel")

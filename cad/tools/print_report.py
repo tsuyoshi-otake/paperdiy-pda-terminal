@@ -27,10 +27,12 @@ import trimesh
 HERE = os.path.dirname(os.path.abspath(__file__))
 CAD = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(CAD, "src"))
+from params import (TPU_FEET, FOOT_H)  # noqa: E402
 from params import (OUT_DIR, SPLIT_DIR, Y_BACK, HINGE_AXIS_Y, Z_PART, PD_L, PD_TOP_X, PANEL_Z_BACK, BATT_CX, BATT_CY,  # noqa: E402
                     BATT_T, USB_PM_Y, USB_PM_Z, PD_MOUNT, KIT_MASS_G, KIT_CX, KIT_T, USB_CEIL)
 
 INI = os.path.join(HERE, "a1mini_pla_020.ini")
+INI_TPU = os.path.join(HERE, "a1mini_tpu_040.ini")      # for plate4_tpu (feet and dampers)
 PLA = 1.24                      # g/cm3
 THIN = 0.8                      # mm: two 0.4 mm lines
 # bought parts: (grams, centre in the closed assembly frame, source)
@@ -42,12 +44,15 @@ KB_CG = (0.0, 0.0, 8.0)         # [A] keyboard centre of mass: middle of the tra
 
 # what the slicer warnings on these parts mean (checked by hand)
 KNOWN = {
-    "Low bed adhesion": ("the snap-tab coupons are 8 mm wide strips standing up to 19 mm: keep Bambu Studio's brim type on "
-                         "Auto (its default) or give them a brim" if PD_MOUNT == "kit" else
+    "Low bed adhesion": ("the TPU dampers lie on a 10 x 1.9 mm side (1.6 mm tall): give them a brim (Bambu Studio's brim "
+                         "type Auto does), or print them on a textured plate" if PD_MOUNT == "kit" else
                          "the push-rods are 3-4 mm thin bars and the front clips stand 20 mm tall on a 1.6 mm U: keep "
                          "Bambu Studio's brim type on Auto (its default) or give them a brim"),
-    "Floating bridge anchors": "the lid's 1.2 mm ceiling is bridged over the sparse infill of the two hinge housings "
-                               "(internal bridges inside solid blocks; checked in the sliced layers)",
+    "Floating bridge anchors": ("the tray's floor is bridged over the four 0.8 mm pockets for the TPU feet in its bottom "
+                                "(16 x 8 mm, anchored in the floor's first layers and its infill; checked in the sliced "
+                                "layers: a short, low bridge that prints fine)" if PD_MOUNT == "kit" else
+                                "the lid's 1.2 mm ceiling is bridged over the sparse infill of the two hinge housings "
+                                "(internal bridges inside solid blocks; checked in the sliced layers)"),
     "Loose extrusions": "the 5 mm counterbore at the panel's screen face is bridged 1.5 mm above the bed "
                         "(same in the real panel, a short bridge that prints fine)",
 }
@@ -91,7 +96,8 @@ def slicer():
 def slice_file(exe, path, tmp, bed=None):
     out = os.path.join(tmp, os.path.basename(path) + ".gcode")
     extra = ["--bed-shape", f"0x0,{bed:g}x0,{bed:g}x{bed:g},0x{bed:g}"] if bed else []
-    r = subprocess.run([exe, "--export-gcode", "--load", INI, *extra, "--dont-arrange", "-o", out, path],
+    ini = INI_TPU if "tpu" in os.path.basename(path) else INI
+    r = subprocess.run([exe, "--export-gcode", "--load", ini, *extra, "--dont-arrange", "-o", out, path],
                        capture_output=True, text=True, timeout=900)
     text = r.stdout + r.stderr
     warn = []
@@ -175,7 +181,8 @@ def main():
         if PD_MOUNT == "kit":
             n = len([p for p in plates if os.path.basename(p)[:6] in ("plate1", "plate2", "plate3")])
             lines += ["", f"Plates 1-{n} together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
-                      "of printing (plate 0, the test coupons, comes on top).", ""]
+                      "of printing (plate 0, the test coupons, comes on top; plate 4, the feet and dampers, is TPU, sliced with "
+                      "`tools/a1mini_tpu_040.ini`).", ""]
         else:
             lines += ["", f"Plates 1-3 together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
                       "of printing (plate 0, the test coupons, and the optional plates 4 and 5, front clip and magnet jigs, come on top).", ""]
@@ -254,12 +261,14 @@ def main():
     feet = [tray] + ([trimesh.load(stl("hinge_cover_tray_x2"))]                 # flush tray covers reach the table
                      if os.path.exists(os.path.join(OUT_DIR, "hinge_cover_tray_x2.stl")) else [])
     pivot_y = max(float(m.vertices[m.vertices[:, 2] < 0.05][:, 1].max(initial=-1e9)) for m in feet)   # rearmost point on the table
+    if TPU_FEET:                                         # standing on the TPU feet: the rear ones' back edge
+        pivot_y = Y_BACK - TPU_FEET["inset"]
     lid = trimesh.load(os.path.join(OUT_DIR, "display_lid_usbc.stl"))
     lv = np.asarray(lid.vertices)
     def lowest(deg):                                  # lowest lid point at this opening (all vertices)
         a = np.radians(-deg)
         return float((Z_PART + (lv[:, 1] - HINGE_AXIS_Y) * np.sin(a) + (lv[:, 2] - Z_PART) * np.cos(a)).min())
-    touch = next((d / 10 for d in range(0, 1801) if lowest(d / 10) < 0), 180.0)   # first contact, 0.1 deg steps
+    touch = next((d / 10 for d in range(0, 1801) if lowest(d / 10) < -FOOT_H), 180.0)   # first contact, 0.1 deg steps
     table_limit = int(np.ceil(touch)) - 1                # last whole degree with the lid still above the table
 
     need, rows = 0.0, []
@@ -277,8 +286,9 @@ def main():
                f"+ half the hinges): **{lid_m:.0f} g**, centre of mass " if PD_MOUNT == "kit" else
                f"Lid side (printed parts{' as sliced' if exe else ' (solid estimate)'} + PaperDIY {PAPERDIY_G} g + battery "
                f"{BATTERY_G:g} g + USB-C cable {USB_CABLE_G:g} g + half the hinges): **{lid_m:.0f} g**, centre of mass ") +
-              f"{HINGE_AXIS_Y - lid_cg[1]:.1f} mm in front of the hinge axis when closed. Base without the keyboard: **{base_m:.0f} g**. "
-              f"The device rests on the back edge of the tray at y = {pivot_y:.1f} mm; the lid reaches the table at "
+              f"{HINGE_AXIS_Y - lid_cg[1]:.1f} mm in front of the hinge axis when closed. Base without the keyboard: **{base_m:.0f} g**. " +
+              (f"The device stands on its TPU feet and tips about the rear ones' back edge at y = {pivot_y:.1f} mm; the lid reaches the table at "
+               if TPU_FEET else f"The device rests on the back edge of the tray at y = {pivot_y:.1f} mm; the lid reaches the table at ") +
               f"{touch:.1f} deg and is supported from there on.", "",
               "| Opening | lid centre of mass behind the back edge | keyboard needed so it does not tip |", "| --- | --- | --- |"] + rows
     lines += ["", f"**The keyboard has to weigh at least {need:.0f} g** (centre of mass assumed in the middle of the tray) for "

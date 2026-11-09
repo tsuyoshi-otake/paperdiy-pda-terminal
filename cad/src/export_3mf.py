@@ -138,6 +138,13 @@ def plates():
                 [("tray_B_main", part(S("tray_B_main")))],
             ] + splice_row("tray")),
         } | ({
+            # TPU parts (0.4 nozzle): 4 feet (table side on the bed), the 2 dampers + 1 spare lying on their side
+            "plate4_tpu.3mf": ("TPU feet and dampers (print in TPU with a 0.4 nozzle)", [
+                [(f"tpu_foot_{i}", part(O("tpu_foot"))) for i in (1, 2)],
+                [(f"tpu_foot_{i}", part(O("tpu_foot"))) for i in (3, 4)],
+                [(f"tpu_damper_{i}", part(O("tpu_damper"))) for i in (1, 2, 3)],
+            ]),
+        } if os.path.exists(O("tpu_foot")) else {}) | ({
             # bezel panel pieces, visible face on the bed (the locating rim grows upward)
             "plate3_panel.3mf": ("Bezel panel (A + B)", [
                 [("panel_A_left", part(S("panel_A_left"), ROT_Z90))],
