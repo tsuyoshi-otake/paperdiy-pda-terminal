@@ -118,6 +118,11 @@ def split_plain(part, X):
     return part ^ box(-BIG, X, -BIG, BIG, -BIG, BIG), part ^ box(X, BIG, -BIG, BIG, -BIG, BIG)
 
 
+def split_kit(part, X, ys, z0, z1, d=DOVETAIL):
+    """Kit split pieces: a straight cut (SPLIT_JOINT "straight") or one with dovetail keys."""
+    return split_plain(part, X) if SPLIT_JOINT == "straight" else split_dovetail(part, X, ys, z0, z1, d)
+
+
 def export(man, path, check_single=True):
     man = man.simplify(0.002)                      # drop sub-micron slivers left by coplanar booleans
     assert man.status() == m3.Error.NoError and len(man.decompose()) >= 1
@@ -1290,7 +1295,7 @@ def clean_outputs():
 
 
 def build_kit_coupons(lid, tray, ta, tb):
-    """Test prints for the kit design: hinge seat (lid + tray), dovetail key, and the snap tab with its recess."""
+    """Test prints for the kit design: hinge seat (lid + tray), dovetail key (if any), and the snap tab with its recess."""
     hx = HINGE_X
     hw = hinge_pad_extent()[0] + 1.0 if SHELL else 13.5
     hinge_box = box(hx - hw, hx + hw, 36.0, Y_BACK + 1.0, -1.0, 40.0)
@@ -1300,7 +1305,7 @@ def build_kit_coupons(lid, tray, ta, tb):
     zf = under_z(-BACK_OLD_Y)
     hw = max(l["w"] / 2 + 4.0, 13.0)                      # at least 26 mm wide: stands on the bed without a brim
     lx0, lx1 = l["x"] - hw, l["x"] + hw
-    return {
+    out = {
         "coupon_hinge_tray": (tray ^ hinge_box, "tray"),
         "coupon_hinge_lid": (lid ^ hinge_box, "lid"),
         "coupon_dovetail_A": (ta ^ dt_box, "tray"),
@@ -1308,6 +1313,9 @@ def build_kit_coupons(lid, tray, ta, tb):
         "coupon_latch_lid": (lid ^ box(lx0, lx1, -BACK_OLD_Y - 1.0, -BACK_OLD_Y + 12.0, zf - 6.0, 60.0), "lid"),
         "coupon_latch_tray": (tray ^ box(lx0, lx1, -BACK_OLD_Y - 1.0, -BACK_OLD_Y + 12.0, -1.0, 20.0), "tray"),
     }
+    if SPLIT_JOINT == "straight":            # no keys to try
+        del out["coupon_dovetail_A"], out["coupon_dovetail_B"]
+    return out
 
 
 def main_kit():
@@ -1347,14 +1355,14 @@ def main_kit():
         kz0 = top_z(max(DOVETAIL_Y_KIT) + SPLIT_BLOCK["dy"]) - SPLIT_BLOCK["h"] + 0.3
     else:               # keys through the plain ceiling, from its inner face (which slopes with the top)
         kz0 = lambda y: top_z(y - DOVETAIL["head"] / 2) - SHELL_CEIL - 0.01
-    la, lb = split_dovetail(lid, SPLIT_X_LID, DOVETAIL_Y_KIT, kz0, 60.0)
-    ta, tb = split_dovetail(tray, SPLIT_X_TRAY, DOVETAIL_Y, 0.0, TRAY_FLOOR)
+    la, lb = split_kit(lid, SPLIT_X_LID, DOVETAIL_Y_KIT, kz0, 60.0)
+    ta, tb = split_kit(tray, SPLIT_X_TRAY, DOVETAIL_Y, 0.0, TRAY_FLOOR)
     splices = {"lid": splice_parts("lid", SPLIT_X_LID), "tray": splice_parts("tray", SPLIT_X_TRAY)} if SPLICE else {}
     pocket = lambda kind: union(p for _, _, p in splices[kind]) if kind in splices else M()
     la, lb, ta, tb = la - pocket("lid"), lb - pocket("lid"), ta - pocket("tray"), tb - pocket("tray")
     pieces = {"lid_A_left": la, "lid_B_main": lb, "tray_A_left": ta, "tray_B_main": tb}
     if SHELL:
-        pa, pb = split_dovetail(panel, SPLIT_X_PANEL, PANEL_DOVETAIL_Y, PANEL_Z0, PANEL_Z1, PANEL_DOVETAIL)
+        pa, pb = split_kit(panel, SPLIT_X_PANEL, PANEL_DOVETAIL_Y, PANEL_Z0, PANEL_Z1, PANEL_DOVETAIL)
         if SPLICE:
             splices["panel"] = splice_parts("panel", SPLIT_X_PANEL)
             pa, pb = pa - pocket("panel"), pb - pocket("panel")
@@ -1380,7 +1388,7 @@ def main_kit():
     if SHELL:
         log(f"== lid A for a screw-ear panel-mount female USB-C (swap only lid A; room inside the end wall {usb_pm_room():.1f} mm)")
         for sp in USB_PM_VARIANTS:
-            va, vb = split_dovetail(build_kit_lid_shell(usb=sp), SPLIT_X_LID, DOVETAIL_Y_KIT, kz0, 60.0)
+            va, vb = split_kit(build_kit_lid_shell(usb=sp), SPLIT_X_LID, DOVETAIL_Y_KIT, kz0, 60.0)
             va, vb = va - pocket("lid"), vb - pocket("lid")
             assert abs(vb.volume() - lb.volume()) < 0.01, ("lid B must not depend on the USB-C end", sp)
             name = usb_variant_name(sp)
@@ -1430,7 +1438,7 @@ def main_kit():
     if SHELL:
         interference(kit, panel, "kit vs bezel panel"); interference(panel, lid, "bezel panel vs lid")
         interference(panel, tray, "bezel panel vs tray"); interference(plug, panel, "USB-C plug vs bezel panel")
-        interference(kb, panel, "keyboard space vs bezel panel"); interference(pa, pb, "panel A vs B (dovetail)")
+        interference(kb, panel, "keyboard space vs bezel panel"); interference(pa, pb, f"panel A vs B ({SPLIT_JOINT})")
         for sp, full in usb_variants.items():
             env = usb_pm_envelope_kit(sp)
             interference(env, full, f"{usb_variant_name(sp)}: panel-mount female vs lid", tol=0.05)
@@ -1444,7 +1452,7 @@ def main_kit():
                 f"{', '.join(f'{x:+g}' for x in g['x_front'])}, back edge x = {', '.join(f'{x:+g}' for x in g['x_back'])}) "
                 f"{g['bump'] - PANEL_CLR:.2f} mm past the wall on the way in, then in "
                 f"{g['h'] - PANEL_CLR + g['clr']:.2f} mm grooves in the lid's {SHELL_WALL} mm walls; seated, they touch nothing")
-    interference(la, lb, "lid A vs B (dovetail)"); interference(ta, tb, "tray A vs B (dovetail)")
+    interference(la, lb, f"lid A vs B ({SPLIT_JOINT})"); interference(ta, tb, f"tray A vs B ({SPLIT_JOINT})")
     h_fixed, h_moving = hinge_envelope(0.0)
     interference(h_fixed, tray, "hinge (tray leaf + barrel) vs tray"); interference(h_moving, lid, "hinge (lid leaf) vs lid")
     interference(h_fixed, lid, "hinge barrel vs lid", tol=1.0)

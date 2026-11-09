@@ -164,6 +164,9 @@ PANEL_DOVETAIL_Y = (-37.3, 0.0, 42.0)
 KIT_RIBS_X = (-50.0, 0.0, 40.0)              # ribs from the ceiling onto the kit's back (clear of the ESP32 window)
 USB_GUIDE_X = (-99.6, None)                  # USB-C guide ribs from the end wall (inner face -99.4) to the kit, either side of the plug path
 SPLIT_BLOCK = None if PD_MOUNT == "kit" else dict(dx=7.0, dy=7.0, h=3.4)   # bare: thicker ceiling around the lid's keys
+# Kit: how the A1 mini split pieces meet: "straight" (a plain cut at SPLIT_X_*: a straight seam, aligned and held by the
+# splice plates below) or "dovetail" (three glued dovetail keys per seam besides, DOVETAIL / PANEL_DOVETAIL).
+SPLIT_JOINT = "straight" if PD_MOUNT == "kit" else "dovetail"
 # A1 mini split pieces (the one-piece parts have none): thin splice plates glued from the hidden side across each seam
 # (on top of the tray floor under the keyboard, inside the lid's ceiling, on the panel's back), each t thick in a pocket
 # half the wall deep in both halves, so they sit flush; the pockets face up in print (no bridging).
@@ -306,7 +309,7 @@ KB_SW_BOTTOM_Z = 5.5          # [A] TODO notch bottom (wall top there is ~z 9.6)
 # A1 mini splitting
 SPLIT_X_LID = -72.0           # clear of hinge knuckle (|x|<=44) and camera window (x>=-68.9)
 SPLIT_X_TRAY = -72.0          # clear of tray hinge ears (|x| 46..61) and rear opening (x 72.9..89.1)
-SPLIT_X_PANEL = -74.2 if PD_MOUNT == "kit" else -72.0   # kit: 2.2 mm clear of the power slot (x >= -72.0), panel B 173.8 mm; bare: of the window bevel
+SPLIT_X_PANEL = -74.2 if PD_MOUNT == "kit" else -72.0   # kit: 2.2 mm clear of the power slot (x >= -72.0), panel B 173.0 mm; bare: of the window bevel
 MAX_PIECE = 175.0
 WHOLE_BED = 220.0   # the unsplit plates are laid out on a 220 x 220 mm bed (fits 220 mm beds and bigger)
 DOVETAIL = dict(neck=6.0, head=10.0, depth=6.0, clr=0.2)   # glued dovetail keys (0.4 total clearance)

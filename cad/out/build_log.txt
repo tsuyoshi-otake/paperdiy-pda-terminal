@@ -12,12 +12,12 @@
   out/hinge_cover_lid_x2.stl: bbox 24.2 x 1.7 x 9.9 mm, watertight=True, winding_ok=True, bodies=1, vol=224 mm3
   out/hinge_cover_tray_x2.stl: bbox 24.2 x 1.7 x 9.2 mm, watertight=True, winding_ok=True, bodies=1, vol=207 mm3
 == split pieces for A1 mini (limit 175 mm)
-  out/split/lid_A_left.stl: bbox 35.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=9102 mm3
-  out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=46264 mm3
-  out/split/tray_A_left.stl: bbox 35.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=10242 mm3
-  out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=52684 mm3
-  out/split/panel_A_left.stl: bbox 29.6 x 95.1 x 1.6 mm, watertight=True, winding_ok=True, bodies=1, vol=2852 mm3
-  out/split/panel_B_main.stl: bbox 173.0 x 96.0 x 7.9 mm, watertight=True, winding_ok=True, bodies=1, vol=15616 mm3
+  out/split/lid_A_left.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8957 mm3
+  out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=46424 mm3
+  out/split/tray_A_left.stl: bbox 29.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=10098 mm3
+  out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=52842 mm3
+  out/split/panel_A_left.stl: bbox 24.6 x 95.1 x 1.6 mm, watertight=True, winding_ok=True, bodies=1, vol=2783 mm3
+  out/split/panel_B_main.stl: bbox 173.0 x 96.0 x 7.9 mm, watertight=True, winding_ok=True, bodies=1, vol=15693 mm3
   panel_A_left: eroded by 1 mm (visible half) -> 1 piece(s)
   panel_B_main: eroded by 1 mm (visible half) -> 1 piece(s)
 == splice plates for the split pieces (tray 1 mm, lid 1 mm, panel 0.8 mm; glued from the hidden side into pockets in both halves)
@@ -31,30 +31,30 @@
   interference tray_splice_1 vs tray_A_left: 0.000 mm3 OK
   interference tray_splice_1 vs tray_B_main: 0.000 mm3 OK
   out/split/splice/panel_splice_1.stl: bbox 18.4 x 10.1 x 0.8 mm, watertight=True, winding_ok=True, bodies=1, vol=149 mm3
-  interference panel_splice_1 vs panel_A_left: -0.000 mm3 OK
+  interference panel_splice_1 vs panel_A_left: 0.000 mm3 OK
   interference panel_splice_1 vs panel_B_main: 0.000 mm3 OK
   out/split/splice/panel_splice_2.stl: bbox 18.4 x 29.0 x 0.8 mm, watertight=True, winding_ok=True, bodies=1, vol=427 mm3
   interference panel_splice_2 vs panel_A_left: 0.000 mm3 OK
   interference panel_splice_2 vs panel_B_main: 0.000 mm3 OK
   out/split/splice/panel_splice_3.stl: bbox 18.4 x 15.4 x 0.8 mm, watertight=True, winding_ok=True, bodies=1, vol=227 mm3
-  interference panel_splice_3 vs panel_A_left: -0.000 mm3 OK
-  interference panel_splice_3 vs panel_B_main: 0.000 mm3 OK
+  interference panel_splice_3 vs panel_A_left: 0.000 mm3 OK
+  interference panel_splice_3 vs panel_B_main: -0.000 mm3 OK
 == lid A for a screw-ear panel-mount female USB-C (swap only lid A; room inside the end wall 7.4 mm)
-  out/split/usb_variants/lid_A_left_usb_noscrew.stl: bbox 35.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8688 mm3
+  out/split/usb_variants/lid_A_left_usb_noscrew.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8544 mm3
     lid_A_left_usb_noscrew: opening 13.0 x 7.0 mm at y = 20, z = 19.3, no screw holes (glue)
-  out/split/usb_variants/lid_A_left_usb16mm.stl: bbox 35.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8691 mm3
+  out/split/usb_variants/lid_A_left_usb16mm.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8547 mm3
     lid_A_left_usb16mm: opening 10.2 x 7.0 mm at y = 20, z = 19.3, M3 holes 16 mm apart
-  out/split/usb_variants/lid_A_left_usb18mm.stl: bbox 35.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8663 mm3
+  out/split/usb_variants/lid_A_left_usb18mm.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8519 mm3
     lid_A_left_usb18mm: opening 12.2 x 7.0 mm at y = 20, z = 19.3, M3 holes 18 mm apart
-  out/split/usb_variants/lid_A_left_usb20mm.stl: bbox 35.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8652 mm3
+  out/split/usb_variants/lid_A_left_usb20mm.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8507 mm3
     lid_A_left_usb20mm: opening 13.0 x 7.0 mm at y = 20, z = 19.3, M3 holes 20 mm apart
-  out/split/usb_variants/lid_A_left_usb22mm.stl: bbox 35.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8652 mm3
+  out/split/usb_variants/lid_A_left_usb22mm.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8507 mm3
     lid_A_left_usb22mm: opening 13.0 x 7.0 mm at y = 20, z = 19.3, M3 holes 22 mm apart
-  out/split/usb_variants/lid_A_left_usb25mm.stl: bbox 35.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8652 mm3
+  out/split/usb_variants/lid_A_left_usb25mm.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8507 mm3
     lid_A_left_usb25mm: opening 13.0 x 7.0 mm at y = 20, z = 19.3, M3 holes 25 mm apart
-  out/split/usb_variants/lid_A_left_usb28mm.stl: bbox 35.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8652 mm3
+  out/split/usb_variants/lid_A_left_usb28mm.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8507 mm3
     lid_A_left_usb28mm: opening 13.0 x 7.0 mm at y = 20, z = 19.3, M3 holes 28 mm apart
-  out/split/usb_variants/lid_A_left_usb30mm.stl: bbox 35.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8652 mm3
+  out/split/usb_variants/lid_A_left_usb30mm.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=8507 mm3
     lid_A_left_usb30mm: opening 13.0 x 7.0 mm at y = 20, z = 19.3, M3 holes 30 mm apart
 == whole parts for printers with a 220 mm bed or bigger (no split, no dovetails, nothing to glue)
   out/whole/lid.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56672 mm3
@@ -72,8 +72,6 @@
 == test coupons (cut from the real parts; print these first)
   out/coupons/coupon_hinge_tray.stl: bbox 30.0 x 17.0 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=3344 mm3
   out/coupons/coupon_hinge_lid.stl: bbox 30.0 x 17.0 x 13.5 mm, watertight=True, winding_ok=True, bodies=1, vol=1970 mm3
-  out/coupons/coupon_dovetail_A.stl: bbox 18.0 x 18.0 x 2.0 mm, watertight=True, winding_ok=True, bodies=1, vol=295 mm3
-  out/coupons/coupon_dovetail_B.stl: bbox 14.0 x 18.0 x 2.0 mm, watertight=True, winding_ok=True, bodies=1, vol=266 mm3
   out/coupons/coupon_latch_lid.stl: bbox 26.0 x 12.0 x 18.3 mm, watertight=True, winding_ok=True, bodies=1, vol=1263 mm3
   out/coupons/coupon_latch_tray.stl: bbox 26.0 x 12.0 x 8.1 mm, watertight=True, winding_ok=True, bodies=1, vol=1029 mm3
 == interference checks (closed)
@@ -88,7 +86,7 @@
   interference bezel panel vs tray: 0.000 mm3 OK
   interference USB-C plug vs bezel panel: 0.000 mm3 OK
   interference keyboard space vs bezel panel: 0.000 mm3 OK
-  interference panel A vs B (dovetail): 0.000 mm3 OK
+  interference panel A vs B (straight): 0.000 mm3 OK
   interference lid_A_left_usb_noscrew: panel-mount female vs lid: 0.000 mm3 OK
   interference lid_A_left_usb_noscrew: panel-mount female vs panel: 0.000 mm3 OK
   interference lid_A_left_usb_noscrew: panel-mount female vs kit: 0.000 mm3 OK
@@ -123,8 +121,8 @@
   interference lid_A_left_usb30mm: panel-mount female vs the one-piece lid: 0.000 mm3 OK
   panel-mount female: ears and body up to 7.2 mm tall fit between the panel and the ceiling
   panel snaps: 4 bumps (8 mm long; front edge x = -60, +26, back edge x = -23, +26) 0.25 mm past the wall on the way in, then in 0.30 mm grooves in the lid's 2.0 mm walls; seated, they touch nothing
-  interference lid A vs B (dovetail): 0.000 mm3 OK
-  interference tray A vs B (dovetail): 0.000 mm3 OK
+  interference lid A vs B (straight): -0.000 mm3 OK
+  interference tray A vs B (straight): 0.000 mm3 OK
   interference hinge (tray leaf + barrel) vs tray: 0.000 mm3 OK
   interference hinge (lid leaf) vs lid: 0.000 mm3 OK
   interference hinge barrel vs lid: 0.000 mm3 OK

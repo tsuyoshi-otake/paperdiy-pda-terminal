@@ -88,7 +88,7 @@ def plan_view(ax, kind, X, a, b, rot=None):
 
 
 def seam_section(ax):
-    y = 12.5                                     # between the tray's dovetail keys
+    y = 12.5                                     # a section across the tray's seam
     xz = np.array([[1, 0, 0, 0], [0, 0, 1, 0], [0, -1, 0, 0], [0, 0, 0, 1]], float)
     a, b = load("tray_A_left.stl"), load("tray_B_main.stl")
     plate = trimesh.load(os.path.join(OUT, "split", "splice", "tray_splice_1.stl"))
@@ -102,7 +102,7 @@ def seam_section(ax):
         ax.annotate(txt, xy=xy, xytext=xytext, fontsize=10.5, ha="left", va="center", color=INK,
                     arrowprops=dict(arrowstyle="-", color=INK, lw=0.8, shrinkA=2, shrinkB=1))
     note((X + g["x1"] - 3.0, TRAY_FLOOR - t / 2), f"継ぎ板（厚さ {t:g} mm）。床の上面と面一", (X + g["x1"] + 2.0, TRAY_FLOOR + 1.6))
-    note((X - 0.05, TRAY_FLOOR - t - 0.3), "A と B の継ぎ目（蟻ほぞでも組む）", (X + 3.0, -1.1))
+    note((X - 0.05, TRAY_FLOOR - t - 0.3), "A と B の継ぎ目（まっすぐ突き合わせ）", (X + 3.0, -1.1))
     ax.text(X + g["x0"] - 9.0, TRAY_FLOOR + 1.6, "↑ キーボードの側（隠れる面）", fontsize=9.5, color="#666", va="center")
     ax.text(X + g["x0"] - 9.0, -1.1, "↓ 机に付く面", fontsize=9.5, color="#666", va="center")
     ax.set_xlim(X + g["x0"] - 10.0, X + g["x1"] + 22.0)

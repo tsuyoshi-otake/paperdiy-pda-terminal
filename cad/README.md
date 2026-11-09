@@ -12,10 +12,10 @@ recessed into the back face, under printed cover plates that sit flush in it and
 themselves**, so only the barrels and the screw heads show; the whole back face is at the hinge plane, so the seam between
 screen and keyboard stays 1–1.5 mm when open. Everything prints in PLA on a **Bambu Lab A1 mini (180 mm bed)**:
 lid and tray are 2.0 mm shells stiffened by screw bosses and ribs (1.2 mm printed too flexible), no chamfers, corner radii halved. Lid, tray and panel
-are split for the A1 mini and joined with dovetail keys plus splice plates glued on the hidden side; with a bed of 220 mm
+are split for the A1 mini with a straight seam, butt-glued and bridged by splice plates glued on the hidden side; with a bed of 220 mm
 or more they are one piece each (`3mf/large/`, `out/whole/`). Nothing needs supports. Fasteners: 14 × M2×8
-countersunk tapping screws (8 hinges, 6 panel). A **test-coupon plate** checks the hinge, dovetail and snap-tab fits in
-~23 min. Bill of materials, print settings and assembly order (Japanese): [ASSEMBLY_ja.md](ASSEMBLY_ja.md); parts list
+countersunk tapping screws (8 hinges, 6 panel). A **test-coupon plate** checks the hinge, snap-tab and cover fits in
+~22 min. Bill of materials, print settings and assembly order (Japanese): [ASSEMBLY_ja.md](ASSEMBLY_ja.md); parts list
 as CSV: [bom.csv](bom.csv).
 
 `KIT_LID = "solid"` builds the previous kit lid (a solid deck with the kit in a pocket, one M2×4 screw from the top, no
@@ -81,12 +81,12 @@ r 6 halved), and the other small radii were halved too.
 | `out/keyboard_tray.stl` | tray, unsplit (a new thin shell with the original's outline and parting; 202.0 × 99.5 × 12.9) |
 | `out/paperdiy_kit_envelope.stl` | the kit as placed (case 120.0 × 67.0 × 6.3, r 3, KEY and power caps): checks and renders |
 | `out/hinge_cover_lid_x2.stl`, `out/hinge_cover_tray_x2.stl` | print 2 of each |
-| `out/split/lid_A_left.stl`, `lid_B_main.stl`, `panel_A_left.stl`, `panel_B_main.stl`, `tray_A_left.stl`, `tray_B_main.stl` | A1 mini pieces (≤ 175 mm), with dovetail keys and the splice-plate pockets |
+| `out/split/lid_A_left.stl`, `lid_B_main.stl`, `panel_A_left.stl`, `panel_B_main.stl`, `tray_A_left.stl`, `tray_B_main.stl` | A1 mini pieces (≤ 175 mm), cut straight, with the splice-plate pockets |
 | `out/split/splice/{lid,tray,panel}_splice_N.stl` | splice plates for the split pieces (2 lid and 1 tray, 1.0 mm; 3 panel, 0.8 mm) |
 | `out/split/usb_variants/lid_A_left_usb*.stl` | lid A for a panel-mount female USB-C: M3 ears 16 / 18 / 20 / 22 / 25 / 28 / 30 mm apart, or none (glue) |
 | `out/whole/lid.stl`, `tray.stl`, `panel.stl`, `out/whole/usb_variants/lid_usb*.stl` | one-piece parts for a bed of 220 mm or more: no split, no keys, no pockets (each asserted to be the checked part minus material; the panel-mount lids are also checked against the connector) |
-| `out/coupons/*.stl` | hinge seat (lid, tray), dovetail key (A, B), snap tab (lid) + recess (tray) |
-| `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~23 min, 9 g |
+| `out/coupons/*.stl` | hinge seat (lid, tray), snap tab (lid) + recess (tray) |
+| `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~22 min, 9 g |
 | `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers + 2 lid splice plates, ~1 h 39 min, 65 g |
 | `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers + 1 tray splice plate, ~1 h 38 min, 63 g |
 | `3mf/plate3_panel.3mf` | panel A + B + 3 panel splice plates, ~38 min, 24 g |
@@ -94,7 +94,7 @@ r 6 halved), and the other small radii were halved too.
 | `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 34 min 65 g, ~1 h 33 min 62 g, ~35 min 24 g (151 g, 3 h 41 min, nothing to glue) |
 | `3mf/large/usb_variants/lid_usb*.3mf` | the panel-mount lids in one piece |
 
-Plates 1–3: about 152 g and 3 h 54 min with the 2.0 mm walls (118 g and 3 h 07 min with 1.2 mm walls; the version with the
+Plates 1–3: about 152 g and 3 h 52 min with the 2.0 mm walls (118 g and 3 h 07 min with 1.2 mm walls; the version with the
 original tray took 139 g and 3 h 29 min).
 
 ### The kit
@@ -123,8 +123,7 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
   hollowed to `SHELL_WALL` = `SHELL_CEIL` = 2.0. Inside: a pad and two screw bosses per hinge (see "Hinge"), six screw
   bosses (Ø6) for the panel with Ø1.8 pilots, three ribs from the ceiling to 0.1 mm above the kit's back (x −50 / 0 / 40,
   clear of the ESP32 window), two 1.2 mm guide ribs either side of the plug path (from the end wall, beside the opening, to
-  the kit; cut at the split like everything else), and a relief that leaves 0.8 mm of ceiling over the plug. The dovetail
-  keys sit in the plain 2.0 mm ceiling (`SPLIT_BLOCK = None`: no thicker blocks around them any more).
+  the kit; cut at the split like everything else), and a relief that leaves 0.8 mm of ceiling over the plug.
 * **Tray shell**: a new part instead of the original `Keyboard.stl`: the same plan outline (r 3) cut by the original
   parting plane and `Z_PART`, hollowed to 2.0 walls over a 2.0 floor (`TRAY_FLOOR`; the original had 3 mm walls and floor).
   Ribs (`TRAY_KB_RIBS`: 4 front, 5 back, 2 per end, 1.2 thick) stand out to the keyboard's faces, `KB_SIZE` + `KB_FIT`
@@ -173,10 +172,10 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
   along the parting are rounded r 1.5 (`HINGE_EDGE_R`), so a real axis a little lower than the catalogue model does not
   make them rub. The cost of the full-width back: with the keyboard's charge plug in, the lid opens to 95°.
 * **Split** (A1 mini only): at x = −72 for lid and tray and −74.2 for the panel (2.2 mm clear of the power slot, panel B
-  173.8 mm), three dovetail keys each: lid y −37, 5, 36 (in the 1.2 mm ceiling), tray y −25, 0, 25 (in the floor), panel y −37.3, 0, 42. The panel's
-  keys are smaller (`PANEL_DOVETAIL`: neck 4.5, head 7, 5 deep, 0.2 clearance) so every web around them is ≥ 2.5 mm;
-  `build.py` erodes each panel piece by 1 mm at mid-thickness and asserts it stays in one piece (no web under 2 mm).
-* **Splice plates** (`SPLICE`): the keys and the butt joint alone make a weak seam, so each seam is
+  173.0 mm), a straight cut (`SPLIT_JOINT = "straight"`; `"dovetail"` adds three glued dovetail keys per seam, `DOVETAIL`,
+  `PANEL_DOVETAIL`, as the earlier version had). `build.py` erodes each panel piece by 1 mm at mid-thickness and asserts
+  it stays in one piece (no web under 2 mm).
+* **Splice plates** (`SPLICE`): the butt joint alone makes a weak seam, so each seam is
   also bridged on its hidden side by plates half the wall thick (1.0 mm; 0.8 on the 1.6 mm panel) glued into pockets cut
   half the wall deep into both halves (0.3 mm clear: 0.15 printed too tight, the plates print flat with elephant foot), flush when in (until they are glued, the wall under a pocket is
   only half as thick, hence the thin-wall notes in the print report): one 20 × 84.8 mm plate on top of the tray floor (under the keyboard, inside the deck's opening), two (16 × 11 and 16 × 65.5 mm) in
@@ -199,7 +198,7 @@ wall stay behind the recess, 1.60 mm behind the groove.
 
 ### Checks run by `src/build.py` (kit)
 Kit envelope vs lid and vs panel, a straight USB-C plug in the port vs lid and vs panel, panel vs lid and vs tray, lid vs
-tray, the keyboard's room (tray floor to `KB_TOP_Z`) vs lid, tray (ribs, pads, bosses) and panel, dovetail halves (lid,
+tray, the keyboard's room (tray floor to `KB_TOP_Z`) vs lid, tray (ribs, pads, bosses) and panel, split halves (lid,
 panel, tray), splice plates vs their pieces, hinge leaves / barrels / covers vs both halves, and for every lid-A variant
 a female-connector envelope (ears + body) vs lid, panel and kit: all 0 mm³ (the covers' crush ribs press 0.16 mm³ each into
 their pockets, logged apart). Lid + kit + panel + covers rotated 0–180° about the real hinge axis: no contact with the
@@ -257,9 +256,9 @@ against tray and closed lid; **with the plug in, the lid opens to 95°** (the fu
 that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits.
 
 ### Printing
-* **Plates** (`3mf/`, A1 mini, 180 × 180 mm): `plate0_test_coupons` (23 min, 9 g, print first), `plate1_lid` (lid A + B,
+* **Plates** (`3mf/`, A1 mini, 180 × 180 mm): `plate0_test_coupons` (22 min, 9 g, print first), `plate1_lid` (lid A + B,
   2 lid covers, 2 splice plates, 1 h 39 min, 65 g), `plate2_tray` (tray A + B, 2 tray covers, 1 splice plate, 1 h 38 min,
-  63 g), `plate3_panel` (panel A + B, 3 splice plates, 38 min, 24 g): 152 g and 3 h 54 min for plates 1–3.
+  63 g), `plate3_panel` (panel A + B, 3 splice plates, 38 min, 24 g): 152 g and 3 h 52 min for plates 1–3.
   `3mf/usb_variants/` holds lid A for a panel-mount female.
 * **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 34 min, 65 g), tray (1 h 33 min, 62 g), panel (35 min,
   24 g): 151 g and 3 h 41 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
@@ -279,10 +278,9 @@ that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits
 * **Slicer warnings:** none on any plate. Thin-wall notes: the USB-C ceiling (0.8 mm), the panel's snap ridges, the
   covers' countersink edges, and the splice pockets (half the wall until the plate is glued in).
 * **Test coupons** (`plate0_test_coupons.3mf`, cut from the real parts in print orientation): hinge seats from tray and lid
-  (put a real HG-MF08 and a cover in: cover flush, barrel free, M2×8 bites, opens past 160°), a dovetail key (slides in by hand
-  without play; skip it for the one-piece parts), the snap tab and its recess (clicks shut, lifts off; tune `LATCH["bump"]` in 0.05 mm steps), and one cover of each kind. Other fits: `HINGE_CLR`,
+  (put a real HG-MF08 and a cover in: cover flush, barrel free, M2×8 bites, opens past 160°), the snap tab and its recess (clicks shut, lifts off; tune `LATCH["bump"]` in 0.05 mm steps), and one cover of each kind. Other fits: `HINGE_CLR`,
   `HINGE_BARREL_D`, `HINGE_PILOT_D`, `HINGE_AXIS_ABOVE_BACK`, `COVER_POCKET_CLR`, `COVER_RIBS`, `COVER_CSK`,
-  `DOVETAIL["clr"]`, `SPLICE["clr"]`.
+  `SPLICE["clr"]`.
 
 ### Hardware
 * 14 × **M2×8 countersunk tapping screws** for plastic: 8 hinges (through the covers), 6 panel.
@@ -290,7 +288,7 @@ that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits
 * M5Stack **PaperDIY Complete Kit** (K159-B), used in its own case.
 * A straight USB-C cable whose overmold is ≤ 12 × 6.5 mm, or (optional) a short panel-mount USB-C extension with M3 ears
   16–30 mm apart and ears + body ≤ 8.2 mm tall, with the matching lid A.
-* CA gel or epoxy (dovetails and splice plates of the split parts); thin double-sided tape if the keyboard is loose.
+* CA gel or epoxy (seams and splice plates of the split parts); thin double-sided tape if the keyboard is loose.
 * Parts list with numbers matching the exploded view: [bom.csv](bom.csv); assembly order: [ASSEMBLY_ja.md](ASSEMBLY_ja.md).
 
 ### Measure on the real parts
@@ -306,7 +304,7 @@ that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits
 ### Verification performed
 Every STL re-loaded: watertight, consistent winding, one body, pieces ≤ 175 mm (one-piece parts ≤ 214 mm). Zero-volume
 interference in the closed assembly between lid, panel, tray, the kit envelope, a USB-C plug in the port, the keyboard's
-room and every panel-mount connector envelope; dovetail halves; splice plates; hinge envelopes and covers; lid + kit +
+room and every panel-mount connector envelope; split halves; splice plates; hinge envelopes and covers; lid + kit +
 panel + covers rotated 0–180° about the hinge axis, also with the axis 0.15 and 0.3 mm further in; the keyboard's charge
 plug while opening; the snap tab along its real opening arc. PrusaSlicer slice of every plate, wall thickness by ray
 casting, tipping estimate, two builds byte-identical, renders inspected. **Not done:** no print of this version yet (the
@@ -392,7 +390,8 @@ published drawing and structure files.
 | `PANEL_SCREWS` | `(±91, −37.5), (±91, 46), (−62, −39.5), (−62, 40)` | design choice | six M2×8 into the lid's bosses, clear of the hinge pads |
 | `PANEL_SNAP` | `x_front (−60, 26), x_back (−23, 26), len 8, h 0.45, bump 0.45, clr 0.05` | design choice | snap bumps on the panel's front and back edges, grooves in the lid's walls (tight: lower `bump`, panel only) |
 | `PANEL_DOVETAIL_Y` / `DOVETAIL_Y_KIT` | `(-37.3, 0, 42)` / `(-37, 5, 36)` | design choice | panel keys (front: between the edge and the USB slot; back: between the power slot and the back edge) / lid keys |
-| `PANEL_DOVETAIL` | `neck 4.5, head 7, depth 5, clr 0.2` | design choice | smaller keys for the panel (webs ≥ 2.5 mm) |
+| `PANEL_DOVETAIL` | `neck 4.5, head 7, depth 5, clr 0.2` | design choice | smaller keys for the panel (webs ≥ 2.5 mm), when `SPLIT_JOINT = "dovetail"` |
+| `SPLIT_JOINT` | `"straight"` (kit) / `"dovetail"` | design choice | how the A1 mini pieces meet: a straight butt seam with splice plates, or dovetail keys as well |
 | `PANEL_USB_SLOT` | `frame 2.2, half 6.6, r 0.75` | design choice | panel open over the USB-C plug path, from a 2.2 mm frame at the left edge to the kit (`None` = closed) |
 | `KIT_RIBS_X` / `USB_GUIDE_X` / `SPLIT_BLOCK` | `(-50, 0, 40)` / `(-99.6, None)` / `None` (bare `7 × 7 × 3.4`) | design choice | ribs onto the kit's back; USB-C guide ribs from the end wall to the kit; ceiling blocks around the lid keys (bare design only) |
 | `SPLICE` | `clr 0.3`; tray 1, lid 2 plates (t `WALL / 2`), panel 3 (t `PANEL_T / 2`), x −10…+10 / +6 / +8.4 from the split | design choice | splice plates glued on the hidden side across each seam of the split pieces, flush in pockets in both halves |
@@ -488,7 +487,7 @@ published drawing and structure files.
 | `KB_SW_BOTTOM_Z` | `5.5` | ASSUMED | [A] TODO notch bottom (wall top there is ~z 9.6) |
 | `SPLIT_X_LID` | `-72.0` | design choice | clear of the hinges (/x/ 42..62) and camera window (x>=-68.9) |
 | `SPLIT_X_TRAY` | `-72.0` | design choice | clear of the hinges and rear opening (x 72.9..89.1) |
-| `SPLIT_X_PANEL` | `-74.2` (bare `-72.0`) | design choice | kit: 2.2 mm clear of the power slot (x >= -72.0), panel B 173.8 mm; bare: of the window bevel |
+| `SPLIT_X_PANEL` | `-74.2` (bare `-72.0`) | design choice | kit: 2.2 mm clear of the power slot (x >= -72.0), panel B 173.0 mm; bare: of the window bevel |
 | `MAX_PIECE` | `175.0` | design choice |  |
 | `DOVETAIL` | `dict(neck=6.0, head=10.0, depth=6.0, clr=0.2)` | design choice | glued dovetail keys (0.4 total clearance) |
 | `DOVETAIL_Y` | `(-25.0, 0.0, 25.0)` | design choice |  |

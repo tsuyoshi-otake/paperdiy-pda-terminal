@@ -115,10 +115,11 @@ def plates():
 
     if KIT:
         return {
-            # test coupons: hinge seat (lid + tray), dovetail key, snap tab + recess, and one cover of each kind
+            # test coupons: hinge seat (lid + tray), dovetail key (if the split has keys), snap tab + recess, one cover of each kind
             "plate0_test_coupons.3mf": ("Test coupons (print first)", [
                 [coupon("coupon_hinge_tray"), coupon("coupon_hinge_lid"), coupon("coupon_latch_tray")],
-                [coupon("coupon_dovetail_A"), coupon("coupon_dovetail_B"), coupon("coupon_latch_lid")],
+                ([coupon("coupon_dovetail_A"), coupon("coupon_dovetail_B")] if "coupon_dovetail_A" in csrc else [])
+                + [coupon("coupon_latch_lid")],
                 [("hinge_cover_lid", part(O("hinge_cover_lid_x2"), LAY_FLAT_Y)),
                  ("hinge_cover_tray", part(O("hinge_cover_tray_x2"), LAY_FLAT_Y))],
             ]),
