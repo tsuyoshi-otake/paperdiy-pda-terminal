@@ -27,6 +27,13 @@
   "grams": 25.0,
   "metres": 8.38132
  },
+ "plate4_kb_bezel.3mf": {
+  "warnings": [],
+  "ok": true,
+  "time": "6m 25s",
+  "grams": 2.83,
+  "metres": 0.95035
+ },
  "large/plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
@@ -47,6 +54,13 @@
   "time": "36m 6s",
   "grams": 25.01,
   "metres": 8.3864
+ },
+ "large/plate4_kb_bezel.3mf": {
+  "warnings": [],
+  "ok": true,
+  "time": "6m 29s",
+  "grams": 2.83,
+  "metres": 0.95031
  },
  "large_total_g": 109.48,
  "large_total_min": 160,

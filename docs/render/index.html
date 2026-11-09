@@ -165,9 +165,10 @@ function screenTexture() {
 // ---------------------------------------------------------------- keyboard (illustration only)
 function keyboard() {
   const grp = new THREE.Group();
-  // body fills the keyboard space (x +-98, y +-43.5) on the tray floor
-  const F = A.TRAY_FLOOR ?? 3.0;
-  grp.add(box(195, 86, 6, M.kbBody, 0, 0, F + 3));
+  // body fills the keyboard space (x +-98, y +-43.5, 0.2 mm short of the ribs) on the tray floor; the key tops reach
+  // the assumed keyboard thickness (KB_THICK = 11.5 mm in cad/src/params.py, not measured yet)
+  const F = A.TRAY_FLOOR ?? 3.0, KH = 2.2, HB = (KITMODE ? 11.5 : 8.2) - KH;
+  grp.add(box(195.6, 86.6, HB, M.kbBody, 0, 0, F + HB / 2));
   const rows = [
     [['`',1],['1',1],['2',1],['3',1],['4',1],['5',1],['6',1],['7',1],['8',1],['9',1],['0',1],['-',1],['=',1],['Bksp',1.5]],
     [['Tab',1.5],['Q',1],['W',1],['E',1],['R',1],['T',1],['Y',1],['U',1],['I',1],['O',1],['P',1],['[',1],[']',1],['\\',1]],
@@ -175,7 +176,7 @@ function keyboard() {
     [['Shift',2.25],['Z',1],['X',1],['C',1],['V',1],['B',1],['N',1],['M',1],[',',1],['.',1],['/',1],['Shift',1.25],['↑',1]],
     [['Fn',1],['Ctrl',1],['Alt',1],['Cmd',1.25],['',5.25],['Alt',1],['Ctrl',1],['←',1],['↓',1],['→',1]],
   ];
-  const U = 13.0, GAP = 1.4, KH = 2.2;
+  const U = 13.0, GAP = 1.4;
   const totalW = 14.5 * U;
   const y0 = 2.5 * U - U / 2 + 1;   // first row centre (rows run toward -y = front)
   rows.forEach((row, r) => {
@@ -185,7 +186,7 @@ function keyboard() {
       const kw = w * U - GAP, kd = U - GAP;
       const cap = new THREE.Mesh(new THREE.BoxGeometry(kw, kd, KH), [M.key, M.key, M.key, M.key, legendMat(lab, kw, kd), M.key]);
       cap.castShadow = true; cap.receiveShadow = true;
-      cap.position.set(x + (w * U) / 2, y, F + 6 + KH / 2);
+      cap.position.set(x + (w * U) / 2, y, F + HB + KH / 2);
       grp.add(cap);
       x += w * U;
     }
@@ -221,7 +222,7 @@ function legendMat(lab, kw, kd) {
 const A = await (await fetch('models/assembly.json')).json();
 const KITMODE = A.PD_MOUNT === 'kit';     // PaperDIY Complete Kit in its own case, in a pocket in a solid lid
 const COVER_STL = !!A.COVER_SCREWED;   // flush covers held by the hinge screws: drawn from their STLs
-const NAMES = (KITMODE ? ['display_lid_usbc', 'paperdiy_kit_envelope', 'keyboard_tray'].concat(A.PANEL ? ['display_panel_kit'] : [])
+const NAMES = (KITMODE ? ['display_lid_usbc', 'paperdiy_kit_envelope', 'keyboard_tray'].concat(A.PANEL ? ['display_panel_kit', 'keyboard_bezel'] : [])
   : ['display_lid_usbc', 'display_panel_paperdiy', 'paperdiy_strap', 'key_pushrod_x2', 'power_pushrod', 'keyboard_tray'])
   .concat(COVER_STL ? ['hinge_cover_lid_x2', 'hinge_cover_tray_x2'] : []);
 const G = {};
@@ -231,6 +232,7 @@ const P = {};          // named parts, for the exploded view
 // fixed half: tray + keyboard
 P.tray = mesh(G.keyboard_tray, M.cream); scene.add(P.tray);
 P.kb = keyboard(); scene.add(P.kb);
+if (G.keyboard_bezel) { P.kbBezel = mesh(G.keyboard_bezel, M.panel); scene.add(P.kbBezel); }   // optional add-on
 
 // moving half: lid parts, rotated about the hinge axis (x axis through y = Y_BACK, z = Z_PART)
 const HINGE_Y = A.Y_BACK, AXIS_Y = A.HINGE_AXIS_Y ?? A.Y_BACK, HINGE_Z = A.Z_PART, HINGE_X = A.HINGE_X, H_LEN = A.HINGE_LEN, H_W = A.HINGE_WIDTH,
@@ -354,6 +356,7 @@ const FIGURES = KITMODE ? {
     ['paperdiy', [0, 0, 100],   [-62, -30, 20],   3,  'PaperDIY Complete Kit'],
     ['panel',    [0, 0, 62],    [-97, -40, 15.8], 2,  '化粧パネル A + B'],
     ['kb',       [0, 0, 26],    [-97, -43, 12],   6,  'キーボード'],
+    ['kbBezel',  [0, 0, 13],    [-100, -45, 7.6], 15, 'キーボードの化粧枠（任意）'],
     ['tray',     [0, 0, 0],     [-100, -46, 6],   7,  'トレイ A + B'],
   ],
   hinge: [

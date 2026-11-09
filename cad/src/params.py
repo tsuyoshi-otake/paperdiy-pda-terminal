@@ -101,6 +101,15 @@ RIB_T = 1.2                   # ribs, guides and guard rings (3 lines)
 # back wall (x 72.9..89.1) starts 3.0 above the floor, as in the original.
 TRAY_KB_RIBS = dict(front_x=(-80.0, -40.0, 40.0, 80.0), back_x=(-25.0, 25.0, -85.0), end_y=(-25.0, 25.0))
 TRAY_PORT = dict(x=(72.9, 89.1), above_floor=3.0)
+# Keyboard bezel (kit design; an optional add-on, the tray is not changed): a frame laid into the tray around the keyboard
+# that hides the ribs, the hinge bosses and the strip behind the keyboard. Its top is one plane `drop` below the rim's
+# sloping plane (so it stays under the flat rim behind the keyboard and prints flat on its top face); it is t thick,
+# rests on the keyboard-locating ribs (notched over them), leaves `cut_clr` around the hinge pads and the snap tab's pad
+# (both flush with the rim), and is held by small bumps pressed `bump.h - clr` into the tray's walls. Split for the
+# A1 mini at the back rib x = split_x (the seam rests on that rib) and in the gap at the snap tab's pad.
+KB_BEZEL = dict(t=1.2, drop=0.4, clr=0.2, kb_clr=0.2, kb_r=3.0, cut_clr=0.3, split_x=25.0, bump=dict(r=0.6, h=0.35),
+                bumps=dict(front_x=(-60.0, -20.0, 30.0, 60.0), back_x=(-94.0, -30.0, -10.0, 10.0, 32.0, 94.0),
+                           end_y=(-10.0, 10.0)))
 TRAY_FLOOR = WALL if PD_MOUNT == "kit" else 3.0   # top of the tray floor (the original tray: 3.0)
 # Keyboard: the CACOE stands above the tray rim (the original lid's panel face was at z = 15). The lid's inner face
 # (and the kit's front face) is KB_CLR above the keyboard's highest point. MEASURE the keyboard's thickness over the

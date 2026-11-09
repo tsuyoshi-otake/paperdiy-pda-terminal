@@ -20,7 +20,8 @@ import numpy as np
 import trimesh
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from params import CAD_DIR, OUT_DIR, SPLIT_DIR, USB_PM_SCREW_SPACING, USB_PM_VARIANTS, WHOLE_BED, WHOLE_DIR  # noqa: E402
+from params import (CAD_DIR, KB_BEZEL, LID_INNER_X, LID_INNER_Y, OUT_DIR, SPLIT_DIR, USB_PM_SCREW_SPACING,  # noqa: E402
+                    USB_PM_VARIANTS, WHOLE_BED, WHOLE_DIR)
 
 BED = 180.0
 MARGIN = 3.0     # keep parts this far from the bed edge
@@ -36,6 +37,8 @@ with open(os.path.join(OUT_DIR, "assembly.json")) as _f:
 KIT = ASM.get("PD_MOUNT") == "kit"
 # the kit design's lid top is a plane z = a + b y: tilt it level before turning it top face down
 LAY_TOP = (trimesh.transformations.rotation_matrix(-np.arctan(ASM["LID_TOP"][1]), [1, 0, 0]) if KIT else np.eye(4))
+# the keyboard bezel's top is parallel to the parting plane z = a + b y: tilt that level before turning it top face down
+LAY_UNDER = (trimesh.transformations.rotation_matrix(-np.arctan(ASM["LID_UNDER"][1]), [1, 0, 0]) if KIT else np.eye(4))
 # print orientation of everything cut from the three big parts
 ORIENT = {"lid": (LAY_TOP, FLIP_X), "tray": (), "panel": ()}
 
@@ -91,18 +94,50 @@ def rows_layout(rows, BED=BED):
     return placed
 
 
-def placed_layout(items):
-    """items: [(name, mesh, (cx, cy))] placed by hand. Checks the bed edge and a GAP / 2 clearance between bounding boxes."""
+def placed_layout(items, nested=()):
+    """items: [(name, mesh, (cx, cy))] placed by hand. Checks the bed edge and a GAP / 2 clearance between bounding boxes
+    (pairs in `nested` are checked by whoever nested them)."""
     boxes = []
     for name, m, (cx, cy) in items:
         ex = m.extents
         b = (cx - ex[0] / 2, cy - ex[1] / 2, cx + ex[0] / 2, cy + ex[1] / 2)
         assert MARGIN <= b[0] and b[2] <= BED - MARGIN and MARGIN <= b[1] and b[3] <= BED - MARGIN, (name, b)
         for other, o in boxes:
+            if {name, other} == set(nested):
+                continue
             sep = max(o[0] - b[2], b[0] - o[2], o[1] - b[3], b[1] - o[3])
             assert sep >= GAP / 2, (name, other, sep)
         boxes.append((name, b))
     return items
+
+
+def kb_bezel_plate():
+    """The two A1 mini pieces of the keyboard bezel, top face on the bed; piece B (turned) lies inside piece A's opening,
+    the keyboard's room, which is open toward the split."""
+    rots = (LAY_UNDER, FLIP_X)
+    a = part(S("kb_bezel_A_left"), *rots)
+    b = part(S("kb_bezel_B_right"), *rots, ROT_Z90)
+    raw = trimesh.load(S("kb_bezel_A_left"), force="mesh")
+    for r in rots:
+        raw.apply_transform(r)
+    lo, hi = raw.bounds
+    shift = np.array([-(lo[0] + hi[0]) / 2, -(lo[1] + hi[1]) / 2, -lo[2]])
+    g = KB_BEZEL                                     # A's opening in the same frame (the keyboard's room, open at the split)
+    x0, x1, y = -LID_INNER_X - g["kb_clr"], g["split_x"], LID_INNER_Y + g["kb_clr"]
+    zc = float(np.mean(trimesh.load(S("kb_bezel_A_left"), force="mesh").bounds[:, 2]))
+    pts = np.array([[x, yy, zc, 1.0] for x in (x0, x1) for yy in (-y, y)])
+    for r in rots:
+        pts = pts @ r.T
+    ox0, oy0 = pts[:, :2].min(axis=0) + shift[:2]
+    ox1, oy1 = pts[:, :2].max(axis=0) + shift[:2]
+    ca = (BED / 2, BED / 2)
+    eb = b.extents
+    cb = (ca[0] + ox0 + 3.0 + eb[0] / 2, ca[1] + (oy0 + oy1) / 2)
+    m = min(cb[1] - eb[1] / 2 - (ca[1] + oy0), (ca[1] + oy1) - (cb[1] + eb[1] / 2))
+    assert m >= 1.5, ("piece B must sit inside piece A's opening", m)
+    assert cb[0] - eb[0] / 2 >= ca[0] + ox0 + 1.5
+    return {"place": [("kb_bezel_A_left", a, ca), ("kb_bezel_B_right", b, cb)],
+            "nested": ("kb_bezel_A_left", "kb_bezel_B_right")}
 
 
 def plates():
@@ -142,7 +177,10 @@ def plates():
                 [("panel_A_left", part(S("panel_A_left"), ROT_Z90))],
                 [("panel_B_main", part(S("panel_B_main")))],
             ] + splice_row("panel")),
-        } if os.path.exists(S("panel_B_main")) else {}) | {
+        } if os.path.exists(S("panel_B_main")) else {}) | ({
+            # optional keyboard bezel (laid into the tray around the keyboard), top face on the bed; any colour
+            "plate4_kb_bezel.3mf": ("Keyboard bezel (A + B, optional)", kb_bezel_plate()),
+        } if os.path.exists(S("kb_bezel_A_left")) else {}) | {
             f"usb_variants/{usb_name(sp)}.3mf": (
                 f"Lid A for a USB-C panel mount with {sp:g} mm hole spacing" if sp > 0
                 else "Lid A, USB-C panel-mount opening only (glue the connector in)",
@@ -182,6 +220,10 @@ def large_plates():
             [("panel", part(W("panel")))],
         ]),
     }
+    if os.path.exists(W("kb_bezel")):
+        p["large/plate4_kb_bezel.3mf"] = ("Keyboard bezel, one piece, optional (bed 220 mm or more)", [
+            [("kb_bezel", part(W("kb_bezel"), LAY_UNDER, FLIP_X))],
+        ])
     for sp in USB_PM_VARIANTS:
         n = usb_name(sp).replace("lid_A_left", "lid")
         p[f"large/usb_variants/{n}.3mf"] = (
@@ -287,7 +329,7 @@ def main():
     jobs = [(k, v, BED) for k, v in plates().items()] + [(k, v, WHOLE_BED) for k, v in large_plates().items()]
     for fname, (title, rows), bed in jobs:
         os.makedirs(os.path.dirname(os.path.join(OUT_3MF, fname)), exist_ok=True)
-        placed = placed_layout(rows["place"]) if isinstance(rows, dict) else rows_layout(rows, bed)
+        placed = placed_layout(rows["place"], rows.get("nested", ())) if isinstance(rows, dict) else rows_layout(rows, bed)
         path = os.path.join(OUT_3MF, fname)
         write_3mf(path, placed, title)
         # re-load and check what was written

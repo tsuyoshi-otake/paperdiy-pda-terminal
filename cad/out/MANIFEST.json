@@ -24,6 +24,13 @@
    20094.08
   ]
  },
+ "3mf/large/plate4_kb_bezel.3mf": {
+  "objects": 1,
+  "sha256": "97e8cb54cf17bece69bdd51183818b05c4a334f0c4ad86961e7ebc5da462d537",
+  "volumes": [
+   2260.49
+  ]
+ },
  "3mf/large/usb_variants/lid_usb16mm.3mf": {
   "objects": 1,
   "sha256": "48651537411054be06370c828b7d65acab3ad3f47bb02ade24ac67497612d3d7",
@@ -126,6 +133,14 @@
    426.88,
    3035.02,
    16221.75
+  ]
+ },
+ "3mf/plate4_kb_bezel.3mf": {
+  "objects": 2,
+  "sha256": "efdeb1ddbf2ce9ecce5bad1f18eee138e621c7922956dbd0b2d86f9293c19349",
+  "volumes": [
+   888.19,
+   1372.3
   ]
  },
  "3mf/usb_variants/lid_A_left_usb16mm.3mf": {
@@ -360,6 +375,23 @@
   "sha256": "3f5c9758e9b075a59ff30c5f1a5dbf21a475798285a21c21174a82b9b966dd5d",
   "volume": 210.07
  },
+ "out/keyboard_bezel.stl": {
+  "bbox": [
+   [
+    -99.95,
+    -45.45,
+    6.398
+   ],
+   [
+    99.95,
+    51.95,
+    12.835
+   ]
+  ],
+  "faces": 3820,
+  "sha256": "c9807d0fc5d007c1870dec4b7105f4e8a7a0dbe462fbb84538b48175874e06c3",
+  "volume": 2260.43
+ },
  "out/keyboard_tray.stl": {
   "bbox": [
    [
@@ -393,6 +425,40 @@
   "faces": 252,
   "sha256": "3272aafc665b3682524d42b222e67e3cf0dcb813a4bf936504da249fd7d0aef3",
   "volume": 50716.15
+ },
+ "out/split/kb_bezel_A_left.stl": {
+  "bbox": [
+   [
+    -99.95,
+    -45.45,
+    6.398
+   ],
+   [
+    25.0,
+    51.95,
+    12.835
+   ]
+  ],
+  "faces": 2118,
+  "sha256": "4183a489e0f0aa7e83c93861a88db78de164315351cd25fe2b58176031695dc4",
+  "volume": 1372.27
+ },
+ "out/split/kb_bezel_B_right.stl": {
+  "bbox": [
+   [
+    16.8,
+    -45.45,
+    6.398
+   ],
+   [
+    99.95,
+    51.95,
+    12.835
+   ]
+  ],
+  "faces": 1714,
+  "sha256": "4f0d22b147de39d7f380f8e4b2307c8b807ece455d713e977cc0db94b7c5e4d2",
+  "volume": 888.17
  },
  "out/split/lid_A_left.stl": {
   "bbox": [
@@ -733,6 +799,23 @@
   "faces": 1408,
   "sha256": "a50ce8519f8922b1662aef02ff1aa04f6eb59a9a67787f0fba5920dbaa8007e1",
   "volume": 5598.94
+ },
+ "out/whole/kb_bezel.stl": {
+  "bbox": [
+   [
+    -99.95,
+    -45.45,
+    6.398
+   ],
+   [
+    99.95,
+    51.95,
+    12.835
+   ]
+  ],
+  "faces": 3820,
+  "sha256": "c9807d0fc5d007c1870dec4b7105f4e8a7a0dbe462fbb84538b48175874e06c3",
+  "volume": 2260.43
  },
  "out/whole/lid.stl": {
   "bbox": [

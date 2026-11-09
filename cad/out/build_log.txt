@@ -153,4 +153,21 @@
   interference charge plug vs tray: 0.000 mm3 OK
   interference charge plug vs lid (closed): 0.000 mm3 OK
   with that plug in, the lid opens to 99 deg; beyond that its back face meets the plug
+== keyboard bezel (optional add-on; the tray is unchanged): 1.2 mm, top plane z = 10.042 + 0.05376 y (0.4 mm under the rim's slope, 0.03 mm under the flat rim at its back edge)
+  out/keyboard_bezel.stl: bbox 199.9 x 97.4 x 6.4 mm, watertight=True, winding_ok=True, bodies=1, vol=2260 mm3
+  out/split/kb_bezel_A_left.stl: bbox 124.9 x 97.4 x 6.4 mm, watertight=True, winding_ok=True, bodies=1, vol=1372 mm3
+  out/split/kb_bezel_B_right.stl: bbox 83.1 x 97.4 x 6.4 mm, watertight=True, winding_ok=True, bodies=1, vol=888 mm3
+  out/whole/kb_bezel.stl: bbox 199.9 x 97.4 x 6.4 mm, watertight=True, winding_ok=True, bodies=1, vol=2260 mm3
+  interference keyboard bezel (without its bumps) vs tray: -0.000 mm3 OK
+  bumps: 12 on its outer edge, 0.15 mm into the tray's walls (pressed in: 1.35 mm3 of bump in the walls; nothing else touches)
+  resting on the keyboard ribs: 2.11 mm3 of overlap with the tray raised 0.05 mm (> 0: it sits on them)
+  interference keyboard space vs keyboard bezel: 0.000 mm3 OK
+  interference keyboard bezel vs lid (closed): 0.000 mm3 OK
+  interference keyboard bezel vs bezel panel: 0.000 mm3 OK
+  interference charge plug vs keyboard bezel: 0.000 mm3 OK
+  interference hinge (tray leaf + barrel) vs keyboard bezel: 0.000 mm3 OK
+  interference tray hinge cover 0 vs keyboard bezel: 0.000 mm3 OK
+  interference tray hinge cover 1 vs keyboard bezel: 0.000 mm3 OK
+  lid + kit + panel + covers rotated 0-180 deg: no contact with the bezel
+  frame widths: beside the keyboard 1.4 / 1.4 mm, behind it 7.9 mm; A1 mini pieces split at the back rib x = 25 and at the snap tab
 == renders

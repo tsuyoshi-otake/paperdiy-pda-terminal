@@ -820,6 +820,54 @@ def build_kit_tray():
     return T - union(cuts)
 
 
+def kb_bezel_top():
+    """The keyboard bezel's top plane z = a + b y (the rim's sloping plane, KB_BEZEL['drop'] lower)."""
+    return LID_UNDER[0] - KB_BEZEL["drop"], LID_UNDER[1]
+
+
+def build_kb_bezel(bumps=True):
+    """Kit design, optional add-on (the tray is not changed): a frame laid into the tray around the keyboard. It covers
+    the gaps beside the keyboard and the strip behind it (ribs, hinge bosses), rests on the keyboard-locating ribs
+    (notched over them), leaves the hinge pads and the snap tab's pad (flush with the rim) free, and is pressed in with
+    small bumps on its outer edge."""
+    g = KB_BEZEL
+    a, b = kb_bezel_top()
+    plan = CS.batch_boolean(lid_plan_pieces(), m3.OpType.Add)
+    outer = plan.offset(-(WALL + g["clr"]), m3.JoinType.Round, 2.0, SEG)
+    hole = rrect(0.0, 0.0, 2 * (LID_INNER_X + g["kb_clr"]), 2 * (LID_INNER_Y + g["kb_clr"]), g["kb_r"])
+    slab = half_space(a, b, False) ^ half_space(a - g["t"], b, True)
+    ring = prism_z(outer - hole, -5.0, 40.0) ^ slab
+    xi, yi0, yi1 = 101.0 - WALL, -BACK_OLD_Y + WALL, Y_BACK - WALL                       # the tray's inner faces
+    c = g["cut_clr"]
+    cuts = []
+    hw, yf = hinge_pad_extent()                      # hinge pads (and their cover pockets), flush with the rim
+    cuts += [box(sx * HINGE_X - hw - c, sx * HINGE_X + hw + c, yf - c, BIG, -BIG, BIG) for sx in (-1.0, 1.0)]
+    l = LATCH                                        # the snap tab's pad, flush with the rim
+    lx0, lx1 = l["x"] - l["w"] / 2 - 0.3 - WALL - c, l["x"] + l["w"] / 2 + 0.3 + WALL + c
+    cuts.append(box(lx0, lx1, -BIG, -LID_INNER_Y + c, -BIG, BIG))
+    rk, h = TRAY_KB_RIBS, RIB_T / 2 + c              # notches over the ribs: their roof is the rib's top (it rests there)
+    zt = lambda y: min(under_z(y), Z_PART) - 1.0
+    cuts += [box(x - h, x + h, -BIG, -LID_INNER_Y + c, -BIG, zt(-LID_INNER_Y)) for x in rk["front_x"]]
+    cuts += [box(x - h, x + h, LID_INNER_Y - c, BIG, -BIG, zt(LID_INNER_Y)) for x in rk["back_x"]]
+    cuts += [box(*sorted((sx * (LID_INNER_X - c), sx * BIG)), y - h, y + h, -BIG, zt(y))
+             for sx in (-1.0, 1.0) for y in rk["end_y"]]
+    B = ring - union(cuts)
+    if bumps:                                        # half-round bumps pressed into the tray's walls
+        r, hb = g["bump"]["r"], g["bump"]["h"]
+        e = g["clr"]
+        nubs = [cyl_z(r, -5.0, 40.0, x, yi0 + e - hb + r) for x in g["bumps"]["front_x"]]
+        nubs += [cyl_z(r, -5.0, 40.0, x, yi1 - e + hb - r) for x in g["bumps"]["back_x"]]
+        nubs += [cyl_z(r, -5.0, 40.0, sx * (xi - e + hb - r), y) for sx in (-1.0, 1.0) for y in g["bumps"]["end_y"]]
+        B = B + (union(nubs) ^ slab)
+    return B
+
+
+def kb_bezel_split(bez):
+    """A1 mini pieces: left of the back rib at KB_BEZEL['split_x'] behind the keyboard and of the snap tab in front."""
+    left = box(-BIG, KB_BEZEL["split_x"], 0.0, BIG, -BIG, BIG) + box(-BIG, LATCH["x"], -BIG, 0.0, -BIG, BIG)
+    return bez ^ left, bez - left
+
+
 # ------------------------------------------------------------------ KIT LID (PaperDIY Complete Kit in its own case)
 def half_space(a, b, above=True):
     """z >= a + b * y (above) or z <= a + b * y."""
@@ -1487,6 +1535,45 @@ def main_kit():
     log(f"  with that plug in, the lid opens to {plug_limit} deg; beyond that its back face meets the plug"
         if plug_limit is not None else "  the plug never meets the lid")
 
+    bez = None
+    if SHELL and KB_BEZEL:
+        g = KB_BEZEL
+        a, b = kb_bezel_top()
+        yb = Y_BACK - WALL - g["clr"]
+        log(f"== keyboard bezel (optional add-on; the tray is unchanged): {g['t']:g} mm, top plane z = {a:.3f} + {b:.5f} y "
+            f"({g['drop']:g} mm under the rim's slope, {Z_PART - (a + b * yb):.2f} mm under the flat rim at its back edge)")
+        assert a + b * yb <= Z_PART - 0.01, "the bezel must stay under the rim behind the keyboard"
+        bez, plain = build_kb_bezel(), build_kb_bezel(bumps=False)
+        export(bez, f"{OUT_DIR}/keyboard_bezel.stl")
+        ba, bb = kb_bezel_split(bez)
+        for k, v in {"kb_bezel_A_left": ba, "kb_bezel_B_right": bb}.items():
+            tm = export(v, f"{SPLIT_DIR}/{k}.stl")
+            assert max(tm.extents) <= MAX_PIECE, (k, tm.extents)
+        tm = export(bez, f"{WHOLE_DIR}/kb_bezel.stl")
+        assert max(tm.extents[:2]) <= WHOLE_BED - 6.0, tm.extents
+        interference(plain, tray, "keyboard bezel (without its bumps) vs tray")
+        press = (bez ^ tray).volume()
+        n = sum(len(v) for v in g["bumps"].values())
+        log(f"  bumps: {n} on its outer edge, {g['bump']['h'] - g['clr']:.2f} mm into the tray's walls (pressed in: "
+            f"{press:.2f} mm3 of bump in the walls; nothing else touches)")
+        assert 0.0 < press < 2.0, press
+        rests = (bez ^ (tray.translate([0.0, 0.0, 0.05]))).volume() - press
+        log(f"  resting on the keyboard ribs: {rests:.2f} mm3 of overlap with the tray raised 0.05 mm (> 0: it sits on them)")
+        assert rests > 0.0
+        interference(kb, bez, "keyboard space vs keyboard bezel")
+        interference(bez, lid, "keyboard bezel vs lid (closed)"); interference(bez, panel, "keyboard bezel vs bezel panel")
+        interference(kplug, bez, "charge plug vs keyboard bezel")
+        interference(h_fixed, bez, "hinge (tray leaf + barrel) vs keyboard bezel")
+        for i, cv in enumerate(plain_tray_cov):
+            interference(cv, bez, f"tray hinge cover {i} vs keyboard bezel")
+        hits = [deg for deg in range(0, 181, 5) if (open_lid(lidset, deg) ^ bez).volume() > 0.05]
+        log("  lid + kit + panel + covers rotated 0-180 deg: no contact with the bezel" if not hits
+            else f"  <-- CHECK: the lid meets the bezel at {hits[0]} deg")
+        assert not hits
+        log(f"  frame widths: beside the keyboard {BACK_OLD_Y - WALL - g['clr'] - LID_INNER_Y - g['kb_clr']:.1f} / "
+            f"{101.0 - WALL - g['clr'] - LID_INNER_X - g['kb_clr']:.1f} mm, behind it {yb - LID_INNER_Y - g['kb_clr']:.1f} mm; "
+            f"A1 mini pieces split at the back rib x = {g['split_x']:g} and at the snap tab")
+
     log("== renders")
     C = dict(lid=(55, 75, 150), tray=(230, 220, 190), kit=(200, 200, 205), red=(210, 60, 50))
     def rend(name, items, view):
@@ -1497,6 +1584,8 @@ def main_kit():
     if SHELL:
         rend("display_panel_kit_back", [(panel, (225, 215, 185))], (-60, 45))
     rend("keyboard_tray", [(tray, C["tray"])], (-130, 40))
+    if bez is not None:
+        rend("keyboard_bezel_in_tray", [(tray, C["tray"]), (bez, (205, 120, 80))], (-130, 40))
     rend("split_lid", [(la.translate([-12, 0, 0]), C["lid"]), (lb, (90, 110, 180))], (-60, -45))
     rend("split_tray", [(ta.translate([-12, 0, 0]), C["tray"]), (tb, (200, 190, 160))], (-60, 45))
     with open(os.path.join(OUT_DIR, "build_log.txt"), "w") as f:
