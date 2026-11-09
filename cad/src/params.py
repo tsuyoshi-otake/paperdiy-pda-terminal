@@ -163,6 +163,11 @@ PANEL_SLOT = dict(out=8.0, end=3.0, r=0.75)  # finger slots through the panel in
 # pocket (ring + the kit's edge) instead of getting into the lid
 PANEL_GUARD = dict(t=RIB_T, clr=0.5)
 PANEL_SCREWS = ((-91.0, -37.5), (91.0, -37.5), (-91.0, 46.0), (91.0, 46.0), (-62.0, -39.5), (-62.0, 40.0))  # clear of the housings
+# Ribs on the panel's screw bosses (Ø6 columns hanging 6.4-8.6 mm from the lid's ceiling): toward a wall closer than
+# `tie` a rib runs into the wall (full height), elsewhere a gusset `len` long (its edge slopes from the boss's foot to
+# the ceiling); none into the kit's rim or the lid's splice-plate pockets. All stop `gap` above the panel's back.
+PANEL_BOSS_R = 3.0
+PANEL_BOSS_RIBS = dict(t=RIB_T, len=3.0, tie=5.5, gap=0.5, min_len=1.5)
 # The panel is open over the USB-C plug path (left edge to the kit's port, like the button slots): a plug can be
 # guided into the port by hand, and a panel-mount female's inner plug goes in and out without taking the panel off.
 PANEL_USB_SLOT = dict(frame=2.2, half=6.6, r=0.75)  # None = closed; frame left at the panel's left edge
@@ -197,12 +202,16 @@ SPLICE = dict(clr=0.3,                # per side (0.15 printed too tight: the pl
 USB_PM_Y_KIT = 20.0            # clear of the lid's split blocks (y 5, 36) and the power slot
 # Snap tab (no magnets): a tab in the middle of the lid's front skirt runs below the parting into a recess in
 # the tray's front face; a bump on its inside drops into a groove in the recess. It bends outward (free air), so the
-# keyboard's position does not matter. Force ~ 3 E I delta / L^3; strain 1.5 t delta / L^2 (bent across the layers in
-# print: keep it under ~0.5 %).
-# Kit design: off centre (x 6) so the KEY slot's guard clears it. Kept as short as the strain allows (the printed 18 mm
-# wide tab, 3.6 below the parting and 9 above it, was too long): 12 wide, 2.2 below, 7 above; bump 0.35 high, 1.4 below
-# the parting (0.75 mm of tray above its groove); free length 8.4 mm.
-LATCH = dict(x=6.0, w=12.0, t=1.0, slot=0.8, root=7.0, below=2.2, bump=0.35, bump_at=1.4, clr=0.15,
+# keyboard's position does not matter. It is bent across the print layers (the lid prints ceiling down), so what
+# matters is the strain at its stiffest point: keep it under ~0.5 %.
+# Kit design: off centre (x 6) so the KEY slot's guard clears it. Below the parting it stays short (the printed 18 mm
+# wide tab, 3.6 below the parting, was too long): 12 wide, 2.2 below; bump 0.35 high, 1.4 below the parting (0.75 mm
+# of tray above its groove). Above the parting (hidden in the wall, only its two slits show) it tapers from t at the
+# parting to t_root = the full wall at its root, so there is no step there: the 1.0 mm tab of uniform thickness that
+# stepped to the 2.0 mm wall at a square corner put a stress raiser right at its most strained point. Free length
+# 12.4 mm (root 11 above the parting): peak strain 0.24 % (was 0.43 % plus the corner), an outward pull of ~15 N at the
+# tip to reach PLA's strength across the layers (was ~3 N), to open ~6 N (was 4.5). Slot ends rounded (r = slot/2).
+LATCH = dict(x=6.0, w=12.0, t=1.0, t_root=WALL, slot=0.8, root=11.0, below=2.2, bump=0.35, bump_at=1.4, clr=0.15,
              close_deg=45.0, open_deg=35.0, tray_wall_min=1.2)
 
 # ---------------------------------------------------------------- layout choices (lid frame)

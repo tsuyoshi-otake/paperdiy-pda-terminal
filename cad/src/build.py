@@ -1008,17 +1008,36 @@ def latch_bump_cs(grow=0.0):
 
 
 def latch_lid_parts():
-    """(cut, tab): the cut frees a tab in the middle of the lid's front skirt; the tab (with its bump) runs down past
-    the parting into the tray's recess."""
+    """(cut, tab): the cut frees a tab in the middle of the lid's front skirt (two slits with round ends, and the inside
+    of the wall between them down to the tab's taper); the tab is what is left of the wall, plus its part below the
+    parting (with the bump) that runs into the tray's recess."""
     l = LATCH
     zf, yo = under_z(-BACK_OLD_Y), -BACK_OLD_Y
-    x0, x1 = l["x"] - l["w"] / 2, l["x"] + l["w"] / 2
-    cut = box(x0 - l["slot"], x1 + l["slot"], yo - 1.0, -LID_INNER_Y + 0.01, zf - 6.0, zf + l["root"])
-    tab = box(x0, x1, yo, yo + l["t"], zf - l["below"], zf + l["root"] + 0.5)
+    x0, x1, s = l["x"] - l["w"] / 2, l["x"] + l["w"] / 2, l["slot"]
+    zr, yi = zf + l["root"], -LID_INNER_Y + 0.01
+    cut = [box(xa, xb, yo - 1.0, yi, zf - 6.0, zr - s / 2) for xa, xb in ((x0 - s, x0), (x1, x1 + s))]
+    cut += [cyl_y(s / 2, yo - 1.0, yi, xc, zr - s / 2) for xc in (x0 - s / 2, x1 + s / 2)]
+    taper = poly_cs([(yo + l["t"], zf - 6.0), (yi, zf - 6.0), (yi, zr), (yo + l["t_root"], zr), (yo + l["t"], zf)])
+    cut.append(prism_x(taper, x0 - 0.01, x1 + 0.01))
+    tab = box(x0, x1, yo, yo + l["t"], zf - l["below"], zf + 0.5)
     tab = tab - prism_x(poly_cs([(yo + l["t"] - 0.5, zf - l["below"] - 0.01), (yo + l["t"] + 0.01, zf - l["below"] - 0.01),
                                  (yo + l["t"] + 0.01, zf - l["below"] + 0.5)]), x0 - 1, x1 + 1)     # lead-in at the tip
     tab = tab + prism_x(latch_bump_cs(), x0, x1)
-    return cut, tab
+    return union(cut), tab
+
+
+def latch_beam(n=4001):
+    """The tab as a cantilever from its root to the bump (thickness t below the parting, tapering to t_root at the
+    root): (stiffness N/mm, peak bending strain per mm of deflection, its height above the bump, force per mm of
+    deflection that puts PLA's strength across the layers, ~25 MPa, at the peak)."""
+    l = LATCH
+    L, a = l["root"] + l["bump_at"], l["bump_at"]
+    sv = np.linspace(1e-6, L, n)                           # distance from the bump toward the root
+    t = np.where(sv < a, l["t"], l["t"] + (l["t_root"] - l["t"]) * (sv - a) / (L - a))
+    k = 1.0 / np.trapezoid(sv ** 2 / (3500.0 * l["w"] * t ** 3 / 12), sv)
+    sig = 6 * k * sv / (l["w"] * t ** 2)                   # MPa at the surface per mm of deflection
+    i = int(np.argmax(sig))
+    return k, sig[i] / 3500.0, sv[i], 25.0 / sig[i]
 
 
 def kb_pads():
@@ -1140,6 +1159,69 @@ def hinge_mounts(lid):
     return out
 
 
+PANEL_RIB_INFO = []          # filled by build_kit_lid_shell, for the log
+
+
+def panel_boss_keepout():
+    """Plan boxes the boss ribs stay out of: the kit with the panel's rim round it, the lid's splice-plate pockets
+    (they go in from below, flush with the ceiling) and the USB-C plug path."""
+    w, c = PANEL_RIM["w"] + 0.5, SPLICE["clr"] + 0.5
+    g = SPLICE["lid"]
+    out = [(KIT_X0 - w, KIT_X1 + w, KIT_Y0 - w, KIT_Y1 + w)]
+    out += [(SPLIT_X_LID + g["x0"] - c, SPLIT_X_LID + g["x1"] + c, ya - c, yb + c) for ya, yb in g["y"]]
+    out.append((-BIG, KIT_X0, KIT_USB_Y - USB_CH["w"] / 2 - 0.5, KIT_USB_Y + USB_CH["w"] / 2 + 0.5))
+    return out
+
+
+def panel_boss_ribs(L):
+    """[(rib, (x, y, direction, kind, length))] for the panel's screw bosses in lid L (shell, bosses, hinge mounts):
+    toward material closer than `tie` a full-height rib into it, else a gusset; shortened at the keep-out boxes."""
+    g = PANEL_BOSS_RIBS
+    rb, h, z0 = PANEL_BOSS_R, g["t"] / 2, PANEL_Z1 + g["gap"]
+    keep = panel_boss_keepout()
+    out = []
+    for x, y in PANEL_SCREWS:
+        zm = (z0 + top_z(y) - SHELL_CEIL) / 2
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            # gap to the nearest material along the ray, at mid-height
+            r0, r1 = rb + 0.2, rb + g["tie"] + 0.2
+            ray = box(*sorted((x + dx * r0, x + dx * r1)) if dx else (x - 0.3, x + 0.3),
+                      *sorted((y + dy * r0, y + dy * r1)) if dy else (y - 0.3, y + 0.3), zm - 0.3, zm + 0.3) ^ L
+            gap = None
+            if not ray.is_empty():
+                bb = ray.bounding_box()
+                gap = (bb[0] - x if dx > 0 else x - bb[3]) if dx else (bb[1] - y if dy > 0 else y - bb[4])
+                gap -= rb
+            reach = (gap + 0.6) if gap is not None else g["len"]          # past the boss's surface
+            for kx0, kx1, ky0, ky1 in keep:                               # stop at a keep-out box
+                if dx and ky0 < y + h and y - h < ky1:
+                    d = (kx0 - x if dx > 0 else x - kx1) - rb
+                elif dy and kx0 < x + h and x - h < kx1:
+                    d = (ky0 - y if dy > 0 else y - ky1) - rb
+                else:
+                    continue
+                if d >= 0:
+                    reach = min(reach, d)
+            if reach < g["min_len"]:
+                continue
+            tie = gap is not None and reach >= gap + 0.5
+            zc = top_z(y + dy * (rb + reach)) - SHELL_CEIL
+            if tie:          # full height into the wall / pad
+                prof = [(rb - 0.5, z0), (rb + reach, z0), (rb + reach, 60.0), (rb - 0.5, 60.0)]
+            else:            # gusset: edge from the boss's foot to the ceiling, carried 0.4 past it into the ceiling
+                u = np.array([rb + reach, zc]) - np.array([rb - 0.5, z0])
+                e = np.array([rb + reach, zc]) + 0.4 * u / np.linalg.norm(u)
+                prof = [(rb - 0.5, z0), tuple(e), (e[0], 60.0), (rb - 0.5, 60.0)]
+            if dx:
+                cs = poly_cs([(x + dx * r, z) for r, z in prof])
+                rib = prism_y(cs, y - h, y + h)
+            else:
+                cs = poly_cs([(y + dy * r, z) for r, z in prof])
+                rib = prism_x(cs, x - h, x + h)
+            out.append((rib, (x, y, (dx, dy), "tie" if tie else "gusset", reach)))
+    return out
+
+
 def build_kit_lid_shell(usb="direct", blocks=True):
     """blocks: the thicker ceiling around the dovetail keys, only needed when the lid is split."""
     bottom, top = LID_UNDER, LID_TOP[:2]
@@ -1150,7 +1232,7 @@ def build_kit_lid_shell(usb="direct", blocks=True):
                      ^ half_space(bottom[0] + 0.01, bottom[1], False))
     L = outer - (prism_z(shell_inner(), -10.0, 60.0) ^ half_space(top[0] - SHELL_CEIL, top[1], False))
     adds = hinge_mounts(True)                                                                        # hinges
-    adds += [cyl_z(3.0, PANEL_Z1, 60.0, x, y) for x, y in PANEL_SCREWS]                              # panel bosses
+    adds += [cyl_z(PANEL_BOSS_R, PANEL_Z1, 60.0, x, y) for x, y in PANEL_SCREWS]                     # panel bosses
     adds += [box(x - 0.8, x + 0.8, -30.0, 30.0, KIT_Z0 + KIT_T + 0.1, 60.0) for x in KIT_RIBS_X]      # on the kit's back
     gx0 = USB_GUIDE_X[0] if usb == "direct" else SPLIT_X_LID       # guides stay in lid B for a panel-mount lid A
     w = USB_CH["w"] / 2 + 0.6
@@ -1161,6 +1243,11 @@ def build_kit_lid_shell(usb="direct", blocks=True):
     adds += [box(SPLIT_X_LID - g["dx"], SPLIT_X_LID + g["dx"], y - g["dy"], y + g["dy"], -10.0, 60.0)
              ^ half_space(top[0] - g["h"], top[1]) for y in DOVETAIL_Y_KIT] if (blocks and g) else []
     L = L + (union(adds) ^ outer)
+    if PANEL_BOSS_RIBS:
+        ribs = panel_boss_ribs(L)
+        if usb == "direct":
+            PANEL_RIB_INFO[:] = [i for _, i in ribs]
+        L = L + (union(r for r, _ in ribs) ^ outer)
     cut, tab = latch_lid_parts()
     L = (L - cut) + tab
     cuts = usb_end_cuts(usb) + hinge_pocket_cuts() + hinge_pilots(True) + [back_edge_relief(True)]
@@ -1570,6 +1657,14 @@ def main_kit():
     else:
         log(f"  the panel holds the kit: rim {PANEL_RIM['h']} mm around it ({KIT_FIT} clear), ribs 0.1 mm above its back; "
             f"{len(PANEL_SCREWS)} x M2x8 countersunk through the {PANEL_T} mm panel, {TAP_SCREW_LEN - PANEL_T:.1f} mm into the bosses")
+        if PANEL_RIB_INFO:
+            hs = [top_z(y) - SHELL_CEIL - PANEL_Z1 for _, y in PANEL_SCREWS]
+            log(f"  panel bosses Ø{2 * PANEL_BOSS_R:g} (pilot {SCREW_PILOT_D}), {min(hs):.1f}..{max(hs):.1f} mm from the ceiling "
+                f"down to the panel; ribs {PANEL_BOSS_RIBS['t']:g} thick, {PANEL_BOSS_RIBS['gap']:g} above the panel's back:")
+            names = {(1, 0): "+x", (-1, 0): "-x", (0, 1): "+y", (0, -1): "-y"}
+            for x, y in PANEL_SCREWS:
+                rs = [f"{names[d]} {k} {r:.1f}" for bx, by, d, k, r in PANEL_RIB_INFO if (bx, by) == (x, y)]
+                log(f"    ({x:g}, {y:g}): " + ", ".join(rs))
     skin = min(top_z(y) - KIT_Z1 for y in (KIT_Y0, KIT_Y1))
     log(f"  skin over the kit {skin:.2f}..{max(top_z(y) - KIT_Z1 for y in (KIT_Y0, KIT_Y1)):.2f} mm, over the USB-C channel "
         f"{min(top_z(KIT_USB_Y + s * USB_CH['w'] / 2) for s in (-1, 1)) - KIT_Z0 - USB_CH['h']:.2f} mm")
@@ -1577,18 +1672,21 @@ def main_kit():
     log("== snap tab (latch)")
     l = LATCH
     L_free = l["root"] + l["bump_at"]
-    I = l["w"] * l["t"] ** 3 / 12
-    k = 3 * 3500.0 * I / L_free ** 3
+    k, eps_mm, at_s, d_break = latch_beam()
     d_static = l["bump"] - l["clr"]
     d_path, at = latch_path(lid, tray)
     mu = 0.3
     to, tc = np.tan(np.radians(l["open_deg"])), np.tan(np.radians(l["close_deg"]))
     f_open = k * d_static * (to + mu) / (1 - mu * to)
     f_close = k * d_path * (tc + mu) / (1 - mu * tc)
-    log(f"  tab {l['w']:g} x {l['t']:g} mm, free length {L_free:.1f} mm -> {k:.1f} N/mm; bump {l['bump']} - clearance {l['clr']} "
-        f"= {d_static:.2f} mm; on the real opening arc the tab bends at most {d_path:.2f} mm (at {at:.1f} deg)")
-    log(f"  strain {150 * l['t'] * max(d_static, d_path) / L_free ** 2:.2f} % (bent across the print layers: keep < 0.5 %); "
-        f"to open ~{f_open:.1f} N at the tab (+ the hinges' friction), to close ~{f_close:.1f} N")
+    log(f"  tab {l['w']:g} wide, {l['t']:g} mm thick below the parting tapering to {l['t_root']:g} (the wall) at its root "
+        f"{l['root']:g} above it, slits {l['slot']:g} with round ends; free length {L_free:.1f} mm -> {k:.1f} N/mm")
+    log(f"  bump {l['bump']} - clearance {l['clr']} = {d_static:.2f} mm; on the real opening arc the tab bends at most "
+        f"{d_path:.2f} mm (at {at:.1f} deg)")
+    log(f"  peak strain {100 * eps_mm * max(d_static, d_path):.2f} % at {at_s - l['bump_at']:.1f} mm above the parting "
+        f"(bent across the print layers: keep < 0.5 %); an outward pull of ~{k * d_break:.0f} N at the bump reaches "
+        f"~25 MPa there; to open ~{f_open:.1f} N at the tab (+ the hinges' friction), to close ~{f_close:.1f} N")
+    assert 100 * eps_mm * max(d_static, d_path) < 0.5, "latch strain"
     recess_back = -BACK_OLD_Y + l["t"] + l["clr"]
     log(f"  tray front wall left behind the recess {-LID_INNER_Y - recess_back:.2f} mm, behind the groove "
         f"{-LID_INNER_Y - recess_back - (l['bump'] - l['clr'] + 0.05):.2f} mm")

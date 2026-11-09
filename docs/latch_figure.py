@@ -83,7 +83,7 @@ def front_view(ax, lid, tray):
     l = B.LATCH
     zf = B.under_z(-B.BACK_OLD_Y)
     note(ax, (l["x"] + l["w"] / 2 - 2.0, zf - l["below"] + 1.0), f"ツメ（幅 {l['w']:g} mm、蓋と一体）", (16.0, 1.0))
-    note(ax, (l["x"] + l["w"] / 2 + l["slot"] / 2, zf + 4.0), "両脇の切れ目", (16.0, 13.5))
+    note(ax, (l["x"] + l["w"] / 2 + l["slot"] / 2, zf + 4.0), f"両脇の切れ目（上へ {l['root']:g} mm、端は丸め）", (16.0, 13.5))
     ax.text(-27.0, zf + 5.0, "蓋", color="white", fontsize=11, va="center")
     ax.text(-27.0, zf - 4.0, "トレイ", color=INK, fontsize=10.5, va="center")
     finish(ax, (-28, 40), (-1, 23), "① 閉じた状態を手前から見たところ")
@@ -99,7 +99,8 @@ def section_view(ax, lid, tray):
     zb = zf - l["bump_at"]
     yt = -B.BACK_OLD_Y + l["t"]
     note(ax, (yt + 0.1, zb - 0.2), f"出っ張り {l['bump']:g} mm が\nトレイの溝に入る", (-64.5, zb - 3.0))
-    note(ax, (-B.BACK_OLD_Y + l["t"] / 2, zf + 5.0), f"ツメ（厚さ {l['t']:g} mm）", (-54.5, zf + 9.0))
+    yt5 = -B.BACK_OLD_Y + (l["t"] + (l["t_root"] - l["t"]) * 5.0 / l["root"]) / 2
+    note(ax, (yt5, zf + 5.0), f"ツメ（厚さ {l['t']:.1f} mm、\n根元へ {l['t_root']:.1f} mm に太る）", (-54.5, zf + 9.0))
     ax.add_patch(FancyArrowPatch((-49.5, zf - 1.0), (-49.5, zf + 4.0), arrowstyle="-|>", mutation_scale=11,
                                  color=RED, lw=1.4, zorder=8))
     ax.text(-50.0, zf + 4.8, "蓋の手前を持ち上げると外れる", color=RED, fontsize=9.5, ha="right", va="bottom")
