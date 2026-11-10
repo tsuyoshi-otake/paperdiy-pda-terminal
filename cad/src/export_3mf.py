@@ -49,7 +49,7 @@ BAMBU = dict(
                  wall_generator="arachne",            # fills the 1.0-1.2 mm walls and ribs without a gap
                  elefant_foot_compensation="0.1",     # the visible faces are first layers
                  precise_z_height="1"),               # panel 1.6 mm, splice pockets 0.6 / 0.8 mm
-    filament=dict(pla=("Bambu PLA Basic @BBL A1M", "GFA00", "#3B6FB6"), tpu=("Bambu TPU 95A HF @BBL A1M", "GFU00", "#2B2B2B")),
+    filament=("Bambu PLA Basic @BBL A1M", "GFA00", "#3B6FB6"),      # preset, filament id, colour shown
     preset="PaperDIY PDA 0.20mm @BBL A1M")            # the same changes as a process preset to import (the fallback)
 
 FLIP_X = trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0])      # top face down
@@ -163,12 +163,6 @@ def plates():
                 [("tray_B_main", part(S("tray_B_main")))],
             ] + splice_row("tray")),
         } | ({
-            # TPU feet (0.4 nozzle), table side on the bed
-            "plate4_tpu.3mf": ("TPU feet (print in TPU with a 0.4 nozzle)", [
-                [(f"tpu_foot_{i}", part(O("tpu_foot"))) for i in (1, 2)],
-                [(f"tpu_foot_{i}", part(O("tpu_foot"))) for i in (3, 4)],
-            ]),
-        } if os.path.exists(O("tpu_foot")) else {}) | ({
             # bezel panel pieces, visible face on the bed (the locating rim grows upward)
             "plate3_panel.3mf": ("Bezel panel (A + B)", [
                 [("panel_A_left", part(S("panel_A_left"), ROT_Z90))],
@@ -278,9 +272,9 @@ def bare_plates(csrc, coupon):
     return p
 
 
-def bambu_project_settings(filament):
+def bambu_project_settings():
     """Metadata/project_settings.config: the preset names and the options changed from the system process preset."""
-    name, fid, colour = BAMBU["filament"][filament]
+    name, fid, colour = BAMBU["filament"]
     cfg = {"from": "project", "name": "project_settings", "version": BAMBU["version"],
            "printer_technology": "FFF", "printer_model": BAMBU["printer_model"], "printer_variant": BAMBU["nozzle"],
            "nozzle_diameter": [BAMBU["nozzle"]],
@@ -319,8 +313,8 @@ def bambu_process_preset():
     return json.dumps(dict(sorted(cfg.items())), indent=4, ensure_ascii=False) + "\n"
 
 
-def write_3mf(path, placed, title, bambu=None):
-    """bambu: None = geometry only (any slicer); "pla" / "tpu" = a Bambu Studio project for the A1 mini (see BAMBU)."""
+def write_3mf(path, placed, title, bambu=False):
+    """bambu: False = geometry only (any slicer); True = a Bambu Studio project for the A1 mini (see BAMBU)."""
     objs, items = [], []
     for i, (name, m, (cx, cy)) in enumerate(placed, start=1):
         v = "".join(f'<vertex x="{a:.4f}" y="{b:.4f}" z="{c:.4f}"/>' for a, b, c in m.vertices)
@@ -351,7 +345,7 @@ def write_3mf(path, placed, title, bambu=None):
     if bambu:
         files += [("Metadata/model_settings.config", bambu_model_settings([n for n, _, _ in placed],
                                                                           os.path.splitext(os.path.basename(path))[0])),
-                  ("Metadata/project_settings.config", bambu_project_settings(bambu))]
+                  ("Metadata/project_settings.config", bambu_project_settings())]
     # fixed timestamps so the same geometry always gives the same file (reproducible checksums)
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
         for arc, data in files:
@@ -374,8 +368,7 @@ def main():
         write_3mf(path, placed, title)
         if KIT and bed == BED and "/" not in fname:      # the A1 mini plates again, as Bambu Studio projects
             os.makedirs(os.path.join(OUT_3MF, BAMBU["dir"]), exist_ok=True)
-            write_3mf(os.path.join(OUT_3MF, BAMBU["dir"], BAMBU["prefix"] + fname), placed, title,
-                      bambu="tpu" if "tpu" in fname else "pla")
+            write_3mf(os.path.join(OUT_3MF, BAMBU["dir"], BAMBU["prefix"] + fname), placed, title, bambu=True)
         # re-load and check what was written
         sc = trimesh.load(path)
         geoms = sc.dump() if isinstance(sc, trimesh.Scene) else [sc]

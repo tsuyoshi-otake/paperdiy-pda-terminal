@@ -634,11 +634,11 @@ def first_contact(lidset, traset, axis_shift=0.0, tol=0.05):
 
 
 def table_angle(verts, step=0.1):
-    """First opening angle (deg) at which a lid-side vertex goes below the table (z = -FOOT_H: on the TPU feet), or None."""
+    """First opening angle (deg) at which a lid-side vertex goes below the table (z = 0, the tray's bottom), or None."""
     y, z = np.asarray(verts)[:, 1] - HINGE_AXIS_Y, np.asarray(verts)[:, 2] - Z_PART
     for i in range(int(round(180.0 / step)) + 1):
         a = np.radians(-i * step)
-        if (Z_PART + y * np.sin(a) + z * np.cos(a)).min() < -FOOT_H:
+        if (Z_PART + y * np.sin(a) + z * np.cos(a)).min() < 0.0:
             return round(i * step, 1)
     return None
 
@@ -844,39 +844,7 @@ def build_kit_tray():
     T = T + (union(adds) ^ outer)
     cuts = hinge_pocket_cuts() + hinge_pilots(False) + [latch_tray_cut(), back_edge_relief(False)]
     cuts.append(box(p["x"][0], p["x"][1], yi1 - 1.0, Y_BACK + 1.0, TRAY_FLOOR + p["above_floor"], 60.0))
-    cuts += [foot_pocket(o) for o in foot_outlines()]
     return T - union(cuts)
-
-
-# ------------------------------------------------------------------ TPU feet (kit)
-def foot_outlines():
-    """Plan outlines of the TPU feet's pockets: rounded rectangles in the tray's bottom corners, concentric with the
-    corner radius and TPU_FEET["inset"] from the outer edges."""
-    f = TPU_FEET
-    if not f:
-        return []
-    x_out, r = 101.0 - f["inset"], CORNER_R - f["inset"]
-    out = []
-    for sx in (-1.0, 1.0):
-        for y_edge, sy in ((Y_BACK - f["inset"], -1.0), (-BACK_OLD_Y + f["inset"], 1.0)):
-            out.append(rrect(sx * (x_out - f["w"] / 2), y_edge + sy * f["d"] / 2, f["w"], f["d"], r))
-    return out
-
-
-def foot_pocket(outline):
-    f = TPU_FEET
-    c = f["chamfer"] - 0.1                    # mouth chamfer (the pocket's first layers spread less than the pad's)
-    return prism_z(outline, -1.0, f["pocket"]) + M.batch_hull([
-        prism_z(outline.offset(c, m3.JoinType.Round, 2.0, SEG), -1.0, 0.0), prism_z(outline, c - 0.01, c)])
-
-
-def tpu_foot(outline):
-    """The pad, in place (its top in the pocket's floor, its bottom FOOT_H under the tray); chamfered on the table side."""
-    f = TPU_FEET
-    o = outline.offset(f["fit"], m3.JoinType.Round, 2.0, SEG)
-    z0, z1, c = -FOOT_H, f["pocket"], f["chamfer"]
-    return prism_z(o, z0 + c, z1) + M.batch_hull([prism_z(o.offset(-c, m3.JoinType.Round, 2.0, SEG), z0, z0 + 0.01),
-                                                  prism_z(o, z0 + c - 0.01, z0 + c)])
 
 
 # ------------------------------------------------------------------ KIT LID (PaperDIY Complete Kit in its own case)
@@ -1454,9 +1422,6 @@ def main_kit():
     lid_cov, tray_cov = hinge_covers()
     export(lid_cov[0], f"{OUT_DIR}/hinge_cover_lid_x2.stl")
     export(tray_cov[0], f"{OUT_DIR}/hinge_cover_tray_x2.stl")
-    feet = [tpu_foot(o) for o in foot_outlines()]
-    if feet:
-        export(feet[0].translate([0, 0, FOOT_H]), f"{OUT_DIR}/tpu_foot.stl")       # table side down, as printed
     write_assembly_json()
     log("== split pieces for A1 mini (limit %.0f mm)" % MAX_PIECE)
     if not SHELL:
@@ -1545,16 +1510,6 @@ def main_kit():
             f"solid {Y_BACK - WALL - KB_FACE_Y:.2f} mm behind it, open over the charge port "
             f"(x {TRAY_PORT['x'][0]:g}..{TRAY_PORT['x'][1]:g})")
         assert (kb ^ tray).volume() < 1e-3 and (tray ^ lid).volume() < 1e-3
-    if feet:
-        log("== TPU feet")
-        f = TPU_FEET
-        fit = sum((ft ^ tray).volume() for ft in feet) / max(len(feet), 1)
-        log(f"  feet: {len(feet)} pads {f['w']:g} x {f['d']:g} mm, {f['t']:g} thick in {f['pocket']:g} mm pockets "
-            f"(press fit {f['fit']:g} mm a side, {fit:.1f} mm3 each), {FOOT_H:g} mm proud; the rear ones end "
-            f"{f['inset']:g} mm in from the back edge (y = {Y_BACK - f['inset']:.1f}: the tipping edge); closed case "
-            f"on its feet {top_z(-BACK_OLD_Y) + FOOT_H:.1f} mm tall at the front, {top_z(Y_BACK) + FOOT_H:.1f} at the back")
-        for ft in feet:
-            interference(ft, lid, "foot vs lid")
     if SHELL:
         interference(kit, panel, "kit vs bezel panel"); interference(panel, lid, "bezel panel vs lid")
         interference(panel, tray, "bezel panel vs tray"); interference(plug, panel, "USB-C plug vs bezel panel")

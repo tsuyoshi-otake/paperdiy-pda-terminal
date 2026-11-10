@@ -14,13 +14,11 @@
   "metres": 21.90745
  },
  "plate2_tray.3mf": {
-  "warnings": [
-   "Floating bridge anchors: tray_A_left, tray_B_main"
-  ],
+  "warnings": [],
   "ok": true,
-  "time": "1h 32m 22s",
-  "grams": 61.57,
-  "metres": 20.64216
+  "time": "1h 32m 28s",
+  "grams": 61.74,
+  "metres": 20.70067
  },
  "plate3_panel.3mf": {
   "warnings": [],
@@ -28,13 +26,6 @@
   "time": "37m 31s",
   "grams": 24.01,
   "metres": 8.049479999999999
- },
- "plate4_tpu.3mf": {
-  "warnings": [],
-  "ok": true,
-  "time": "3m 11s",
-  "grams": 0.73,
-  "metres": 0.25089
  },
  "large/plate1_lid.3mf": {
   "warnings": [],
@@ -44,13 +35,11 @@
   "metres": 21.76141
  },
  "large/plate2_tray.3mf": {
-  "warnings": [
-   "Floating bridge anchors: tray"
-  ],
+  "warnings": [],
   "ok": true,
-  "time": "1h 28m 11s",
-  "grams": 60.72,
-  "metres": 20.35706
+  "time": "1h 28m 4s",
+  "grams": 60.89,
+  "metres": 20.41608
  },
  "large/plate3_panel.3mf": {
   "warnings": [],
@@ -59,25 +48,25 @@
   "grams": 24.05,
   "metres": 8.064779999999999
  },
- "large_total_g": 149.67000000000002,
+ "large_total_g": 149.84,
  "large_total_min": 221,
- "total_g": 150.92,
+ "total_g": 151.09,
  "total_min": 233,
  "nozzle_check": {
   "worst_spot_mm2": 0.4999307581650446,
   "wall_gaps": 0
  },
  "lid_g": 137.97,
- "base_g": 63.37,
+ "base_g": 63.55,
  "lid_cg": [
   0.3251437992634959,
   4.127394716632546,
   19.516314471273443
  ],
- "pivot_y": 52.5,
- "table_contact_deg": 168.6,
- "table_limit": 168,
- "keyboard_min_g": 88.08022357453176,
+ "pivot_y": 53.0,
+ "table_contact_deg": 162.2,
+ "table_limit": 162,
+ "keyboard_min_g": 83.42151328443163,
  "hinge_torque_nm": [
   0.1176,
   0.1568,
@@ -93,5 +82,5 @@
  "snap_hold_n": 5.696327859145422,
  "snap_hold_low_n": 2.8481639295727113,
  "open_force_n": 6.603990726904756,
- "keyboard_for_one_hand_g": 332.28500013064206
+ "keyboard_for_one_hand_g": 332.07323206074284
 }

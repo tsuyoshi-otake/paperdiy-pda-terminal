@@ -106,15 +106,8 @@ TRAY_PORT = dict(x=(72.9, 89.1), above_floor=3.0)
 # behind the keyboard it is the top of a solid strip from the floor up (the slicer fills it with infill; it takes in the
 # hinge bosses and pads), open over the charge-port opening (the plug, and a switch there, stay reachable from above).
 TRAY_DECK = dict(t=1.2, r=3.0) if PD_MOUNT == "kit" else None
-# Kit: TPU feet (print them with a 0.4 nozzle; TPU does not go through a 0.2 one).
-# Feet: four non-slip pads pressed into `pocket` deep pockets in the tray's bottom at the corners, `t` thick, so they
-# stand t - pocket proud: only 0.4 mm, so the open lid still comes down on the table (at ~169 deg) and stops there; with
-# 1.2 mm feet it would swing on past 180 deg with nothing to stop it. Concentric with the corner radius and `inset` from
-# the outer edges: the rear ones reach to 0.5 mm from the back edge, so the point the device tips about moves in only
-# that much. The pocket's mouth is chamfered (elephant foot); the pad is `fit` larger than the pocket per side (TPU
-# squeezes in) and chamfered on the table side.
-TPU_FEET = dict(w=16.0, d=8.0, inset=0.5, pocket=0.8, t=1.2, fit=0.05, chamfer=0.3) if PD_MOUNT == "kit" else None
-FOOT_H = TPU_FEET["t"] - TPU_FEET["pocket"] if TPU_FEET else 0.0      # the table is this far below the tray's bottom
+# No feet: the tray's bottom is flat and stands on the table, as the original's does. (TPU feet pressed into pockets in
+# the bottom were tried: the pockets in the first layer and the second material only invited mistakes in the making.)
 # No dampers under the lid's front edge: the torque hinges spring back a little when the lid is let go (see LATCH), so
 # the closed lid is always pressed up against the snap and cannot rattle; TPU springs there only added to that push.
 TRAY_FLOOR = WALL if PD_MOUNT == "kit" else 3.0   # top of the tray floor (the original tray: 3.0)

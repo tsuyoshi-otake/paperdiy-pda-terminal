@@ -86,11 +86,9 @@ r 6 halved), and the other small radii were halved too.
 | `out/split/usb_variants/lid_A_left_usb*.stl` | lid A for a panel-mount female USB-C: M3 ears 16 / 18 / 20 / 22 / 25 / 28 / 30 mm apart, or none (glue) |
 | `out/whole/lid.stl`, `tray.stl`, `panel.stl`, `out/whole/usb_variants/lid_usb*.stl` | one-piece parts for a bed of 220 mm or more: no split, no keys, no pockets (each asserted to be the checked part minus material; the panel-mount lids are also checked against the connector) |
 | `out/coupons/*.stl` | hinge seat (lid, tray), snap lip (lid) + recess (tray) |
-| `out/tpu_foot.stl` | TPU foot (table side down), as printed |
 | `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~21 min, 8 g |
 | `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers + 2 lid splice plates, ~1 h 45 min, 65 g |
-| `3mf/plate4_tpu.3mf` | TPU (0.4 nozzle): 4 feet, ~3 min, 1 g |
-| `3mf/bambu_a1mini/bambu_plate0…4*.3mf` | the same five plates as **Bambu Studio projects** for the A1 mini with a 0.4 mm nozzle: printer, process, filament and plate type are selected on opening (see "Bambu Studio projects") |
+| `3mf/bambu_a1mini/bambu_plate0…3*.3mf` | the same four plates as **Bambu Studio projects** for the A1 mini with a 0.4 mm nozzle: printer, process, filament and plate type are selected on opening (see "Bambu Studio projects") |
 | `3mf/bambu_a1mini/paperdiy_process_a1mini_04.json` | the same process changes as a preset to import (File → Import → Import Configs), the fallback |
 | `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers + 1 tray splice plate, ~1 h 32 min, 62 g |
 | `3mf/plate3_panel.3mf` | panel A + B + 3 panel splice plates, ~38 min, 24 g |
@@ -121,7 +119,7 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
 * **Top**: a plane through the lowest point that the hinge allows at the back face (leaf 12.75 mm above the axis + the
   cover's top rim; z 26.4 at y = 53) and the most demanding of: the kit + ceiling, and the USB-C plug path + 0.8
   (`USB_CEIL`): z = 24.994 + 0.02653 y (set by the kit's front edge + the 2.0 ceiling). The lid is 15.8 mm thick at
-  the front face and 13.4 at the back; the closed case is 23.8 mm tall at the front and 26.4 at the back (24.2 / 26.8 on the TPU feet; was 30 / 30). The hinge (25 mm wide, face mounted) sets a floor
+  the front face and 13.4 at the back; the closed case is 23.8 mm tall at the front and 26.4 at the back (was 30 / 30). The hinge (25 mm wide, face mounted) sets a floor
   of ~26 mm at the back whatever the keyboard.
 * **Lid shell** (`KIT_LID = "shell"`): the plan outline (r 3 corners) as a prism between the two planes, no chamfers,
   hollowed to `SHELL_WALL` = `SHELL_CEIL` = 2.0. Inside: a pad and two screw bosses per hinge (see "Hinge"), six screw
@@ -145,12 +143,9 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
   the floor up (7.5 mm deep; it takes in the hinge bosses and pads, the slicer fills it with infill). Over the charge-port opening it is open (16.2 mm), so the plug, and a switch there, stay reachable from above.
   No supports, no slicer warnings (the first try, a deck bridged over ribs, gave long-bridge warnings). The tray's splice
   plate now stays inside the keyboard's room (y ±42.4, 84.8 mm), so it goes in through the opening.
-* **TPU feet** (`TPU_FEET`): four 16 × 8 mm pads, 1.2 mm thick, pressed into 0.8 mm pockets in the tray's bottom at the
-  corners (concentric with the r 3 corners, 0.5 mm in from the edges; 0.05 mm press fit a side; chamfered pocket mouth
-  and table edge), so they stand 0.4 mm proud. Kept that low on purpose: the open lid still comes down on the table at
-  168.6° and stops there (1.2 mm feet would let it swing past 180° with nothing to stop it). The rear pads end 0.5 mm in
-  from the back edge, so the tipping edge moves in only that much. The slicer bridges the floor over the pockets
-  ("floating bridge anchors": a short, low bridge).
+* **No feet**: the tray's bottom is flat and stands on the table, as the original's does. An earlier version pressed
+  four TPU pads into 0.8 mm pockets in the bottom; the pockets in the first layer and the second material only invited
+  mistakes in the making, so they are gone and every part is PLA.
 * **No dampers** under the lid's front edge: the torque hinges spring back a little when the lid is let go (see
   "Hinge"), so the closed lid is always pressed up against the snap and cannot rattle. The TPU bow springs an earlier
   version had in the tray's front rim only added 0.5 N to that push.
@@ -203,7 +198,7 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
 ### Bambu Studio projects (`3mf/bambu_a1mini/`)
 `export_3mf.py` writes the A1 mini plates a second time as Bambu Studio projects (`bambu_` + the plate's file name, so
 the two kinds cannot be mixed up once downloaded); they open ready to slice: Bambu Lab
-A1 mini 0.4 nozzle, Textured PEI Plate, Bambu PLA Basic (plate 4: Bambu TPU 95A HF), and "0.20mm Standard @BBL A1M" with
+A1 mini 0.4 nozzle, Textured PEI Plate, Bambu PLA Basic, and "0.20mm Standard @BBL A1M" with
 five options changed (`BAMBU["changed"]`: 3 wall loops, gyroid infill, Arachne walls, 0.1 mm elephant-foot compensation,
 precise Z height).
 
@@ -252,13 +247,13 @@ tray, the keyboard's room (tray floor to `KB_TOP_Z`) vs lid, tray (deck, pads, b
 panel, tray), splice plates vs their pieces, hinge leaves / barrels / covers vs both halves, and for every lid-A variant
 a female-connector envelope (ears + body) vs lid, panel and kit: all 0 mm³ (the covers' crush ribs press 0.16 mm³ each into
 their pockets, logged apart). Lid + kit + panel + covers rotated 0–180° about the real hinge axis: no contact with the
-tray; standing on the TPU feet, the lid reaches the table at 168.6°. With the axis 0.15 mm further in (exactly at the back face) still none;
+tray; the lid reaches the table at 162.2°. With the axis 0.15 mm further in (exactly at the back face) still none;
 0.3 mm further in, the lid meets the tray at 170°. With the keyboard's charge plug in, the lid opens to 95°.
 
 ### Tipping
 Lid side 138 g (printed parts as sliced + kit 43.1 g + half the hinges), centre of mass 49.0 mm in front of the hinge
-axis; base 63 g without the keyboard, standing on the TPU feet and tipping about the rear ones' back edge (y = 52.5): a
-keyboard of **88 g** keeps it on its feet up to the table contact at 168.6° (`out/print_report.md`; the tray's centre of mass is taken from its solid shape,
+axis; base 64 g without the keyboard, tipping about the back edge of the tray's bottom (y = 53.0): a
+keyboard of **83 g** keeps it upright up to the table contact at 162.2° (`out/print_report.md`; the tray's centre of mass is taken from its solid shape,
 which puts too much weight in the infilled strip behind the keyboard, so this errs on the safe side).
 
 ### Colour mock-ups
@@ -298,7 +293,7 @@ tray and panel): `docs/images/render_{open,closed}_{black,khaki,mix}.png`.
   reprinting the covers only. Flush covers sink the leaves by their thickness, which moves the axis in by as much: at
   2 mm the plate would put the axis inside the back face, hence the 1 mm plate.
 * **Checks:** lid + kit + panel + covers rotated 0–180° about the axis do not touch the tray + covers; on a table the lid
-  reaches the table at 168.6° on the TPU feet (opening limit). The axis height is read off Sugatsune's 3D viewer: moved 0.3 mm further in,
+  reaches the table at 162.2° (opening limit). The axis height is read off Sugatsune's 3D viewer: moved 0.3 mm further in,
   the lid would meet the tray at 170° (past the table limit, thanks to the r 1.5 edges). Hinge envelopes and covers vs
   lid / tray: 0 mm³.
 * The hinge's 25 mm leaf span sets a floor of about 26 mm for the closed height at the back, whatever the keyboard.
@@ -312,8 +307,7 @@ that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits
 ### Printing
 * **Plates** (`3mf/`, A1 mini, 180 × 180 mm): `plate0_test_coupons` (21 min, 8 g, print first), `plate1_lid` (lid A + B,
   2 lid covers, 2 splice plates, 1 h 45 min, 65 g), `plate2_tray` (tray A + B, 2 tray covers, 1 splice plate, 1 h 32 min,
-  62 g), `plate3_panel` (panel A + B, 3 splice plates, 38 min, 24 g): 151 g and 3 h 53 min for plates 1–3;
-  `plate4_tpu` (TPU 95A, 0.4 nozzle: 4 feet, ~3 min, 1 g; sliced with `tools/a1mini_tpu_040.ini`).
+  62 g), `plate3_panel` (panel A + B, 3 splice plates, 38 min, 24 g): 151 g and 3 h 53 min for plates 1–3.
   `3mf/usb_variants/` holds lid A for a panel-mount female.
 * **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 40 min, 65 g), tray (1 h 28 min, 61 g), panel (35 min,
   24 g): 150 g and 3 h 41 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
@@ -352,7 +346,7 @@ that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits
 * **Keyboard play**: the kit tray keeps the original's 196 × 87 mm room with nothing to locate the keyboard, so the
   keyboard (estimated 194 × 85 mm, `KB_SIZE`) moves about 2 mm both ways as in the original. If that bothers: removable
   tape under the keyboard, or measure it and close the room up (`KB_FACE_X`, `KB_FACE_Y`).
-* **Keyboard weight**: 88 g or more keeps the device on its feet up to the table contact; see "Tipping".
+* **Keyboard weight**: 83 g or more keeps the device upright up to the table contact; see "Tipping".
 * **Hinge barrel and axis**: read off Sugatsune's 3D viewer, not a drawing; join the hinge coupons with a real hinge.
 * **The kit's printed case**: modelled from M5Stack's 3D file (120.0 × 67.0 × 6.3, r 3); the panel's rim has 0.2 mm clearance.
 * **CACOE charge port / switch** positions are inferred from the original tray's openings (`KB_CUTS_ENABLED` adds others).
@@ -432,7 +426,6 @@ published drawing and structure files.
 | `WALL` / `CORNER_R` / `RIB_T` | `2.0` / `3.0` (bare `6.0`) / `1.2` | design choice | walls, ceiling and floor (5 lines of a 0.4 mm nozzle, 10 layers of 0.2 mm; 1.2 printed too flexible); plan corner radius (the original's halved); ribs, guides, guard rings |
 | `TRAY_FLOOR` / `TRAY_PORT` | `WALL` (bare `3.0`) / `x 72.9…89.1, 3.0 above the floor` | design choice | the kit tray: floor top; charge-port opening |
 | `TRAY_DECK` | `t 1.2, r 3` (kit) | design choice | the kit tray's deck flush with the rim: thickness, corner radius of its opening (the opening itself is `KB_FACE_*`) |
-| `TPU_FEET` / `FOOT_H` | `16 × 8, inset 0.5, pocket 0.8, t 1.2, fit 0.05, chamfer 0.3` / `0.4` (kit) | design choice | TPU feet in the tray's bottom; how far they stand proud (the table is that far below the tray) |
 | `KB_THICK` / `KB_TOP_Z` / `KB_CLR` | `11.5` / `TRAY_FLOOR + KB_THICK` (12.7) / `0.5` | ASSUMED | keyboard thickness over the keycaps -> MEASURE; its highest point; clearance under the panel |
 | `KB_SIZE` / `KB_FACE_X`, `KB_FACE_Y` / `KB_PAD` | `(194, 85)` (kit; bare `None`) / `LID_INNER_X`, `LID_INNER_Y` (98, 43.5) / `clr 0.15, w 6, 4 front + 4 back + 2 per end` | ASSUMED / measured | keyboard body width × depth -> MEASURE (kit: the original room 196 × 87 less the reported ~2 mm play; used for the renders and the report only); the faces of the keyboard's room, the original tray's; bare: pads on the tray's inner walls take up the play (`None` = no pads) |
 | `LID_UNDER` | `(10.4417, 0.05376)` | measured | [M] parting plane of the original lid, z = a + b y |
