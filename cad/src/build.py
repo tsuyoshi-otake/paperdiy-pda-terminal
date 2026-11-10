@@ -805,27 +805,21 @@ def splice_parts(kind, X):
 
 
 def build_kit_tray():
-    """Kit design: the keyboard tray as a thin shell (WALL walls and floor) with the original outline and parting, ribs
-    that locate the keyboard where the original walls did, hinge pads and bosses, the charge-port opening and the
-    snap-tab recess on a local pad."""
+    """Kit design: the keyboard tray as a thin shell (WALL walls and floor) with the original outline and parting, a deck
+    round the keyboard with the original tray's room as its opening (nothing stands into it), hinge pads and bosses, the
+    charge-port opening and the snap-tab recess on a local pad."""
     bottom = LID_UNDER
     plan = CS.batch_boolean(lid_plan_pieces(), m3.OpType.Add)
     outer = prism_z(plan, 0.0, 60.0) ^ half_space(bottom[0], bottom[1], False) ^ box(-BIG, BIG, -BIG, BIG, -BIG, Z_PART)
     T = outer - prism_z(plan.offset(-WALL, m3.JoinType.Round, 2.0, SEG), TRAY_FLOOR, 60.0)
-    xi, yi0, yi1 = 101.0 - WALL, -BACK_OLD_Y + WALL, Y_BACK - WALL                       # inner faces
+    yi0, yi1 = -BACK_OLD_Y + WALL, Y_BACK - WALL                                          # inner faces
     adds = hinge_mounts(False)
-    rk = TRAY_KB_RIBS                        # keyboard-locating ribs, out to the keyboard's faces
-    zt = lambda y: min(under_z(y), Z_PART) - 1.0                                          # 1 mm below the rim
-    adds += [box(x - RIB_T / 2, x + RIB_T / 2, yi0 - 0.1, -KB_FACE_Y, 0.0, zt(-KB_FACE_Y)) for x in rk["front_x"]]
-    adds += [box(x - RIB_T / 2, x + RIB_T / 2, KB_FACE_Y, yi1 + 0.1, 0.0, zt(KB_FACE_Y)) for x in rk["back_x"]]
-    adds += [box(*sorted((sx * KB_FACE_X, sx * (xi + 0.1))), y - RIB_T / 2, y + RIB_T / 2, 0.0, zt(y))
-             for sx in (-1.0, 1.0) for y in rk["end_y"]]
     p = TRAY_PORT
     d = TRAY_DECK
     if d:                                    # the deck: flush with the rim around the keyboard
         cav = plan.offset(-WALL, m3.JoinType.Round, 2.0, SEG)
-        # the opening runs on past the back strip's face (y = KB_FACE_Y + clr), which the solid strip makes: square corners
-        opening = rrect(0.0, d["r"] / 2, 2 * (KB_FACE_X + d["clr"]), 2 * (KB_FACE_Y + d["clr"]) + d["r"], d["r"])
+        # the opening runs on past the back strip's face (y = KB_FACE_Y), which the solid strip makes: square corners
+        opening = rrect(0.0, d["r"] / 2, 2 * KB_FACE_X, 2 * KB_FACE_Y + d["r"], d["r"])
         port = box(p["x"][0], p["x"][1], 0.0, BIG, -BIG, BIG)
 
         def below(off):                      # under the parting surface lowered by off
@@ -835,13 +829,13 @@ def build_kit_tray():
         deck = ring - below(d["t"])
         # a 45 deg fillet under it along the front and end walls, so it prints without supports; it starts 0.05 mm
         # short of the deck's edge (no shared edge)
-        ye, xe, zb = KB_FACE_Y + d["clr"] - 0.05, KB_FACE_X + d["clr"] - 0.05, bottom[0] - d["t"]
+        ye, xe, zb = KB_FACE_Y - 0.05, KB_FACE_X - 0.05, bottom[0] - d["t"]
         r2 = np.sqrt(2.0)
         fil = [ring.trim_by_plane((0.0, -1.0 / r2, 1.0 / r2), (zb - bottom[1] * ye + ye) / r2)]          # front wall
         for sx in (-1.0, 1.0):                                                                           # end walls
             n = np.array([sx, -bottom[1], 1.0])
             fil.append(ring.trim_by_plane(tuple(n / np.linalg.norm(n)), (zb + xe) / np.linalg.norm(n)))
-        back = box(-BIG, BIG, KB_FACE_Y + d["clr"], BIG, -BIG, BIG)   # behind the keyboard: solid from the floor up
+        back = box(-BIG, BIG, KB_FACE_Y, BIG, -BIG, BIG)              # behind the keyboard: solid from the floor up
         deck = deck + union(fil) + (prism_z(inside, 0.0, 60.0) ^ below(-1.0) ^ back)         # overlapping, not touching
         T = outer - (prism_z(cav, TRAY_FLOOR, 60.0) - (deck - port))  # left out of the cavity: its top is the rim's own face
     l = LATCH                                # pad behind the snap-tab recess, out to the original inner face
@@ -1541,14 +1535,14 @@ def main_kit():
     interference(lid, tray, "lid vs tray")
     kb = prism_z(rrect(0.0, 0.0, 2 * KB_FACE_X - 0.3, 2 * KB_FACE_Y - 0.3, 2.7), TRAY_FLOOR, KB_TOP_Z)
     interference(kb, lid, f"keyboard space (tray floor {TRAY_FLOOR} to z {KB_TOP_Z}) vs lid")
-    interference(kb, tray, "keyboard space vs tray (ribs, pads, hinge bosses)")
+    interference(kb, tray, "keyboard space vs tray (deck, pads, hinge bosses)")
     if SHELL and TRAY_DECK:
         d = TRAY_DECK
-        log(f"  keyboard {KB_SIZE[0]:g} x {KB_SIZE[1]:g} mm (estimate, MEASURE): ribs at x = +-{KB_FACE_X:.2f}, "
-            f"y = +-{KB_FACE_Y:.2f} ({KB_FIT:g} mm a side); deck {d['t']:g} mm flush with the rim, opening "
-            f"{2 * (KB_FACE_X + d['clr']):.1f} x {2 * (KB_FACE_Y + d['clr']):.1f} mm, "
-            f"{BACK_OLD_Y - WALL - KB_FACE_Y - d['clr']:.2f} mm wide at the front and the ends (45 deg under), "
-            f"solid {Y_BACK - WALL - KB_FACE_Y - d['clr']:.2f} mm behind it, open over the charge port "
+        log(f"  keyboard room {2 * KB_FACE_X:g} x {2 * KB_FACE_Y:g} mm from the floor up (the original tray's; nothing "
+            f"stands into it: no ribs), {KB_FACE_X - KB_SIZE[0] / 2:g} / {KB_FACE_Y - KB_SIZE[1] / 2:g} mm a side round the "
+            f"estimated {KB_SIZE[0]:g} x {KB_SIZE[1]:g} mm keyboard (MEASURE); deck {d['t']:g} mm flush with the rim, "
+            f"{BACK_OLD_Y - WALL - KB_FACE_Y:.2f} mm wide at the front and the ends (45 deg under), "
+            f"solid {Y_BACK - WALL - KB_FACE_Y:.2f} mm behind it, open over the charge port "
             f"(x {TRAY_PORT['x'][0]:g}..{TRAY_PORT['x'][1]:g})")
         assert (kb ^ tray).volume() < 1e-3 and (tray ^ lid).volume() < 1e-3
     if feet:

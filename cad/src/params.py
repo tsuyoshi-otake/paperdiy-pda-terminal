@@ -96,18 +96,16 @@ KIT_GAP = 0.2                 # behind the kit (its back plate is flat; the ESP3
 WALL = 2.0                    # lid and tray walls, lid ceiling, tray floor (5 lines of a 0.4 nozzle, 9 of a 0.2 nozzle)
 CORNER_R = 3.0 if PD_MOUNT == "kit" else 6.0   # plan corners of lid and tray (the original's r 6, halved)
 RIB_T = 1.2                   # ribs, guides and guard rings (3 lines)
-# keyboard tray (kit): a new thin shell with the original's outline and parting. Ribs on the inside of the walls stand
-# out to the keyboard's faces (KB_FACE_*: the measured or estimated keyboard + KB_FIT), so it sits without play (behind
-# it they stand on the deck's solid back strip). The charge-port opening in the back wall (x 72.9..89.1) starts 3.0
-# above the floor, as in the original.
-TRAY_KB_RIBS = dict(front_x=(-80.0, -40.0, 40.0, 80.0), back_x=(-80.0, -40.0, 0.0, 40.0, 66.0), end_y=(-25.0, 25.0))
+# keyboard tray (kit): a new thin shell with the original's outline and parting. Nothing stands out of its walls into
+# the keyboard's room: no ribs or pads to locate the keyboard (they got in its way). The charge-port opening in the
+# back wall (x 72.9..89.1) starts 3.0 above the floor, as in the original.
 TRAY_PORT = dict(x=(72.9, 89.1), above_floor=3.0)
 # Deck (kit): a t thick face flush with the tray's rim that closes the gaps around the keyboard, so no boss or pad shows.
-# Its opening is `clr` larger than the rib faces on every side (room to file the ribs if the keyboard is a little bigger
-# than KB_SIZE), corner radius r. Along the front and end walls it rests on a 45 deg fillet (no supports); behind the
-# keyboard it is the top of a solid strip from the floor up (the slicer fills it with infill; it takes in the hinge
-# bosses and pads), open over the charge-port opening (the plug, and a switch there, stay reachable from above).
-TRAY_DECK = dict(t=1.2, clr=0.5, r=3.0) if PD_MOUNT == "kit" else None
+# Its opening is the original tray's room (KB_FACE_*: 196 x 87, the one room the keyboard is known to go into), corner
+# radius r as the original's inner corners. Along the front and end walls it rests on a 45 deg fillet (no supports);
+# behind the keyboard it is the top of a solid strip from the floor up (the slicer fills it with infill; it takes in the
+# hinge bosses and pads), open over the charge-port opening (the plug, and a switch there, stay reachable from above).
+TRAY_DECK = dict(t=1.2, r=3.0) if PD_MOUNT == "kit" else None
 # Kit: TPU feet (print them with a 0.4 nozzle; TPU does not go through a 0.2 one).
 # Feet: four non-slip pads pressed into `pocket` deep pockets in the tray's bottom at the corners, `t` thick, so they
 # stand t - pocket proud: only 0.4 mm, so the open lid still comes down on the table (at ~169 deg) and stops there; with
@@ -127,12 +125,11 @@ KB_THICK = 11.5               # [A] from the original lid (panel face 15.0 over 
 KB_TOP_Z = TRAY_FLOOR + KB_THICK
 KB_CLR = 0.5
 # The CACOE sits loose in the original tray (reported: about 2 mm both ways). KB_SIZE = (width x, depth y) of the keyboard
-# body. Kit: the tray's ribs stand KB_FIT off it (KB_FACE_*). Bare design: None = no pads; otherwise pads on the inner
-# walls stand (inner size - keyboard) / 2 - KB_PAD["clr"] off the wall.
+# body. Kit: only an estimate for the renders and the report; the tray keeps the original's room (KB_FACE_*), so the
+# keyboard goes in as it does in the original, with the same play. Bare design: None = no pads; otherwise pads on the
+# inner walls stand (inner size - keyboard) / 2 - KB_PAD["clr"] off the wall.
 KB_SIZE = (194.0, 85.0) if PD_MOUNT == "kit" else None   # [A] kit: the original room (196 x 87) less the reported play -> MEASURE
-KB_FIT = 0.15                 # kit: keyboard to the ribs, per side
-KB_FACE_X, KB_FACE_Y = ((KB_SIZE[0] / 2 + KB_FIT, KB_SIZE[1] / 2 + KB_FIT) if PD_MOUNT == "kit" and KB_SIZE
-                        else (LID_INNER_X, LID_INNER_Y))   # the ribs' faces toward the keyboard
+KB_FACE_X, KB_FACE_Y = LID_INNER_X, LID_INNER_Y            # the faces toward the keyboard: the original tray's room
 KB_PAD = dict(clr=0.15, w=6.0, z0=3.0, top_below_rim=1.0, lead=1.5, front_x=(-60.0, -22.0, 22.0, 60.0),
               back_x=(-60.0, -22.0, 22.0, 60.0), end_y=(-20.0, 8.0))
 LID_UNDER = (10.4417, 0.05376)  # [M] lid underside (parting) plane z = a + b * y, fitted to the original (resid < 0.001)

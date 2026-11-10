@@ -167,7 +167,7 @@ function screenTexture() {
 // ---------------------------------------------------------------- keyboard (illustration only)
 function keyboard() {
   const grp = new THREE.Group();
-  // body: KB_SIZE (the kit's estimate, x 194 by y 85, held by the tray's ribs) or the original's room, on the tray
+  // body: KB_SIZE (the kit's estimate, x 194 by y 85, loose in the tray's 196 by 87 room) or the original's room, on the tray
   // floor; the key tops reach the assumed keyboard thickness (KB_THICK = 11.5 mm in cad/src/params.py, not measured yet)
   const F = A.TRAY_FLOOR ?? 3.0, KH = 2.2, HB = (KITMODE ? 11.5 : 8.2) - KH;
   const [KW, KD] = A.KB_SIZE ?? [195, 86];

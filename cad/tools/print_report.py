@@ -195,7 +195,9 @@ def gcode_layers(path):
 def unprinted(path, gcode, skin=0.30, thin=1.5):
     """Where the sliced plate leaves the model unprinted, layer by layer: (a) the outer `skin` of every section not
     covered by an extrusion (a feature too small for the nozzle), (b) a gap left inside a section thinner than `thin`
-    (a wall the nozzle does not fill). Returns [(part, z, area mm2, kind)], slivers under 0.03 mm2 ignored."""
+    that goes on in the layer above (a wall the nozzle does not fill; where a sloping or rounded top face runs out in
+    one layer there is nothing above, and it is listed under (a) only). Returns [(part, z, area mm2, kind)], slivers
+    under 0.03 mm2 ignored."""
     from shapely.geometry import LineString, Polygon
     from shapely.ops import unary_union
     scene = trimesh.load(path)
@@ -208,7 +210,7 @@ def unprinted(path, gcode, skin=0.30, thin=1.5):
     layers = gcode_layers(gcode)
     pts = np.array([q for v in layers.values() for (a, b, c, d, _) in v for q in ((a, b), (c, d))])
     off = (mesh.bounds[0][:2] + mesh.bounds[1][:2]) / 2 - (pts.min(0) + pts.max(0)) / 2     # the slicer's placement
-    out, prev = [], 0.0
+    out = []
 
     def part_at(x, y):
         for name, lo, hi in boxes:
@@ -216,21 +218,37 @@ def unprinted(path, gcode, skin=0.30, thin=1.5):
                 return name
         return "?"
 
-    for z in sorted(layers):
-        segs, lh, prev = layers[z], z - prev, z
-        sec = mesh.section(plane_origin=[0, 0, mesh.bounds[0][2] + z - lh / 2], plane_normal=[0, 0, 1]) if segs else None
-        if sec is None:
+    zs = sorted(z for z in layers if layers[z])
+    mid = {z: z - (z - (zs[i - 1] if i else 0.0)) / 2 for i, z in enumerate(zs)}             # middle of each layer
+    cache = {}
+
+    def model(z):                # the model's section in the middle of layer z, or None
+        if z not in cache:
+            sec = mesh.section(plane_origin=[0, 0, mesh.bounds[0][2] + mid[z]], plane_normal=[0, 0, 1])
+            cache[z] = None
+            if sec is not None:
+                planar, _ = sec.to_2D(to_2D=np.eye(4))
+                cache[z] = unary_union([Polygon(q.exterior.coords, [h.coords for h in q.interiors])
+                                        for q in planar.polygons_full])
+        return cache[z]
+
+    for i, z in enumerate(zs):
+        mp = model(z)
+        if mp is None:
             continue
-        planar, _ = sec.to_2D(to_2D=np.eye(4))
-        mp = unary_union([Polygon(q.exterior.coords, [h.coords for h in q.interiors]) for q in planar.polygons_full])
+        above = model(zs[i + 1]) if i + 1 < len(zs) else None
         pr = unary_union([LineString([(a + off[0], b + off[1]), (c + off[0], d + off[1])]).buffer(w / 2)
-                          for a, b, c, d, w in segs]).buffer(0.03)
+                          for a, b, c, d, w in layers[z]]).buffer(0.03)
         lost = mp.difference(mp.buffer(-skin)).difference(pr).buffer(-0.07).buffer(0.07)
         gaps = mp.difference(mp.buffer(-thin / 2).buffer(thin / 2 + 0.01)).difference(pr).buffer(-0.04).buffer(0.04)
         for kind, g in (("surface", lost), ("gap", gaps)):
             for q in getattr(g, "geoms", [g]):
-                if not q.is_empty and q.area >= 0.03:
-                    out.append((part_at(q.centroid.x, q.centroid.y), round(z, 2), float(q.area), kind))
+                if q.is_empty or q.area < 0.03:
+                    continue
+                if kind == "gap" and (above is None or q.intersection(above).area < 0.5 * q.area):
+                    continue                                  # the top of a face that runs out here, not a wall
+                out.append((part_at(q.centroid.x, q.centroid.y), round(z, 2), float(q.area), kind))
+        cache.pop(z, None)
     return out
 
 
@@ -252,13 +270,13 @@ def nozzle_section(report, checked):
     return ["## Does the 0.4 mm nozzle print everything?", "",
             "Each sliced plate (0.4 mm nozzle, 0.2 mm layers, Arachne walls) compared with the model, layer by layer: the "
             "outer 0.3 mm of every section has to be covered by an extrusion (else a feature is too small for the "
-            "nozzle), and sections thinner than 1.5 mm have to be filled without a gap (the snap's 1.1 mm flex zone, its "
-            "1.0 mm lip, the 1.2 mm ribs).", "",
+            "nozzle), and sections thinner than 1.5 mm that go on in the layer above have to be filled without a gap "
+            "(the snap's 1.1 mm flex zone, its 1.0 mm lip, the 1.2 mm ribs).", "",
             "| Plate | Part | Surface left unprinted |", "| --- | --- | --- |"] + (rows or ["| all | - | nothing |"]) + ["",
             f"Largest spot: {worst:.2f} mm\u00b2 in a single 0.2 mm layer; gaps inside thin walls: {gaps}. "
             + ("Nothing a part depends on: the hinge covers' crush ribs start 0.25 mm high, under what the nozzle adds "
                "to a wall, so the lowest of the four layers they span is left out and the upper three print; the rest are "
-               "specks where a rounded edge runs out in one layer." if worst < 0.6 and gaps == 0 else
+               "specks where a rounded edge or the tray's sloping rim runs out in one layer." if worst < 0.6 and gaps == 0 else
                "**Check these before printing.**"), ""]
 
 
