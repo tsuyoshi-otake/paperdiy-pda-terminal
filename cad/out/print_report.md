@@ -26,6 +26,25 @@ Together: about **151 g** and **3 h 46 min**, with nothing to glue.
 
 - *Floating bridge anchors*: the tray's floor is bridged over the four 0.8 mm pockets for the TPU feet in its bottom (16 x 8 mm, anchored in the floor's first layers and its infill; checked in the sliced layers: a short, low bridge that prints fine)
 
+## Does the 0.4 mm nozzle print everything?
+
+Each sliced plate (0.4 mm nozzle, 0.2 mm layers, Arachne walls) compared with the model, layer by layer: the outer 0.3 mm of every section has to be covered by an extrusion (else a feature is too small for the nozzle), and sections thinner than 1.5 mm have to be filled without a gap (the snap's 1.1 mm flex zone, its 1.0 mm lip, the 1.2 mm ribs).
+
+| Plate | Part | Surface left unprinted |
+| --- | --- | --- |
+| `plate0_test_coupons.3mf` | coupon_hinge_lid | 2 spot(s), up to 0.04 mm², in 1 layer(s) (z 8 mm on the bed) |
+| `plate0_test_coupons.3mf` | coupon_hinge_tray | 2 spot(s), up to 0.50 mm², in 1 layer(s) (z 9.6 mm on the bed) |
+| `plate0_test_coupons.3mf` | hinge_cover_lid | 4 spot(s), up to 0.29 mm², in 1 layer(s) (z 0.4 mm on the bed) |
+| `plate0_test_coupons.3mf` | hinge_cover_tray | 4 spot(s), up to 0.29 mm², in 1 layer(s) (z 0.4 mm on the bed) |
+| `plate1_lid.3mf` | hinge_cover_lid_1 | 4 spot(s), up to 0.31 mm², in 1 layer(s) (z 0.4 mm on the bed) |
+| `plate1_lid.3mf` | hinge_cover_lid_2 | 4 spot(s), up to 0.31 mm², in 1 layer(s) (z 0.4 mm on the bed) |
+| `plate1_lid.3mf` | lid_B_main | 6 spot(s), up to 0.07 mm², in 2 layer(s) (z 8..10.6 mm on the bed) |
+| `plate2_tray.3mf` | hinge_cover_tray_1 | 4 spot(s), up to 0.29 mm², in 1 layer(s) (z 0.4 mm on the bed) |
+| `plate2_tray.3mf` | hinge_cover_tray_2 | 4 spot(s), up to 0.29 mm², in 1 layer(s) (z 0.4 mm on the bed) |
+| `plate2_tray.3mf` | tray_B_main | 4 spot(s), up to 0.50 mm², in 1 layer(s) (z 9.6 mm on the bed) |
+
+Largest spot: 0.50 mm² in a single 0.2 mm layer; gaps inside thin walls: 0. Nothing a part depends on: the hinge covers' crush ribs start 0.25 mm high, under what the nozzle adds to a wall, so the lowest of the four layers they span is left out and the upper three print; the rest are specks where a rounded edge runs out in one layer.
+
 ## Wall thickness
 
 Share of each part's surface where the wall measured straight inwards is thinner than 0.8 mm (two extrusion lines). Small values come from sharp edges and the dovetail jaws.

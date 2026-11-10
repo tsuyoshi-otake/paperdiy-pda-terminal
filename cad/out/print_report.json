@@ -63,6 +63,10 @@
  "large_total_min": 226,
  "total_g": 151.85999999999999,
  "total_min": 238,
+ "nozzle_check": {
+  "worst_spot_mm2": 0.5008695534035915,
+  "wall_gaps": 0
+ },
  "lid_g": 137.97,
  "base_g": 64.37,
  "lid_cg": [

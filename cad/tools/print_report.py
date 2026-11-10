@@ -2,12 +2,13 @@
 """Printability report for the A1 mini plates.
 
 1. Slices every plate in 3mf/ with PrusaSlicer's command line and an approximation of the Bambu Studio
-   A1 mini / 0.20 mm Standard / PLA profile (tools/a1mini_pla_020.ini): print time, filament, and the slicer's
+   A1 mini / 0.4 mm nozzle / 0.20 mm Standard / PLA profile (tools/a1mini_pla_020.ini): print time, filament, and the slicer's
    own "print stability" warnings (floating regions, long bridges, loose extrusions, low bed adhesion).
 2. Measures wall thickness on every printed part (rays from the surface inwards).
 3. Estimates whether the open device tips over backwards: lid-side mass and centre of mass from the sliced
    part masses plus the bought parts, swept over the opening angle.
 4. Kit design: whether the lid stays shut (the hinges' spring-back against the snap) and what it takes to open it.
+5. Kit design: whether the 0.4 mm nozzle prints every feature (the sliced toolpaths compared with the model).
 
     python3 tools/print_report.py            # after src/build.py and src/export_3mf.py
 Writes out/print_report.md. Without prusa-slicer on PATH (or PRUSA_SLICER=...) only parts 2-3 run, with
@@ -119,7 +120,7 @@ def slice_file(exe, path, tmp, bed=None):
             kinds = [x for x in b if " " in x.replace(", ", ",")]
             objs = [x for x in b if x not in kinds]
             warn.append(f"{' / '.join(kinds) or '?'}: {', '.join(objs)}")
-    res = {"warnings": warn, "ok": r.returncode == 0 and os.path.exists(out)}
+    res = {"warnings": warn, "ok": r.returncode == 0 and os.path.exists(out), "gcode": out}
     if res["ok"]:
         with open(out, errors="replace") as f:
             g = f.read()
@@ -153,6 +154,112 @@ def open_point(p, deg):
     a = np.radians(-deg)
     y, z = p[1] - HINGE_AXIS_Y, p[2] - Z_PART
     return np.array([p[0], HINGE_AXIS_Y + y * np.cos(a) - z * np.sin(a), Z_PART + y * np.sin(a) + z * np.cos(a)])
+
+
+def gcode_layers(path):
+    """{z: [(x0, y0, x1, y1, width)]}: the extrusion moves of each layer of a PrusaSlicer G-code (no skirt, no supports)."""
+    layers, cur, z, w, typ, x, y, rel, e_abs = {}, [], None, 0.42, "", None, None, False, 0.0
+    num = {k: re.compile(k + r"([-\d.]+)") for k in "XYE"}
+    with open(path, errors="replace") as f:
+        for line in f:
+            if line[0] == ";":
+                if line.startswith(";Z:"):
+                    z = float(line[3:]); cur = layers.setdefault(z, [])
+                elif line.startswith(";WIDTH:"):
+                    w = float(line[7:])
+                elif line.startswith(";TYPE:"):
+                    typ = line[6:].strip()
+                continue
+            if line.startswith("M83"):
+                rel = True
+            elif line.startswith("M82"):
+                rel = False
+            elif line.startswith("G92"):
+                m = num["E"].search(line)
+                e_abs = float(m.group(1)) if m else e_abs
+            elif line.startswith(("G1 ", "G0 ")):
+                mx, my, me = num["X"].search(line), num["Y"].search(line), num["E"].search(line)
+                nx, ny = (float(mx.group(1)) if mx else x), (float(my.group(1)) if my else y)
+                ext = False
+                if me:
+                    ev = float(me.group(1))
+                    ext = ev > 0 if rel else ev > e_abs
+                    e_abs = e_abs if rel else ev
+                if ext and (mx or my) and x is not None and z is not None and (nx, ny) != (x, y) \
+                        and typ not in ("Skirt/Brim", "Support material", "Support material interface", "Custom"):
+                    cur.append((x, y, nx, ny, w))
+                x, y = nx, ny
+    return layers
+
+
+def unprinted(path, gcode, skin=0.30, thin=1.5):
+    """Where the sliced plate leaves the model unprinted, layer by layer: (a) the outer `skin` of every section not
+    covered by an extrusion (a feature too small for the nozzle), (b) a gap left inside a section thinner than `thin`
+    (a wall the nozzle does not fill). Returns [(part, z, area mm2, kind)], slivers under 0.03 mm2 ignored."""
+    from shapely.geometry import LineString, Polygon
+    from shapely.ops import unary_union
+    scene = trimesh.load(path)
+    boxes = []
+    for node in scene.graph.nodes_geometry:
+        T, gname = scene.graph[node]
+        b = trimesh.transform_points(scene.geometry[gname].bounding_box.vertices, T)
+        boxes.append((node if isinstance(node, str) else gname, b.min(0)[:2], b.max(0)[:2]))
+    mesh = scene.to_mesh()
+    layers = gcode_layers(gcode)
+    pts = np.array([q for v in layers.values() for (a, b, c, d, _) in v for q in ((a, b), (c, d))])
+    off = (mesh.bounds[0][:2] + mesh.bounds[1][:2]) / 2 - (pts.min(0) + pts.max(0)) / 2     # the slicer's placement
+    out, prev = [], 0.0
+
+    def part_at(x, y):
+        for name, lo, hi in boxes:
+            if lo[0] - 0.5 <= x <= hi[0] + 0.5 and lo[1] - 0.5 <= y <= hi[1] + 0.5:
+                return name
+        return "?"
+
+    for z in sorted(layers):
+        segs, lh, prev = layers[z], z - prev, z
+        sec = mesh.section(plane_origin=[0, 0, mesh.bounds[0][2] + z - lh / 2], plane_normal=[0, 0, 1]) if segs else None
+        if sec is None:
+            continue
+        planar, _ = sec.to_2D(to_2D=np.eye(4))
+        mp = unary_union([Polygon(q.exterior.coords, [h.coords for h in q.interiors]) for q in planar.polygons_full])
+        pr = unary_union([LineString([(a + off[0], b + off[1]), (c + off[0], d + off[1])]).buffer(w / 2)
+                          for a, b, c, d, w in segs]).buffer(0.03)
+        lost = mp.difference(mp.buffer(-skin)).difference(pr).buffer(-0.07).buffer(0.07)
+        gaps = mp.difference(mp.buffer(-thin / 2).buffer(thin / 2 + 0.01)).difference(pr).buffer(-0.04).buffer(0.04)
+        for kind, g in (("surface", lost), ("gap", gaps)):
+            for q in getattr(g, "geoms", [g]):
+                if not q.is_empty and q.area >= 0.03:
+                    out.append((part_at(q.centroid.x, q.centroid.y), round(z, 2), float(q.area), kind))
+    return out
+
+
+def nozzle_section(report, checked):
+    """Markdown: what the 0.4 mm nozzle leaves unprinted on the PLA plates."""
+    rows, worst = [], 0.0
+    for plate, items in checked:
+        by = {}
+        for part, z, area, kind in items:
+            if kind == "surface":
+                by.setdefault(part, []).append((z, area))
+        for part, v in sorted(by.items()):
+            worst = max(worst, max(a for _, a in v))
+            zs = sorted({z for z, _ in v})
+            rows.append(f"| `{plate}` | {part} | {len(v)} spot(s), up to {max(a for _, a in v):.2f} mm\u00b2, "
+                        f"in {len(zs)} layer(s) (z {zs[0]:g}{'' if len(zs) == 1 else '..' + format(zs[-1], 'g')} mm on the bed) |")
+    gaps = sum(1 for _, items in checked for it in items if it[3] == "gap" and it[2] >= 0.15)
+    report["nozzle_check"] = dict(worst_spot_mm2=worst, wall_gaps=gaps)
+    return ["## Does the 0.4 mm nozzle print everything?", "",
+            "Each sliced plate (0.4 mm nozzle, 0.2 mm layers, Arachne walls) compared with the model, layer by layer: the "
+            "outer 0.3 mm of every section has to be covered by an extrusion (else a feature is too small for the "
+            "nozzle), and sections thinner than 1.5 mm have to be filled without a gap (the snap's 1.1 mm flex zone, its "
+            "1.0 mm lip, the 1.2 mm ribs).", "",
+            "| Plate | Part | Surface left unprinted |", "| --- | --- | --- |"] + (rows or ["| all | - | nothing |"]) + ["",
+            f"Largest spot: {worst:.2f} mm\u00b2 in a single 0.2 mm layer; gaps inside thin walls: {gaps}. "
+            + ("Nothing a part depends on: the hinge covers' crush ribs start 0.25 mm high, under what the nozzle adds "
+               "to a wall, so the lowest of the four layers they span is left out and the upper three print; the rest are "
+               "specks where a rounded edge runs out in one layer." if worst < 0.6 and gaps == 0 else
+               "**Check these before printing.**"), ""]
 
 
 def lid_stays_shut(report, lid_m, lid_cg, base_m, base_cg):
@@ -206,10 +313,11 @@ def main():
     # 1. plates
     if exe:
         lines += ["## Plates", "", "| Plate | Time | Filament | Slicer stability warnings |", "| --- | --- | --- | --- |"]
-        total_g, total_min = 0.0, 0
+        total_g, total_min, checked = 0.0, 0, []
         plates = sorted(glob.glob(os.path.join(CAD, "3mf", "plate*.3mf")))
         for p in plates:
             r = slice_file(exe, p, tmp)
+            gcode = r.pop("gcode", None)
             report[os.path.basename(p)] = r
             if not r["ok"]:
                 lines.append(f"| {os.path.basename(p)} | slicing failed | | {r.get('error', '')[:80]} |")
@@ -218,6 +326,8 @@ def main():
                 total_g += r["grams"]; total_min += minutes(r["time"])
             lines.append(f"| `{os.path.basename(p)}` | {r['time']} | {r['grams']:.0f} g ({r['metres']:.1f} m) | "
                          f"{'; '.join(r['warnings']) if r['warnings'] else 'none'} |")
+            if PD_MOUNT == "kit" and "tpu" not in os.path.basename(p):
+                checked.append((os.path.basename(p), unprinted(p, gcode)))
         if PD_MOUNT == "kit":
             n = len([p for p in plates if os.path.basename(p)[:6] in ("plate1", "plate2", "plate3")])
             lines += ["", f"Plates 1-{n} together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
@@ -233,6 +343,7 @@ def main():
             lg, lm = 0.0, 0
             for p in large:
                 r = slice_file(exe, p, tmp, bed=220)
+                r.pop("gcode", None)
                 report["large/" + os.path.basename(p)] = r
                 if not r["ok"]:
                     lines.append(f"| large/{os.path.basename(p)} | slicing failed | | {r.get('error', '')[:80]} |")
@@ -247,6 +358,8 @@ def main():
             lines.append(f"- *{k}*: {KNOWN.get(k, 'not reviewed yet - look at it in the slicer preview')}")
         lines.append("")
         report["total_g"], report["total_min"] = total_g, total_min
+        if checked:
+            lines += nozzle_section(report, checked)
 
     # 2. wall thickness
     lines += ["## Wall thickness", "",
@@ -271,6 +384,7 @@ def main():
         m = trimesh.load(stl(name))
         if exe:
             r = slice_file(exe, stl(name), tmp)
+            r.pop("gcode", None)
             if r["ok"] and r["grams"]:
                 return r["grams"], m.center_mass
         return m.volume / 1000 * PLA * 0.55, m.center_mass        # rough: 3 walls + 15 % infill ~ 55 % of solid
