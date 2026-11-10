@@ -2,25 +2,25 @@
  "plate0_test_coupons.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "21m 26s",
-  "grams": 8.4,
-  "metres": 2.81608
+  "time": "21m 17s",
+  "grams": 8.36,
+  "metres": 2.8032199999999996
  },
  "plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 45m 1s",
-  "grams": 65.46,
-  "metres": 21.948439999999998
+  "time": "1h 44m 46s",
+  "grams": 65.34,
+  "metres": 21.90745
  },
  "plate2_tray.3mf": {
   "warnings": [
    "Floating bridge anchors: tray_A_left, tray_B_main"
   ],
   "ok": true,
-  "time": "1h 37m 49s",
-  "grams": 62.46,
-  "metres": 20.940450000000002
+  "time": "1h 37m 40s",
+  "grams": 62.51,
+  "metres": 20.95901
  },
  "plate3_panel.3mf": {
   "warnings": [],
@@ -30,29 +30,27 @@
   "metres": 8.049479999999999
  },
  "plate4_tpu.3mf": {
-  "warnings": [
-   "Low bed adhesion: tpu_damper_1, tpu_damper_2, tpu_damper_3"
-  ],
+  "warnings": [],
   "ok": true,
-  "time": "3m 46s",
-  "grams": 0.8,
-  "metres": 0.2757
+  "time": "3m 11s",
+  "grams": 0.73,
+  "metres": 0.25089
  },
  "large/plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 40m 35s",
-  "grams": 65.03,
-  "metres": 21.80227
+  "time": "1h 39m 57s",
+  "grams": 64.9,
+  "metres": 21.76141
  },
  "large/plate2_tray.3mf": {
   "warnings": [
    "Floating bridge anchors: tray"
   ],
   "ok": true,
-  "time": "1h 33m 40s",
-  "grams": 61.68,
-  "metres": 20.67966
+  "time": "1h 33m 22s",
+  "grams": 61.71,
+  "metres": 20.69146
  },
  "large/plate3_panel.3mf": {
   "warnings": [],
@@ -61,19 +59,35 @@
   "grams": 24.05,
   "metres": 8.064779999999999
  },
- "large_total_g": 150.76000000000002,
- "large_total_min": 227,
- "total_g": 151.92999999999998,
- "total_min": 239,
- "lid_g": 138.11,
- "base_g": 64.32,
+ "large_total_g": 150.66000000000003,
+ "large_total_min": 226,
+ "total_g": 151.85999999999999,
+ "total_min": 238,
+ "lid_g": 137.97,
+ "base_g": 64.37,
  "lid_cg": [
-  0.31832905774047415,
-  4.0799396827646195,
-  19.511424708972427
+  0.3251437992634959,
+  4.127394716632546,
+  19.516314471273443
  ],
  "pivot_y": 52.5,
  "table_contact_deg": 168.6,
  "table_limit": 168,
- "keyboard_min_g": 87.82673278469002
+ "keyboard_min_g": 87.47501791854745,
+ "hinge_torque_nm": [
+  0.1176,
+  0.1568,
+  0.196
+ ],
+ "lid_moment_nm": 0.06635139522778229,
+ "springback_push_n": [
+  0.5142860488933036,
+  0.9076628677593347,
+  1.3010396866253662
+ ],
+ "snap_k": 14.996035573021567,
+ "snap_hold_n": 5.696327859145422,
+ "snap_hold_low_n": 2.8481639295727113,
+ "open_force_n": 6.603990726904756,
+ "keyboard_for_one_hand_g": 331.67496632181474
 }

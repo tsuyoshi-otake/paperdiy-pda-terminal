@@ -108,7 +108,7 @@ TRAY_PORT = dict(x=(72.9, 89.1), above_floor=3.0)
 # keyboard it is the top of a solid strip from the floor up (the slicer fills it with infill; it takes in the hinge
 # bosses and pads), open over the charge-port opening (the plug, and a switch there, stay reachable from above).
 TRAY_DECK = dict(t=1.2, clr=0.5, r=3.0) if PD_MOUNT == "kit" else None
-# Kit: TPU parts (print them with a 0.4 nozzle; TPU does not go through a 0.2 one).
+# Kit: TPU feet (print them with a 0.4 nozzle; TPU does not go through a 0.2 one).
 # Feet: four non-slip pads pressed into `pocket` deep pockets in the tray's bottom at the corners, `t` thick, so they
 # stand t - pocket proud: only 0.4 mm, so the open lid still comes down on the table (at ~169 deg) and stops there; with
 # 1.2 mm feet it would swing on past 180 deg with nothing to stop it. Concentric with the corner radius and `inset` from
@@ -117,13 +117,8 @@ TRAY_DECK = dict(t=1.2, clr=0.5, r=3.0) if PD_MOUNT == "kit" else None
 # squeezes in) and chamfered on the table side.
 TPU_FEET = dict(w=16.0, d=8.0, inset=0.5, pocket=0.8, t=1.2, fit=0.05, chamfer=0.3) if PD_MOUNT == "kit" else None
 FOOT_H = TPU_FEET["t"] - TPU_FEET["pocket"] if TPU_FEET else 0.0      # the table is this far below the tray's bottom
-# Dampers: two small TPU bow springs in grooves in the tray's front rim (x), under the lid's front wall: two feet on the
-# groove's floor carry a `t` thick beam `gap` above it, with a `nub` long bump on top standing `proud` above the rim.
-# The closing lid presses the bump flush: the beam bends ~0.8 N/mm (E ~26 MPa), so the lid rests on them with ~0.25 N
-# each and does not rattle, without making it harder to close (the snap tab holds ~4.5 N). `edge`: tray wall left
-# outside the groove; `clr`: groove clearance per side. Printed lying on their side (no bridges).
-TPU_DAMPERS = dict(x=(-70.0, 70.0), len=10.0, w=1.6, t=1.0, gap=0.6, foot=2.0, nub=2.0, proud=0.3, clr=0.1, edge=0.6) \
-    if PD_MOUNT == "kit" else None
+# No dampers under the lid's front edge: the torque hinges spring back a little when the lid is let go (see LATCH), so
+# the closed lid is always pressed up against the snap and cannot rattle; TPU springs there only added to that push.
 TRAY_FLOOR = WALL if PD_MOUNT == "kit" else 3.0   # top of the tray floor (the original tray: 3.0)
 # Keyboard: the CACOE stands above the tray rim (the original lid's panel face was at z = 15). The lid's inner face
 # (and the kit's front face) is KB_CLR above the keyboard's highest point. MEASURE the keyboard's thickness over the
@@ -201,17 +196,23 @@ SPLICE = dict(clr=0.3,                # per side (0.15 printed too tight: the pl
 # lid A also comes for a screw-ear panel-mount female (USB_PM_*), at y = USB_PM_Y, so the end can be swapped later.
 USB_PM_Y_KIT = 20.0            # clear of the lid's split blocks (y 5, 36) and the power slot
 # Snap (no magnets, no slits): a lip in the middle of the lid's front wall runs below the parting into a recess in the
-# tray's front face; a bump on its inside drops into a groove in the recess. The lip is not cut free: the printed tabs
-# freed by two slits breaks from the slit ends (the strain gathers there, on a layer line: the lid prints ceiling
-# down). Instead the front wall is thinned from inside over a zone round the lip (`flex`: x0..x1, to t, stopping `top`
-# below the ceiling, 45 deg chamfers back to the full wall), and that zone bends outward as a plate (free air, so the
-# keyboard's position does not matter). build.py solves it as a Kirchhoff plate (src/latch_plate.py): keep the strain
-# across the layers under ~0.5 %. A plain 2.0 wall would need ~17 N to open; the 1.2 zone ~5 N.
-# Kit design: off centre (x 6) so the KEY slot's guard clears it; the zone stops short of the panel's snap groove at
-# x 22..30. Lip 12 wide, 2.2 below the parting, 1.0 thick (the tray's recess and groove are unchanged); bump 0.35
-# high, 1.4 below the parting (0.75 mm of tray above its groove).
-LATCH = dict(x=6.0, w=12.0, t=1.0, below=2.2, bump=0.35, bump_at=1.4, clr=0.15,
-             flex=dict(x0=-14.0, x1=20.0, t=1.2, top=2.0),
+# tray's front face; a bump on its inside drops into a groove in the recess.
+# What it has to do: the HG-MF08 are free-stop friction hinges in POM. Let go, they turn back a little (the twist stored
+# in them and in their seats), so a lid pushed down onto the tray comes up again: 1 deg at the axis is 1.7 mm at the
+# front edge, and it cannot be pushed past closed to make up for it. The snap holds the lid down against that: the two
+# hinges' torque (0.157 N*m +-25 %) less the lid's weight leaves 0.5..1.3 N at the front edge.
+# The lip is not cut free: a tab freed by two slits breaks from the slit ends (the strain gathers there, on a layer
+# line: the lid prints ceiling down). Instead the front wall is thinned from inside over a zone round the lip (`flex`:
+# x0..x1, to t, stopping `top` below the ceiling, 45 deg chamfers back to the full wall), and that zone bends outward
+# as a plate (free air, so the keyboard's position does not matter). build.py solves it as a Kirchhoff plate
+# (src/latch_plate.py): keep the strain across the layers under ~0.5 %.
+# Engagement = bump - clr = 0.30 mm: a printer's +-0.15 mm leaves 0.15..0.45, i.e. still ~2.5 N of hold at the low end
+# (the 0.20 mm of the earlier versions could shrink to nothing) and under 0.4 % strain at the high end.
+# Lip 12 wide in the middle (nothing of the panel reaches the wall there), 2.2 below the parting, 1.0 thick; bump 0.45
+# high, 1.4 below the parting (0.6 mm of tray above its groove). The zone stops short of the panel's snap groove at
+# x 22..30.
+LATCH = dict(x=0.0, w=12.0, t=1.0, below=2.2, bump=0.45, bump_at=1.4, clr=0.15,
+             flex=dict(x0=-20.0, x1=20.0, t=1.1, top=2.0),
              close_deg=45.0, open_deg=35.0, tray_wall_min=1.2)
 
 # ---------------------------------------------------------------- layout choices (lid frame)
@@ -380,6 +381,8 @@ COVER_RIBS = dict(per_side=2, h=COVER_POCKET_CLR + 0.1, r=0.9) if COVER_FLUSH el
 # mortise), e.g. dict(w=1.0, d=1.1, clr=0.2) for a 2.1 mm deep cover (SLA / MJF minimums). None: a plain 1 mm plate.
 COVER_LIP = None
 HINGE_MODEL = "Sugatsune HG-MF08-BL x2 (free-stop, 0.0784 N*m +-25% each, POM)"
+HINGE_TORQUE = 0.0784         # [M] N*m each (0.8 kgf*cm), free stop in both directions
+HINGE_TORQUE_TOL = 0.25       # [M] +-25 %
 # [M] Sugatsune spec table (global.sugatsune.com, 21651_t): HG-MF08 L 20, W 25, t 2, W2 16, H2 10, holes 2.4 / csk 4.2
 HINGE_LEN = 20.0              # [M] L: length along the axis
 HINGE_WIDTH = 25.0            # [M] W: both leaves + barrel, open flat

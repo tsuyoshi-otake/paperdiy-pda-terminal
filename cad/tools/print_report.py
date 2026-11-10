@@ -7,6 +7,7 @@
 2. Measures wall thickness on every printed part (rays from the surface inwards).
 3. Estimates whether the open device tips over backwards: lid-side mass and centre of mass from the sliced
    part masses plus the bought parts, swept over the opening angle.
+4. Kit design: whether the lid stays shut (the hinges' spring-back against the snap) and what it takes to open it.
 
     python3 tools/print_report.py            # after src/build.py and src/export_3mf.py
 Writes out/print_report.md. Without prusa-slicer on PATH (or PRUSA_SLICER=...) only parts 2-3 run, with
@@ -27,12 +28,12 @@ import trimesh
 HERE = os.path.dirname(os.path.abspath(__file__))
 CAD = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(CAD, "src"))
-from params import (TPU_FEET, FOOT_H)  # noqa: E402
+from params import (TPU_FEET, FOOT_H, HINGE_TORQUE, HINGE_TORQUE_TOL, LATCH, BACK_OLD_Y)  # noqa: E402
 from params import (OUT_DIR, SPLIT_DIR, Y_BACK, HINGE_AXIS_Y, Z_PART, PD_L, PD_TOP_X, PANEL_Z_BACK, BATT_CX, BATT_CY,  # noqa: E402
                     BATT_T, USB_PM_Y, USB_PM_Z, PD_MOUNT, KIT_MASS_G, KIT_CX, KIT_T, USB_CEIL)
 
 INI = os.path.join(HERE, "a1mini_pla_020.ini")
-INI_TPU = os.path.join(HERE, "a1mini_tpu_040.ini")      # for plate4_tpu (feet and dampers)
+INI_TPU = os.path.join(HERE, "a1mini_tpu_040.ini")      # for plate4_tpu (the feet)
 PLA = 1.24                      # g/cm3
 THIN = 0.8                      # mm: two 0.4 mm lines
 # bought parts: (grams, centre in the closed assembly frame, source)
@@ -44,8 +45,8 @@ KB_CG = (0.0, 0.0, 8.0)         # [A] keyboard centre of mass: middle of the tra
 
 # what the slicer warnings on these parts mean (checked by hand)
 KNOWN = {
-    "Low bed adhesion": ("the TPU dampers lie on a 10 x 1.9 mm side (1.6 mm tall): give them a brim (Bambu Studio's brim "
-                         "type Auto does), or print them on a textured plate" if PD_MOUNT == "kit" else
+    "Low bed adhesion": ("a small part with little area on the bed: give it a brim (Bambu Studio's brim type Auto "
+                         "does)" if PD_MOUNT == "kit" else
                          "the push-rods are 3-4 mm thin bars and the front clips stand 20 mm tall on a 1.6 mm U: keep "
                          "Bambu Studio's brim type on Auto (its default) or give them a brim"),
     "Floating bridge anchors": ("the tray's floor is bridged over the four 0.8 mm pockets for the TPU feet in its bottom "
@@ -154,6 +155,45 @@ def open_point(p, deg):
     return np.array([p[0], HINGE_AXIS_Y + y * np.cos(a) - z * np.sin(a), Z_PART + y * np.sin(a) + z * np.cos(a)])
 
 
+def lid_stays_shut(report, lid_m, lid_cg, base_m, base_cg):
+    """The hinges' spring-back against the snap, and what it takes to open the lid (kit design)."""
+    import build                                          # the snap's plate model
+    g = 9.81e-3                                           # N per gram
+    n = 2
+    T, lo, hi = n * HINGE_TORQUE, n * HINGE_TORQUE * (1 - HINGE_TORQUE_TOL), n * HINGE_TORQUE * (1 + HINGE_TORQUE_TOL)
+    arm = (HINGE_AXIS_Y - lid_cg[1]) / 1000               # m, lid closed (level): the largest moment
+    M = lid_m * g * arm
+    lever = (HINGE_AXIS_Y + BACK_OLD_Y) / 1000            # axis to the front face
+    push = [(t - M) / lever for t in (lo, T, hi)]
+    k, _, _ = build.latch_plate()
+    hold = lambda e: k * e * (np.tan(np.radians(LATCH["open_deg"])) + 0.3) / (1 - 0.3 * np.tan(np.radians(LATCH["open_deg"])))  # noqa: E731
+    eng = LATCH["bump"] - LATCH["clr"]
+    lift = lid_m * g * arm / lever                        # the lid's weight, as a force at the front edge
+    f_open = hold(eng) + T / lever - lift
+    base_arm, kb_arm = (HINGE_AXIS_Y - base_cg[1]) / 1000, (HINGE_AXIS_Y - KB_CG[1]) / 1000
+    kb_one_hand = (hi / g - base_m * base_arm) / kb_arm   # keyboard heavy enough for the base to stay down by itself
+    report.update(hinge_torque_nm=[lo, T, hi], lid_moment_nm=M, springback_push_n=push, snap_k=k, snap_hold_n=hold(eng),
+                  snap_hold_low_n=hold(eng - 0.15), open_force_n=f_open,
+                  keyboard_for_one_hand_g=kb_one_hand)
+    return ["## Does the lid stay shut?", "",
+            f"The two HG-MF08 are free-stop friction hinges: together {T:.3f} N\u00b7m ({lo:.3f}..{hi:.3f} with their "
+            f"\u00b1{100 * HINGE_TORQUE_TOL:.0f} %). The lid side's moment about the axis is at most {M:.3f} N\u00b7m (level, "
+            f"{lid_m:.0f} g at {1000 * arm:.1f} mm), so the hinges hold it at any angle ({lo / M:.1f}x at least) and it never "
+            "falls shut by itself.", "",
+            "Let go, friction hinges turn back a little (the twist stored in them and in their seats). Anywhere else that "
+            "is made up for by pushing a little further; at the closed position the lid lands on the tray and cannot go "
+            f"further, so it comes up again: every degree at the axis is {1000 * lever * np.radians(1):.1f} mm at the front "
+            "edge. The snap is what keeps it down.", "",
+            "| | at the front edge |", "| --- | --- |",
+            f"| push from the hinges' spring-back, less the lid's weight | {push[0]:.1f}..{push[2]:.1f} N |",
+            f"| the snap holds (plate model, {eng:.2f} mm engagement) | {hold(eng):.1f} N |",
+            f"| the snap holds if the print leaves {eng - 0.15:.2f} mm | {hold(eng - 0.15):.1f} N |",
+            f"| to open: snap + hinge friction - the lid's weight | about {f_open:.1f} N |", "",
+            "Press the front of the lid until the snap clicks; a lid that is only laid down stays open by the spring-back. "
+            f"To open, hold the base: it weighs {base_m:.0f} g plus the keyboard, less than the pull on the lid, and the hinges "
+            f"would carry it up with the lid unless the keyboard weighed about {kb_one_hand:.0f} g.", ""]
+
+
 def main():
     exe = slicer()
     lines = ["# Printability report", "",
@@ -181,7 +221,7 @@ def main():
         if PD_MOUNT == "kit":
             n = len([p for p in plates if os.path.basename(p)[:6] in ("plate1", "plate2", "plate3")])
             lines += ["", f"Plates 1-{n} together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
-                      "of printing (plate 0, the test coupons, comes on top; plate 4, the feet and dampers, is TPU, sliced with "
+                      "of printing (plate 0, the test coupons, comes on top; plate 4, the feet, is TPU, sliced with "
                       "`tools/a1mini_tpu_040.ini`).", ""]
         else:
             lines += ["", f"Plates 1-3 together: about **{total_g:.0f} g** of PLA and **{total_min // 60} h {total_min % 60:02d} min** "
@@ -294,6 +334,8 @@ def main():
     lines += ["", f"**The keyboard has to weigh at least {need:.0f} g** (centre of mass assumed in the middle of the tray) for "
               f"the device to stay on its feet at every angle until the lid rests on the table ({touch:.0f} deg). Weigh yours; if it is lighter, "
               "stay below the angle in the table where the needed weight exceeds it, or add weight in the tray.", ""]
+    if PD_MOUNT == "kit":
+        lines += lid_stays_shut(report, lid_m, lid_cg, base_m, base_cg)
     with open(os.path.join(OUT_DIR, "print_report.md"), "w") as f:
         f.write("\n".join(lines) + "\n")
     with open(os.path.join(OUT_DIR, "print_report.json"), "w") as f:
