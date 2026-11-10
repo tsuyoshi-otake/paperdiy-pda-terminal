@@ -7,6 +7,9 @@ Kit design (PD_MOUNT = "kit", default): plate 0 = test coupons (print first), pl
 (cream). The earlier design ("bare") adds plate 3 (panel, strap, push-rods), plates 4-5 (front clip, magnet jigs) and
 3mf/usb_variants/ (lid A for other USB-C cables).
 
+Kit design: the A1 mini plates are also written as Bambu Studio projects with the print settings chosen
+(3mf/bambu_a1mini/, see BAMBU below).
+
     python3 src/export_3mf.py          # after src/build.py; reads out/, writes 3mf/
 """
 import glob
@@ -26,6 +29,28 @@ BED = 180.0
 MARGIN = 3.0     # keep parts this far from the bed edge
 GAP = 6.0        # between parts
 OUT_3MF = os.path.join(CAD_DIR, "3mf")
+
+# Bambu Studio projects for the A1 mini with a 0.4 mm nozzle (3mf/bambu_a1mini/): the same plates with the printer,
+# process and filament presets chosen, so they open ready to slice. How Bambu Studio reads such a file (its source,
+# src/libslic3r/Format/bbs_3mf.cpp, PresetBundle::load_config_file_config, PresetCollection::load_external_preset):
+# a 3MF whose "Application" metadata starts with "BambuStudio-" is a project; Metadata/project_settings.config (JSON)
+# names the three presets; every option that is not listed in "different_settings_to_system" is taken from the
+# system preset of that name as installed on the user's computer, the listed ones from the file. So the file carries
+# only the preset names and the handful of options changed from "0.20mm Standard @BBL A1M" (2 walls, grid infill,
+# classic walls, no elephant-foot compensation), and stays right when Bambu updates its presets.
+# The version is the lowest 2.x: a file newer than the program only brings up an "update Bambu Studio" notice.
+BAMBU = dict(
+    dir="bambu_a1mini", version="02.00.00.00",
+    printer="Bambu Lab A1 mini 0.4 nozzle", printer_model="Bambu Lab A1 mini", nozzle="0.4",
+    process="0.20mm Standard @BBL A1M", bed="Textured PEI Plate",
+    # option: value, as in Bambu Studio's process tabs (see ASSEMBLY_ja.md, 2.)
+    changed=dict(wall_loops="3",                      # screws bite into three walls
+                 sparse_infill_pattern="gyroid",
+                 wall_generator="arachne",            # fills the 1.0-1.2 mm walls and ribs without a gap
+                 elefant_foot_compensation="0.1",     # the visible faces are first layers
+                 precise_z_height="1"),               # panel 1.6 mm, splice pockets 0.6 / 0.8 mm
+    filament=dict(pla=("Bambu PLA Basic @BBL A1M", "GFA00", "#3B6FB6"), tpu=("Bambu TPU 95A HF @BBL A1M", "GFU00", "#2B2B2B")),
+    preset="PaperDIY PDA 0.20mm @BBL A1M")            # the same changes as a process preset to import (the fallback)
 
 FLIP_X = trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0])      # top face down
 ROT_Z90 = trimesh.transformations.rotation_matrix(np.pi / 2, [0, 0, 1])  # turn on the bed
@@ -253,7 +278,49 @@ def bare_plates(csrc, coupon):
     return p
 
 
-def write_3mf(path, placed, title):
+def bambu_project_settings(filament):
+    """Metadata/project_settings.config: the preset names and the options changed from the system process preset."""
+    name, fid, colour = BAMBU["filament"][filament]
+    cfg = {"from": "project", "name": "project_settings", "version": BAMBU["version"],
+           "printer_technology": "FFF", "printer_model": BAMBU["printer_model"], "printer_variant": BAMBU["nozzle"],
+           "nozzle_diameter": [BAMBU["nozzle"]],
+           "printer_settings_id": BAMBU["printer"], "print_settings_id": BAMBU["process"],
+           "filament_settings_id": [name], "filament_ids": [fid], "filament_colour": [colour],
+           "curr_bed_type": BAMBU["bed"],
+           # per preset, in the order process, filament, printer: its parent ("" = it is the system preset itself) and
+           # the options that differ from it
+           "inherits_group": ["", "", ""],
+           "different_settings_to_system": [";".join(sorted(BAMBU["changed"])), "", ""]}
+    cfg.update(BAMBU["changed"])
+    return json.dumps(dict(sorted(cfg.items())), indent=4, ensure_ascii=False) + "\n"
+
+
+def bambu_model_settings(names, plate_name):
+    """Metadata/model_settings.config: every object on extruder 1, all of them on plate 1."""
+    x = ['<?xml version="1.0" encoding="UTF-8"?>', "<config>"]
+    for i, n in enumerate(names, start=1):
+        x += [f'  <object id="{i}">', f'    <metadata key="name" value="{escape(n)}"/>',
+              '    <metadata key="extruder" value="1"/>', "  </object>"]
+    x += ["  <plate>", '    <metadata key="plater_id" value="1"/>',
+          f'    <metadata key="plater_name" value="{escape(plate_name)}"/>', '    <metadata key="locked" value="false"/>']
+    for i in range(1, len(names) + 1):
+        x += ["    <model_instance>", f'      <metadata key="object_id" value="{i}"/>',
+              '      <metadata key="instance_id" value="0"/>', f'      <metadata key="identify_id" value="{100 + i}"/>',
+              "    </model_instance>"]
+    x += ["  </plate>", "</config>"]
+    return "\n".join(x) + "\n"
+
+
+def bambu_process_preset():
+    """The changed options as a user process preset (File > Import > Import Configs in Bambu Studio)."""
+    cfg = {"from": "User", "inherits": BAMBU["process"], "name": BAMBU["preset"], "print_settings_id": BAMBU["preset"],
+           "version": BAMBU["version"]}
+    cfg.update(BAMBU["changed"])
+    return json.dumps(dict(sorted(cfg.items())), indent=4, ensure_ascii=False) + "\n"
+
+
+def write_3mf(path, placed, title, bambu=None):
+    """bambu: None = geometry only (any slicer); "pla" / "tpu" = a Bambu Studio project for the A1 mini (see BAMBU)."""
     objs, items = [], []
     for i, (name, m, (cx, cy)) in enumerate(placed, start=1):
         v = "".join(f'<vertex x="{a:.4f}" y="{b:.4f}" z="{c:.4f}"/>' for a, b, c in m.vertices)
@@ -263,7 +330,10 @@ def write_3mf(path, placed, title):
         items.append(f'<item objectid="{i}" transform="1 0 0 0 1 0 0 0 1 {cx:.4f} {cy:.4f} 0"/>')
     model = ('<?xml version="1.0" encoding="UTF-8"?>\n'
              '<model unit="millimeter" xml:lang="en-US" '
-             'xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">'
+             'xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"'
+             + (' xmlns:BambuStudio="http://schemas.bambulab.com/package/2021">'
+                f'<metadata name="Application">BambuStudio-{BAMBU["version"]}</metadata>'
+                '<metadata name="BambuStudio:3mfVersion">1</metadata>' if bambu else '>') +
              f'<metadata name="Title">{escape(title)}</metadata>'
              '<metadata name="Designer">PaperDIY PDA Terminal (derivative of unkyulee/phone-enclosure)</metadata>'
              '<metadata name="LicenseTerms">CC BY-NC 4.0</metadata>'
@@ -277,9 +347,14 @@ def write_3mf(path, placed, title):
             '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
             '<Relationship Target="/3D/3dmodel.model" Id="rel0" '
             'Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/></Relationships>')
+    files = [("[Content_Types].xml", content_types), ("_rels/.rels", rels), ("3D/3dmodel.model", model)]
+    if bambu:
+        files += [("Metadata/model_settings.config", bambu_model_settings([n for n, _, _ in placed],
+                                                                          os.path.splitext(os.path.basename(path))[0])),
+                  ("Metadata/project_settings.config", bambu_project_settings(bambu))]
     # fixed timestamps so the same geometry always gives the same file (reproducible checksums)
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
-        for arc, data in (("[Content_Types].xml", content_types), ("_rels/.rels", rels), ("3D/3dmodel.model", model)):
+        for arc, data in files:
             info = zipfile.ZipInfo(arc, date_time=(2020, 1, 1, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o644 << 16
@@ -287,8 +362,8 @@ def write_3mf(path, placed, title):
 
 
 def main():
-    for sub in ("", "usb_variants", "large", "large/usb_variants"):
-        for f in glob.glob(os.path.join(OUT_3MF, sub, "*.3mf")):
+    for sub in ("", "usb_variants", "large", "large/usb_variants", BAMBU["dir"]):
+        for f in glob.glob(os.path.join(OUT_3MF, sub, "*.3mf")) + glob.glob(os.path.join(OUT_3MF, sub, "*.json")):
             os.remove(f)                                # a plate that is no longer made must not linger
     os.makedirs(os.path.join(OUT_3MF, "usb_variants"), exist_ok=True)
     jobs = [(k, v, BED) for k, v in plates().items()] + [(k, v, WHOLE_BED) for k, v in large_plates().items()]
@@ -297,6 +372,9 @@ def main():
         placed = placed_layout(rows["place"]) if isinstance(rows, dict) else rows_layout(rows, bed)
         path = os.path.join(OUT_3MF, fname)
         write_3mf(path, placed, title)
+        if KIT and bed == BED and "/" not in fname:      # the A1 mini plates again, as Bambu Studio projects
+            os.makedirs(os.path.join(OUT_3MF, BAMBU["dir"]), exist_ok=True)
+            write_3mf(os.path.join(OUT_3MF, BAMBU["dir"], fname), placed, title, bambu="tpu" if "tpu" in fname else "pla")
         # re-load and check what was written
         sc = trimesh.load(path)
         geoms = sc.dump() if isinstance(sc, trimesh.Scene) else [sc]
@@ -310,6 +388,12 @@ def main():
             print(f"    {name:24s} {m.extents[0]:6.1f} x {m.extents[1]:6.1f} x {m.extents[2]:5.1f} mm")
         assert ok, fname
     assert USB_PM_SCREW_SPACING in USB_PM_VARIANTS
+    if KIT:
+        with open(os.path.join(OUT_3MF, BAMBU["dir"], "paperdiy_process_a1mini_04.json"), "w") as f:
+            f.write(bambu_process_preset())
+        made = sorted(os.path.basename(f) for f in glob.glob(os.path.join(OUT_3MF, BAMBU["dir"], "*.3mf")))
+        print(f"{BAMBU['dir']}/: {', '.join(made)} as Bambu Studio projects ({BAMBU['printer']}, {BAMBU['process']} with "
+              f"{', '.join(f'{k} {v}' for k, v in BAMBU['changed'].items())}; {BAMBU['bed']}) + paperdiy_process_a1mini_04.json")
 
 
 if __name__ == "__main__":

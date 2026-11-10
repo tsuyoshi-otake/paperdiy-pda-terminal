@@ -90,6 +90,8 @@ r 6 halved), and the other small radii were halved too.
 | `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~21 min, 8 g |
 | `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers + 2 lid splice plates, ~1 h 45 min, 65 g |
 | `3mf/plate4_tpu.3mf` | TPU (0.4 nozzle): 4 feet, ~3 min, 1 g |
+| `3mf/bambu_a1mini/plate0…4*.3mf` | the same five plates as **Bambu Studio projects** for the A1 mini with a 0.4 mm nozzle: printer, process, filament and plate type are selected on opening (see "Bambu Studio projects") |
+| `3mf/bambu_a1mini/paperdiy_process_a1mini_04.json` | the same process changes as a preset to import (File → Import → Import Configs), the fallback |
 | `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers + 1 tray splice plate, ~1 h 38 min, 63 g |
 | `3mf/plate3_panel.3mf` | panel A + B + 3 panel splice plates, ~38 min, 24 g |
 | `3mf/usb_variants/lid_A_left_usb*.3mf` | the lid-A variants, one per file |
@@ -198,6 +200,25 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
   need no bridging; the plates print flat. Plates vs their pieces: 0 mm³. The lid-A variants carry the same pockets.
 * **Print**: lid pieces top face down (the 3MF export first tilts the top plane level, `LAY_TOP`, from `assembly.json`);
   tray floor down; panel pieces visible face down.
+
+### Bambu Studio projects (`3mf/bambu_a1mini/`)
+`export_3mf.py` writes the A1 mini plates a second time as Bambu Studio projects, so they open ready to slice: Bambu Lab
+A1 mini 0.4 nozzle, Textured PEI Plate, Bambu PLA Basic (plate 4: Bambu TPU 95A HF), and "0.20mm Standard @BBL A1M" with
+five options changed (`BAMBU["changed"]`: 3 wall loops, gyroid infill, Arachne walls, 0.1 mm elephant-foot compensation,
+precise Z height).
+
+The files follow how Bambu Studio reads a project (its source: `src/libslic3r/Format/bbs_3mf.cpp`,
+`PresetBundle::load_config_file_config`, `PresetCollection::load_external_preset`, `PresetBundle::validate_presets`):
+- `3D/3dmodel.model` carries the metadata `Application = BambuStudio-02.00.00.00`; that is what makes it a project
+  instead of "geometry only". The version is the lowest 2.x, so no "newer file" notice comes up.
+- `Metadata/project_settings.config` (JSON) names the three presets and lists, in `different_settings_to_system`, the
+  process options that differ. Bambu Studio takes every option that is not in that list from its own system preset of
+  that name, so the file holds only the names and the five changed values; start G-code, speeds and temperatures are
+  Bambu's own, as installed.
+- `Metadata/model_settings.config` puts every object on extruder 1 and on plate 1.
+
+Not verified in Bambu Studio itself (it cannot be run where these files are built): on opening, check that the four
+boxes show the presets above. The geometry-only plates in `3mf/` and the preset JSON are the fallback.
 
 ### Snap (`LATCH`)
 **What it is for.** The hinges are free-stop friction hinges: let go, they turn back a little, so a lid pushed down

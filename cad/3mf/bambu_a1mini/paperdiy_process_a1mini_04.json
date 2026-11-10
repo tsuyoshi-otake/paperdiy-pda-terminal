@@ -1,0 +1,12 @@
+{
+    "elefant_foot_compensation": "0.1",
+    "from": "User",
+    "inherits": "0.20mm Standard @BBL A1M",
+    "name": "PaperDIY PDA 0.20mm @BBL A1M",
+    "precise_z_height": "1",
+    "print_settings_id": "PaperDIY PDA 0.20mm @BBL A1M",
+    "sparse_infill_pattern": "gyroid",
+    "version": "02.00.00.00",
+    "wall_generator": "arachne",
+    "wall_loops": "3"
+}

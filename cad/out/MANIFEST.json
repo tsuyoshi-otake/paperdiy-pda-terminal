@@ -1,4 +1,63 @@
 {
+ "3mf/bambu_a1mini/paperdiy_process_a1mini_04.json": {
+  "sha256": "b120145bc44cd12ca17afabefd38b169907c450abbd9c8f32ea5e6b5165c571b"
+ },
+ "3mf/bambu_a1mini/plate0_test_coupons.3mf": {
+  "objects": 6,
+  "sha256": "963d06b68ae8cc67840769edeb78a6da14de9e504b0fe0710e40110b4e1c3be6",
+  "volumes": [
+   207.22,
+   223.61,
+   1028.43,
+   1082.96,
+   1969.68,
+   3344.13
+  ]
+ },
+ "3mf/bambu_a1mini/plate1_lid.3mf": {
+  "objects": 6,
+  "sha256": "646d1a1559933c2136a3a0c77dbfc32fc82b8ed061a2d8026df1820d3a16cc13",
+  "volumes": [
+   175.99,
+   223.61,
+   223.61,
+   1047.95,
+   9140.24,
+   46346.11
+  ]
+ },
+ "3mf/bambu_a1mini/plate2_tray.3mf": {
+  "objects": 5,
+  "sha256": "5e84db19f045d2974a2b8ad5e1da30d7bf953ad8de41aa5fdbf89226b77072f7",
+  "volumes": [
+   207.22,
+   207.22,
+   1696.0,
+   9900.35,
+   52643.53
+  ]
+ },
+ "3mf/bambu_a1mini/plate3_panel.3mf": {
+  "objects": 5,
+  "sha256": "84773ab08d44a114d1caf545c6d3414f39df87ade6583dfdd9436eaa0fa9d0b2",
+  "volumes": [
+   148.67,
+   226.69,
+   426.88,
+   2783.44,
+   15693.42
+  ]
+ },
+ "3mf/bambu_a1mini/plate4_tpu.3mf": {
+  "objects": 4,
+  "sha256": "1c223f96f5ea8ed9b39cd2dbce4d10b57c872120cdc7554f9ab65a89e627c2b0",
+  "volumes": [
+   147.83,
+   147.83,
+   147.83,
+   147.83
+  ]
+ },
  "3mf/large/plate1_lid.3mf": {
   "objects": 3,
   "sha256": "7f71d4076b869fd2fcf4f922aa26e951a59069dde55e9251fb7cb39acafd4ba6",

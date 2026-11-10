@@ -22,6 +22,8 @@ Un Kyu Lee さんの [phone-enclosure](https://github.com/unkyulee/phone-enclosu
 
 ## 印刷するファイル
 
+**Bambu Lab A1 mini（0.4 mm ノズル）なら、`3mf/bambu_a1mini/` の同じ名前のファイルを開くだけです。**Bambu Studio のプロジェクトになっていて、プリンタ・プロセス（壁 3 周、ジャイロイド、Arachne、象足補正 0.1 mm、正確な Z の高さ）・フィラメント・プレートが選ばれた状態で開きます（[組み立て説明書の 2-0](ASSEMBLY_ja.md)）。下の表のファイルは形だけで、どのスライサーでも開けます。
+
 | ファイル | 中身 | 0.4 mm ノズル | 0.2 mm ノズル |
 | --- | --- | --- | --- |
 | `3mf/plate0_test_coupons.3mf` | 試し刷り（ヒンジ、留めツメ、カバー） | 21 分・8 g | 約 1 時間 27 分・7.5 g（推定） |
