@@ -40,7 +40,7 @@ OUT_3MF = os.path.join(CAD_DIR, "3mf")
 # classic walls, no elephant-foot compensation), and stays right when Bambu updates its presets.
 # The version is the lowest 2.x: a file newer than the program only brings up an "update Bambu Studio" notice.
 BAMBU = dict(
-    dir="bambu_a1mini", version="02.00.00.00",
+    dir="bambu_a1mini", prefix="bambu_", version="02.00.00.00",
     printer="Bambu Lab A1 mini 0.4 nozzle", printer_model="Bambu Lab A1 mini", nozzle="0.4",
     process="0.20mm Standard @BBL A1M", bed="Textured PEI Plate",
     # option: value, as in Bambu Studio's process tabs (see ASSEMBLY_ja.md, 2.)
@@ -374,7 +374,8 @@ def main():
         write_3mf(path, placed, title)
         if KIT and bed == BED and "/" not in fname:      # the A1 mini plates again, as Bambu Studio projects
             os.makedirs(os.path.join(OUT_3MF, BAMBU["dir"]), exist_ok=True)
-            write_3mf(os.path.join(OUT_3MF, BAMBU["dir"], fname), placed, title, bambu="tpu" if "tpu" in fname else "pla")
+            write_3mf(os.path.join(OUT_3MF, BAMBU["dir"], BAMBU["prefix"] + fname), placed, title,
+                      bambu="tpu" if "tpu" in fname else "pla")
         # re-load and check what was written
         sc = trimesh.load(path)
         geoms = sc.dump() if isinstance(sc, trimesh.Scene) else [sc]

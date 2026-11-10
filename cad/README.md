@@ -90,7 +90,7 @@ r 6 halved), and the other small radii were halved too.
 | `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~21 min, 8 g |
 | `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers + 2 lid splice plates, ~1 h 45 min, 65 g |
 | `3mf/plate4_tpu.3mf` | TPU (0.4 nozzle): 4 feet, ~3 min, 1 g |
-| `3mf/bambu_a1mini/plate0…4*.3mf` | the same five plates as **Bambu Studio projects** for the A1 mini with a 0.4 mm nozzle: printer, process, filament and plate type are selected on opening (see "Bambu Studio projects") |
+| `3mf/bambu_a1mini/bambu_plate0…4*.3mf` | the same five plates as **Bambu Studio projects** for the A1 mini with a 0.4 mm nozzle: printer, process, filament and plate type are selected on opening (see "Bambu Studio projects") |
 | `3mf/bambu_a1mini/paperdiy_process_a1mini_04.json` | the same process changes as a preset to import (File → Import → Import Configs), the fallback |
 | `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers + 1 tray splice plate, ~1 h 38 min, 63 g |
 | `3mf/plate3_panel.3mf` | panel A + B + 3 panel splice plates, ~38 min, 24 g |
@@ -202,7 +202,8 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
   tray floor down; panel pieces visible face down.
 
 ### Bambu Studio projects (`3mf/bambu_a1mini/`)
-`export_3mf.py` writes the A1 mini plates a second time as Bambu Studio projects, so they open ready to slice: Bambu Lab
+`export_3mf.py` writes the A1 mini plates a second time as Bambu Studio projects (`bambu_` + the plate's file name, so
+the two kinds cannot be mixed up once downloaded); they open ready to slice: Bambu Lab
 A1 mini 0.4 nozzle, Textured PEI Plate, Bambu PLA Basic (plate 4: Bambu TPU 95A HF), and "0.20mm Standard @BBL A1M" with
 five options changed (`BAMBU["changed"]`: 3 wall loops, gyroid infill, Arachne walls, 0.1 mm elephant-foot compensation,
 precise Z height).

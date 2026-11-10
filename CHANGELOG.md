@@ -2,7 +2,7 @@
 
 ## 2026-11-10（その 26）設定入りの Bambu Studio プロジェクト（A1 mini・0.4 mm ノズル）
 
-- `3mf/bambu_a1mini/` を足した。plate 0〜4 を Bambu Studio のプロジェクトにしたもので、開くとプリンタ（Bambu Lab A1 mini 0.4 nozzle）、プレート（Textured PEI Plate）、フィラメント（Bambu PLA Basic、plate 4 は Bambu TPU 95A HF）、プロセス（0.20mm Standard @BBL A1M から壁 3 周・ジャイロイド・Arachne・象足補正 0.1 mm・正確な Z の高さを変えたもの）が選ばれた状態になる。あとはスライスして印刷するだけ
+- `3mf/bambu_a1mini/` を足した。plate 0〜4 を Bambu Studio のプロジェクトにしたもので（ファイル名は `bambu_plate0_test_coupons.3mf` のように頭に `bambu_` を付け、形だけのファイルと取り違えないようにした）、開くとプリンタ（Bambu Lab A1 mini 0.4 nozzle）、プレート（Textured PEI Plate）、フィラメント（Bambu PLA Basic、plate 4 は Bambu TPU 95A HF）、プロセス（0.20mm Standard @BBL A1M から壁 3 周・ジャイロイド・Arachne・象足補正 0.1 mm・正確な Z の高さを変えたもの）が選ばれた状態になる。あとはスライスして印刷するだけ
 - ファイルに入れたのは、プリセットの名前と、変えた 5 か所の値だけ。Bambu Studio は「標準と違う項目の一覧」に無い項目を手元の標準プリセットから読むので、開始 G-code や速度・温度は Bambu の標準のまま使われる（Bambu Studio のソースの読み込み処理に合わせた。`cad/README.md` の「Bambu Studio projects」）
 - 同じ 5 か所を入れたプロセスのプリセット `paperdiy_process_a1mini_04.json` も出力する（取り込んで選ぶだけの予備）
 - 形だけの `3mf/plate*.3mf` と `3mf/large/` は前のまま

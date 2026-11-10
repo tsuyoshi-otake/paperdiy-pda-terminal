@@ -1,10 +1,7 @@
 {
- "3mf/bambu_a1mini/paperdiy_process_a1mini_04.json": {
-  "sha256": "b120145bc44cd12ca17afabefd38b169907c450abbd9c8f32ea5e6b5165c571b"
- },
- "3mf/bambu_a1mini/plate0_test_coupons.3mf": {
+ "3mf/bambu_a1mini/bambu_plate0_test_coupons.3mf": {
   "objects": 6,
-  "sha256": "963d06b68ae8cc67840769edeb78a6da14de9e504b0fe0710e40110b4e1c3be6",
+  "sha256": "9607de29254bbe338ebb14e5923325719b5dc31543df413a3d5582f529aed054",
   "volumes": [
    207.22,
    223.61,
@@ -14,9 +11,9 @@
    3344.13
   ]
  },
- "3mf/bambu_a1mini/plate1_lid.3mf": {
+ "3mf/bambu_a1mini/bambu_plate1_lid.3mf": {
   "objects": 6,
-  "sha256": "646d1a1559933c2136a3a0c77dbfc32fc82b8ed061a2d8026df1820d3a16cc13",
+  "sha256": "8d73c876502562c487bf730bb768f6c63ea50d0a1334b52e4ca84f0f44e9bf0e",
   "volumes": [
    175.99,
    223.61,
@@ -26,9 +23,9 @@
    46346.11
   ]
  },
- "3mf/bambu_a1mini/plate2_tray.3mf": {
+ "3mf/bambu_a1mini/bambu_plate2_tray.3mf": {
   "objects": 5,
-  "sha256": "5e84db19f045d2974a2b8ad5e1da30d7bf953ad8de41aa5fdbf89226b77072f7",
+  "sha256": "0090f6d83b5f5a8d2242dd7fcd2fd670ff411237c54e6102a66e35eeea9fd460",
   "volumes": [
    207.22,
    207.22,
@@ -37,9 +34,9 @@
    52643.53
   ]
  },
- "3mf/bambu_a1mini/plate3_panel.3mf": {
+ "3mf/bambu_a1mini/bambu_plate3_panel.3mf": {
   "objects": 5,
-  "sha256": "84773ab08d44a114d1caf545c6d3414f39df87ade6583dfdd9436eaa0fa9d0b2",
+  "sha256": "9a5380e92d6477e3062d97caa53d5cd2556e400133c2ce5a7a96aec5e3e7becd",
   "volumes": [
    148.67,
    226.69,
@@ -48,15 +45,18 @@
    15693.42
   ]
  },
- "3mf/bambu_a1mini/plate4_tpu.3mf": {
+ "3mf/bambu_a1mini/bambu_plate4_tpu.3mf": {
   "objects": 4,
-  "sha256": "1c223f96f5ea8ed9b39cd2dbce4d10b57c872120cdc7554f9ab65a89e627c2b0",
+  "sha256": "c193ed94483cff60ba55e1e0be6294efc17fa33e13140f3b168d382a779132c2",
   "volumes": [
    147.83,
    147.83,
    147.83,
    147.83
   ]
+ },
+ "3mf/bambu_a1mini/paperdiy_process_a1mini_04.json": {
+  "sha256": "b120145bc44cd12ca17afabefd38b169907c450abbd9c8f32ea5e6b5165c571b"
  },
  "3mf/large/plate1_lid.3mf": {
   "objects": 3,
