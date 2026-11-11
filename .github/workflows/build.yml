@@ -18,11 +18,22 @@ jobs:
         run: make verify
       - name: the other designs the docs describe still build (PD_MOUNT=bare, KIT_LID=solid)
         run: make variants
-      - name: printability report (PrusaSlicer)
+      # The report needs PrusaSlicer from the Ubuntu archive. When the archive cannot be reached (it happens: the runner
+      # then hangs for half an hour and more), the report is skipped with a warning; the checks above still count.
+      - name: install PrusaSlicer
+        id: slicer
+        continue-on-error: true
+        timeout-minutes: 10
         run: |
-          sudo apt-get -o Acquire::Retries=5 update -q
-          sudo apt-get -o Acquire::Retries=5 install -y -q --no-install-recommends prusa-slicer
-          make report
+          sudo apt-get -o Acquire::Retries=2 update -q
+          sudo apt-get -o Acquire::Retries=2 install -y -q --no-install-recommends prusa-slicer
+      - name: printability report (PrusaSlicer)
+        if: steps.slicer.outcome == 'success'
+        timeout-minutes: 20
+        run: make report
+      - name: report skipped
+        if: steps.slicer.outcome != 'success'
+        run: echo "::warning::PrusaSlicer could not be installed (Ubuntu archive unreachable), so the printability report was skipped in this run"
       - uses: actions/upload-artifact@v4
         with:
           name: cad-outputs
