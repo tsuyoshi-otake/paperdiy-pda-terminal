@@ -278,8 +278,9 @@ def nozzle_section(report, checked):
 
 
 def lid_stays_shut(report, lid_m, lid_cg, base_m, base_cg):
-    """The hinges' spring-back against the snap, and what it takes to open the lid (kit design)."""
-    import build                                          # the snap's plate model
+    """The hinges' spring-back against the snap, and what it takes to open the lid (kit design). The snap's figures
+    come from closing the built lid on the built tray (tools/snap_sim.py)."""
+    import snap_sim
     g = 9.81e-3                                           # N per gram
     n = 2
     T, lo, hi = n * HINGE_TORQUE, n * HINGE_TORQUE * (1 - HINGE_TORQUE_TOL), n * HINGE_TORQUE * (1 + HINGE_TORQUE_TOL)
@@ -287,16 +288,21 @@ def lid_stays_shut(report, lid_m, lid_cg, base_m, base_cg):
     M = lid_m * g * arm
     lever = (HINGE_AXIS_Y + BACK_OLD_Y) / 1000            # axis to the front face
     push = [(t - M) / lever for t in (lo, T, hi)]
-    k, _, _ = build.latch_plate()
-    hold = lambda e: k * e * (np.tan(np.radians(LATCH["open_deg"])) + 0.3) / (1 - 0.3 * np.tan(np.radians(LATCH["open_deg"])))  # noqa: E731
-    eng = LATCH["bump"] - LATCH["clr"] - LATCH["stop"]["clr"]       # with the lid forward against its stops
+    geo = snap_sim.Geometry(trimesh.load(os.path.join(OUT_DIR, "display_lid_usbc.stl")),
+                            trimesh.load(os.path.join(OUT_DIR, "keyboard_tray.stl")))
+    C, eps_n = snap_sim.plate()
+    sim = lambda **kw: snap_sim.run(geo, C, eps_n, push=push[2], **kw)      # noqa: E731
+    stops, place = sim(play=0.3), sim()                   # the lid forward against its stops / exactly as drawn
+    wide = sim(play=0.3, gap_lip=0.10, gap_stop=0.10)     # both printed gaps 0.10 mm wider than drawn
+    fwd = sim(at=-0.4)                                    # the lid 0.4 mm forward and not giving
     lift = lid_m * g * arm / lever                        # the lid's weight, as a force at the front edge
-    f_open = hold(eng) + T / lever - lift
+    f_open = [r["hold_n"] + T / lever - lift for r in (stops, place)]
     base_arm, kb_arm = (HINGE_AXIS_Y - base_cg[1]) / 1000, (HINGE_AXIS_Y - KB_CG[1]) / 1000
     kb_one_hand = (hi / g - base_m * base_arm) / kb_arm   # keyboard heavy enough for the base to stay down by itself
-    report.update(hinge_torque_nm=[lo, T, hi], lid_moment_nm=M, springback_push_n=push, snap_k=k, snap_hold_n=hold(eng),
-                  snap_hold_low_n=hold(eng - 0.15), open_force_n=f_open,
-                  keyboard_for_one_hand_g=kb_one_hand)
+    report.update(hinge_torque_nm=[lo, T, hi], lid_moment_nm=M, springback_push_n=push, snap_k=1.0 / C[0, 0],
+                  snap_hold_n=stops["hold_n"], snap_hold_in_place_n=place["hold_n"], snap_hold_low_n=wide["hold_n"],
+                  snap_close_n=[stops["close_n"], place["close_n"]], open_force_n=f_open,
+                  snap_forward_close_n=fwd["close_n"], keyboard_for_one_hand_g=kb_one_hand)
     return ["## Does the lid stay shut?", "",
             f"The two HG-MF08 are free-stop friction hinges: together {T:.3f} N\u00b7m ({lo:.3f}..{hi:.3f} with their "
             f"\u00b1{100 * HINGE_TORQUE_TOL:.0f} %). The lid side's moment about the axis is at most {M:.3f} N\u00b7m (level, "
@@ -306,20 +312,32 @@ def lid_stays_shut(report, lid_m, lid_cg, base_m, base_cg):
             "is made up for by pushing a little further; at the closed position the lid lands on the tray and cannot go "
             f"further, so it comes up again: every degree at the axis is {1000 * lever * np.radians(1):.1f} mm at the front "
             "edge. The snap is what keeps it down.", "",
+            "The snap's figures are simulated: `tools/snap_sim.py` closes the built lid on the built tray along the hinge's "
+            "arc, with the lip and the stop tongues as springs (plate model) and friction 0.3 on the ramps; all cases are "
+            "in `out/snap_sim.md`. Two cases bracket a print that came out as drawn: the lid forward against its stops, "
+            "and the lid exactly where it was drawn.", "",
             "| | at the front edge |", "| --- | --- |",
             f"| push from the hinges' spring-back, less the lid's weight | {push[0]:.1f}..{push[2]:.1f} N |",
-            f"| the snap holds (plate model, {eng:.2f} mm engagement) | {hold(eng):.1f} N |",
-            f"| the snap holds if the print leaves {eng - 0.15:.2f} mm | {hold(eng - 0.15):.1f} N |",
-            f"| to open: snap + hinge friction - the lid's weight | about {f_open:.1f} N |", "",
-            f"**Why the stops.** The lid hangs on the hinges {1000 * lever:.0f} mm behind the snap and can shift a few tenths "
-            "front to back on them. Without a stop the bump's ramps pushed the whole lid forward instead of bending the "
-            "lip: the earlier snaps (12 mm and 30 mm lips) never clicked, and the lid's front face stood proud of the "
-            f"tray's. Two tongues on the lid now reach down inside the tray's front wall ({LATCH['stop']['clr']:g} mm off its "
-            "inner face), so the lip has to bend. The engagement above is the one with the lid forward against them. "
-            "The figures are the plate model's (ceiling and end walls rigid), so the real hold is somewhat lower; an earlier "
-            "note here that the model overstates it several times over was drawn from those snaps that never engaged, and "
-            "does not stand. The snap coupons of plate 0 take in the flex zone and both stops: click them together and pull "
-            "them apart before printing the lid and the tray. Too hard to open: file the bump's upper flank a little.", "",
+            f"| to close | {stops['close_n']:.0f}..{place['close_n']:.0f} N |",
+            f"| the snap holds | {stops['hold_n']:.0f}..{place['hold_n']:.0f} N |",
+            f"| the snap holds if both printed gaps are 0.10 mm wider than drawn (lid against its stops) | {wide['hold_n']:.1f} N |",
+            f"| to open: snap + hinge friction - the lid's weight | about {f_open[0]:.0f}..{f_open[1]:.0f} N |", "",
+            f"**Why the stops, and what they do not cure.** The lid hangs on the hinges {1000 * lever:.0f} mm behind the "
+            "snap. With the lid 0.3 mm forward a snap without stops no longer catches (simulated), and that is what the "
+            "prints of the 12 mm and the 30 mm lips did: no click, the lid's front face proud of the tray's. Whether the "
+            "bump's ramp pushes the lid there (play or give in the hinges and their seats) or the lid sits there (seat "
+            "depths, the print's scale) is not known. Two tongues on the lid reach down inside the tray's front wall "
+            f"({LATCH['stop']['clr']:g} mm off its inner face), so a lid that shifts or gives is held back and the lip has "
+            "to bend. A lid that sits more than about 0.3 mm forward and does not give is not cured by them: the tongues "
+            f"ride up on the tray's wall (simulated at 0.4 mm: about {fwd['close_n']:.0f} N to close). Do not force it: the "
+            "tongues are 0.9 mm thick. Measure the step between the two front faces instead; the snap has to be moved by "
+            "that much.", "",
+            "The forces are the plate model's (ceiling and end walls rigid), so the real ones are somewhat lower. They are "
+            "higher than the 8 N to close and 10 N to open quoted before: those were worked out for 30 and 35 degree "
+            "faces, and the bump as built has 44 and 49 degree faces (`src/build.py`, `latch_flanks`). An earlier note "
+            "that the model overstates the hold several times over was drawn from snaps that never engaged, and does not "
+            "stand. The snap coupons of plate 0 take in the flex zone and both stops: click them together and pull them "
+            "apart before printing the lid and the tray. Too hard to open: file the bump's upper flank a little.", "",
             "Press the front of the lid until the snap clicks; a lid that is only laid down stays open by the spring-back. "
             f"To open, hold the base: it weighs {base_m:.0f} g plus the keyboard, less than the pull on the lid, and the hinges "
             f"would carry it up with the lid unless the keyboard weighed about {kb_one_hand:.0f} g.", ""]

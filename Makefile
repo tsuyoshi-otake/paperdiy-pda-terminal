@@ -5,6 +5,7 @@
 #   make 3mf         print plates for the Bambu Lab A1 mini (cad/3mf/)
 #   make verify      rebuild and compare with cad/out/MANIFEST.json (what is committed)
 #   make report      slicer estimates and stability warnings (needs prusa-slicer) -> cad/out/print_report.md
+#   make sim         the lid closing onto its snap, simulated on the built parts -> cad/out/snap_sim.md
 #   make render      README / assembly images (needs Node.js; downloads Chromium for Playwright)
 #   make test        host tests of the firmware's terminal emulator (g++, Python with pyte)
 #   make firmware    ESP-IDF v5.5.6 build (run `. $IDF_PATH/export.sh` first); checks it against prebuilt/
@@ -19,7 +20,7 @@ export PHONE_ENCLOSURE_STL ?= $(ORIGINAL)/STL
 
 TAG         ?= $(shell git describe --tags --always 2>/dev/null || echo dev)
 
-.PHONY: all setup original cad 3mf verify report manifest render test firmware firmware-check firmware-docker dist variants
+.PHONY: all setup original cad 3mf verify report sim manifest render test firmware firmware-check firmware-docker dist variants
 
 all: 3mf
 
@@ -41,6 +42,9 @@ verify: 3mf
 report: 3mf
 	cd cad && $(PYTHON) tools/print_report.py
 
+sim: cad
+	cd cad && $(PYTHON) tools/snap_sim.py
+
 manifest: 3mf
 	cd cad && $(PYTHON) tools/manifest.py --write
 
@@ -52,6 +56,7 @@ render:
 	$(PYTHON) docs/snap_figure.py docs/images/panel_snap.png
 	$(PYTHON) docs/splice_figure.py docs/images/splice_plates.png
 	$(PYTHON) docs/latch_figure.py docs/images/latch.png
+	cd cad && $(PYTHON) tools/snap_sim.py --figure ../docs/images/snap_sim.png
 
 test:
 	$(MAKE) -C firmware/test/host test PYTHON=$(PYTHON)

@@ -924,6 +924,9 @@ def chamfered_slab(cs, bottom, top, c):
     return M.batch_hull([mid, up, lo])
 
 
+LATCH_ROOT = 0.3              # the bump's profile starts this far inside the lip (no coplanar faces)
+
+
 def latch_bump_cs(grow=0.0):
     """Bump on the inside of the tab, in (y, z) at the closed position; grow > 0 gives the tray's groove."""
     l = LATCH
@@ -931,8 +934,16 @@ def latch_bump_cs(grow=0.0):
     zb = under_z(-BACK_OLD_Y) - l["bump_at"]
     h = l["bump"]
     dc, do = h / np.tan(np.radians(l["close_deg"])), h / np.tan(np.radians(l["open_deg"]))
-    cs = poly_cs([(y0 - 0.3, zb - 0.1 - dc), (y0 + h, zb - 0.1), (y0 + h, zb + 0.1), (y0 - 0.3, zb + 0.1 + do)])
+    cs = poly_cs([(y0 - LATCH_ROOT, zb - 0.1 - dc), (y0 + h, zb - 0.1), (y0 + h, zb + 0.1), (y0 - LATCH_ROOT, zb + 0.1 + do)])
     return cs.offset(grow, m3.JoinType.Miter) if grow else cs
+
+
+def latch_flanks():
+    """(closing ramp, catch face) as built: mm outward per mm of travel. close_deg / open_deg set how far each flank
+    runs along the lip for the bump's height, but the profile is rooted LATCH_ROOT inside the lip, so the faces
+    themselves are steeper than those angles: (h + root) / run."""
+    l = LATCH
+    return tuple(np.tan(np.radians(l[k])) * (l["bump"] + LATCH_ROOT) / l["bump"] for k in ("close_deg", "open_deg"))
 
 
 def latch_lid_parts():
@@ -1617,7 +1628,7 @@ def main_kit():
     d_max = l["bump"]                                      # the lip's bend if the lid is held back instead
     d_path, at = latch_path(lid, tray)
     mu = 0.3
-    to, tc = np.tan(np.radians(l["open_deg"])), np.tan(np.radians(l["close_deg"]))
+    tc, to = latch_flanks()                                # the faces as built, not close_deg / open_deg
     f_open = k * d_static * (to + mu) / (1 - mu * to)
     f_close = k * d_static * (tc + mu) / (1 - mu * tc)
     eps, eps_hi = 100 * eps_n * k * d_static, 100 * eps_n * k * d_max
@@ -1643,6 +1654,10 @@ def main_kit():
         f"z {ez:.1f}, {et:.2f} thick; across the print layers: keep < 0.5 %), "
         f"spread over the zone, no slit ends; an outward pull of ~{0.714 / (100 * eps_n):.0f} N at the bump reaches ~25 MPa; "
         f"to open ~{f_open:.1f} N at the lip (+ the hinges' friction), to close ~{f_close:.1f} N")
+    log(f"  the bump's faces as built stand at {np.degrees(np.arctan(tc)):.0f} deg (closing ramp) and "
+        f"{np.degrees(np.arctan(to)):.0f} deg (catch face) to the closing direction: its profile is rooted {LATCH_ROOT:g} mm "
+        f"inside the lip, which steepens them from the {l['close_deg']:g} / {l['open_deg']:g} deg of LATCH. "
+        f"tools/snap_sim.py closes the built lid on the built tray (out/snap_sim.md)")
     if SHELL:
         assert eps_hi < 0.5, "latch strain"
     elif max(eps, eps_hi) >= 0.5:        # the solid lid's front wall is lower and stiffer; that lid is not kept up

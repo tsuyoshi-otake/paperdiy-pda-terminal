@@ -149,7 +149,8 @@
   stops: 2 tongues on the lid at x = -26, 26 (8 wide, 3.5 below the parting, 0.90 thick) inside the tray's front wall, 0.1 off its inner face, through notches in the deck: the ramps cannot push the lid forward, the lip has to bend
   the tongues on the last 6 deg of closing (rigid lid on the real arc): they never touch the tray; their outer face leans back with the arc, the wall's edge has a 0.6 mm lead-in
   plate model (Kirchhoff, ceiling and end walls rigid, so the real wall is somewhat softer): 24.9 N/mm at the bump; engagement with the lid against the stops: 0.30 mm; a rigid lip on the real opening arc overlaps the tray by at most 0.39 mm (at 0.1 deg)
-  peak strain 0.31 % (0.46 % if the lid is held back and the lip bends by the whole bump; x -0.1, z 19.9, 1.18 thick; across the print layers: keep < 0.5 %), spread over the zone, no slit ends; an outward pull of ~17 N at the bump reaches ~25 MPa; to open ~9.5 N at the lip (+ the hinges' friction), to close ~7.9 N
+  peak strain 0.31 % (0.46 % if the lid is held back and the lip bends by the whole bump; x -0.1, z 19.9, 1.18 thick; across the print layers: keep < 0.5 %), spread over the zone, no slit ends; an outward pull of ~17 N at the bump reaches ~25 MPa; to open ~16.9 N at the lip (+ the hinges' friction), to close ~13.3 N
+  the bump's faces as built stand at 44 deg (closing ramp) and 49 deg (catch face) to the closing direction: its profile is rooted 0.3 mm inside the lip, which steepens them from the 30 / 35 deg of LATCH. tools/snap_sim.py closes the built lid on the built tray (out/snap_sim.md)
   tray front wall left behind the recess 1.95 mm, behind the groove 1.50 mm
 == hinge motion (lid + kit + panel + covers rotated about the real axis y=53.15, z=12.85; tray fixed)
   no collision with the tray from 0 to 180 deg

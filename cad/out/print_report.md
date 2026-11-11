@@ -84,14 +84,19 @@ The two HG-MF08 are free-stop friction hinges: together 0.157 N·m (0.118..0.196
 
 Let go, friction hinges turn back a little (the twist stored in them and in their seats). Anywhere else that is made up for by pushing a little further; at the closed position the lid lands on the tray and cannot go further, so it comes up again: every degree at the axis is 1.7 mm at the front edge. The snap is what keeps it down.
 
+The snap's figures are simulated: `tools/snap_sim.py` closes the built lid on the built tray along the hinge's arc, with the lip and the stop tongues as springs (plate model) and friction 0.3 on the ramps; all cases are in `out/snap_sim.md`. Two cases bracket a print that came out as drawn: the lid forward against its stops, and the lid exactly where it was drawn.
+
 | | at the front edge |
 | --- | --- |
 | push from the hinges' spring-back, less the lid's weight | 0.5..1.3 N |
-| the snap holds (plate model, 0.30 mm engagement) | 9.5 N |
-| the snap holds if the print leaves 0.15 mm | 4.7 N |
-| to open: snap + hinge friction - the lid's weight | about 10.4 N |
+| to close | 9..13 N |
+| the snap holds | 12..17 N |
+| the snap holds if both printed gaps are 0.10 mm wider than drawn (lid against its stops) | 1.3 N |
+| to open: snap + hinge friction - the lid's weight | about 13..18 N |
 
-**Why the stops.** The lid hangs on the hinges 100 mm behind the snap and can shift a few tenths front to back on them. Without a stop the bump's ramps pushed the whole lid forward instead of bending the lip: the earlier snaps (12 mm and 30 mm lips) never clicked, and the lid's front face stood proud of the tray's. Two tongues on the lid now reach down inside the tray's front wall (0.1 mm off its inner face), so the lip has to bend. The engagement above is the one with the lid forward against them. The figures are the plate model's (ceiling and end walls rigid), so the real hold is somewhat lower; an earlier note here that the model overstates it several times over was drawn from those snaps that never engaged, and does not stand. The snap coupons of plate 0 take in the flex zone and both stops: click them together and pull them apart before printing the lid and the tray. Too hard to open: file the bump's upper flank a little.
+**Why the stops, and what they do not cure.** The lid hangs on the hinges 100 mm behind the snap. With the lid 0.3 mm forward a snap without stops no longer catches (simulated), and that is what the prints of the 12 mm and the 30 mm lips did: no click, the lid's front face proud of the tray's. Whether the bump's ramp pushes the lid there (play or give in the hinges and their seats) or the lid sits there (seat depths, the print's scale) is not known. Two tongues on the lid reach down inside the tray's front wall (0.1 mm off its inner face), so a lid that shifts or gives is held back and the lip has to bend. A lid that sits more than about 0.3 mm forward and does not give is not cured by them: the tongues ride up on the tray's wall (simulated at 0.4 mm: about 44 N to close). Do not force it: the tongues are 0.9 mm thick. Measure the step between the two front faces instead; the snap has to be moved by that much.
+
+The forces are the plate model's (ceiling and end walls rigid), so the real ones are somewhat lower. They are higher than the 8 N to close and 10 N to open quoted before: those were worked out for 30 and 35 degree faces, and the bump as built has 44 and 49 degree faces (`src/build.py`, `latch_flanks`). An earlier note that the model overstates the hold several times over was drawn from snaps that never engaged, and does not stand. The snap coupons of plate 0 take in the flex zone and both stops: click them together and pull them apart before printing the lid and the tray. Too hard to open: file the bump's upper flank a little.
 
 Press the front of the lid until the snap clicks; a lid that is only laid down stays open by the spring-back. To open, hold the base: it weighs 64 g plus the keyboard, less than the pull on the lid, and the hinges would carry it up with the lid unless the keyboard weighed about 332 g.
 

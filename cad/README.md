@@ -35,6 +35,7 @@ From the repository root (or the same commands by hand from this folder):
 make setup     # pip install -r cad/requirements.txt (pinned versions) + the host-test packages
 make verify    # fetch the pinned original, build every STL + 3MF, compare with out/MANIFEST.json
 make report    # optional, needs prusa-slicer: print time / filament / stability warnings -> out/print_report.md
+make sim       # the lid closing onto its snap, simulated on the built parts -> out/snap_sim.md
 make variants  # the other designs (PD_MOUNT=bare, KIT_LID=solid) still build? (in scratch copies; CI runs it)
 ```
 By hand:
@@ -45,6 +46,7 @@ python3 src/build.py                     # ~10 s; writes out/, out/split/, out/c
 python3 src/export_3mf.py                # 3mf/ print plates
 python3 tools/manifest.py --check        # same outputs as committed?
 python3 tools/print_report.py            # optional (prusa-slicer)
+python3 tools/snap_sim.py                # the snap, simulated (--figure ../docs/images/snap_sim.png redraws the figure)
 ```
 Set `PHONE_ENCLOSURE_STL=/path/to/phone-enclosure/STL` if the original repo is cloned elsewhere.
 `src/params.py` holds every parameter; `src/build.py` does the mesh booleans (manifold3d) on the original STLs,
@@ -61,7 +63,7 @@ log is written to `out/build_log.txt`.
   are byte-identical and the rest match in geometry only.
 * **Recorded:** `out/MANIFEST.json` holds the SHA-256, volume, bounding box and triangle count of every output.
   `tools/manifest.py --check` accepts byte differences only when the geometry matches to 0.01 mm / 0.01 %.
-* **CI:** `.github/workflows/build.yml` runs `make verify`, the slicer report, the firmware build (compared byte for byte
+* **CI:** `.github/workflows/build.yml` runs `make verify`, the snap simulation, the slicer report, the firmware build (compared byte for byte
   with `firmware/prebuilt/`) and the host tests.
 
 ## Kit design (`PD_MOUNT = "kit"`, the default)
@@ -227,34 +229,69 @@ tray's front face. Nothing is slit: a tab freed by two slits breaks from the sli
 layer line (the lid prints ceiling down). Instead the front wall is thinned from inside to 1.1 mm over x −20…20
 (`LATCH["flex"]`), up to 2 mm below the ceiling, with 45° chamfers back to the 2.0 wall (they face up in print), clear
 of the panel's snap groove at x 22…30; that zone bends outward as a plate and nothing shows from outside. A 0.45 mm
-bump on the lip's inside (30° closing ramp, 35° catch face) presses on the recess face, pushing the lip outward into
-free air, and drops into a groove 1.4 mm below the parting (0.6 mm of tray above it).
+bump on the lip's inside (its faces stand at 44° on the closing side and 49° on the catch side, measured from the
+closing direction; see "The faces' angles" below) presses on the recess face, pushing the lip outward into free air,
+and drops into a groove 1.4 mm below the parting (0.6 mm of tray above it).
 
-**Stops.** The lid hangs on the hinges 100 mm behind the snap, and the screws in the leaves' holes leave it free to
-shift a few tenths front to back. Without a stop the bump's ramps pushed the whole lid forward instead of bending the
-lip: the snaps printed so far (12 mm and 30 mm lips) never clicked, and the lid's front face stood proud of the tray's.
+**Stops.** The lid hangs on the hinges 100 mm behind the snap. The snaps printed so far (12 mm and 30 mm lips, no
+stops) never clicked, and the lid's front face stood proud of the tray's. That is what the simulation below gives when
+the lid is 0.3 mm or more forward as the bump arrives. Whether the bump's ramp pushes it there (play or give in the
+hinges and their seats) or it sits there (the leaves' seat depths, the print's scale) is not known.
 So two tongues on the lid (`LATCH["stop"]`: x ±26, 8 wide, 3.5 below the parting), either side of the flex zone, reach
 down inside the tray's front wall through notches in the deck and bear on the wall's inner face, 0.10 mm off it: the
 lid's front edge straddles the tray's wall, and the lip has to bend. Their outer face leans back with the closing arc
-(the build sweeps the last 6° and asserts they never touch), and the wall's edge has a 0.6 mm lead-in, so a lid that
-sits up to about 1 mm forward is picked up. They stay out of the keyboard's 196 × 87 mm room.
+(the build sweeps the last 6° and asserts they never touch), and the wall's edge has a 0.6 mm lead-in. They stay out
+of the keyboard's 196 × 87 mm room. They cure a lid that shifts or gives. They do not cure a lid that sits more than
+about 0.3 mm forward and does not give: with them such a lid rides up on the tray's wall (below).
 
-With the lid forward against the stops the engagement is 0.45 − 0.05 (lip to recess face; the lip is the springy side
-and rides on it) − 0.10 = 0.30 mm; held back the other way the lip bends by the whole bump, 0.45 mm.
-`src/latch_plate.py` solves the wall as a Kirchhoff plate (Morley triangles, scikit-fem; E = 3.5 GPa, ν = 0.35; ceiling
-and end walls rigid, so the real wall is somewhat softer): 24.9 N/mm at the bump → ~9.5 N of hold at the lip (μ = 0.3;
-~4.7 N if the print leaves 0.15 mm) against 0.5–1.3 N of push from the hinges, ~7.9 N to close; peak strain 0.31 %,
-spread over the zone (keep under ~0.5 % across the layers; 0.46 % at 0.45 mm); an outward pull of ~17 N at the bump
-brings it to ~25 MPa. A plain 2.0 mm wall without the zone would be four times as stiff. Behind the tray's recess
-1.95 mm of wall stay, behind the groove 1.50 mm. (An earlier note here, that the model overstates the hold several
-times over, was drawn from those snaps that never engaged; it is withdrawn.)
+By the drawn numbers the engagement with the lid forward against the stops is 0.45 − 0.05 (lip to recess face; the lip
+is the springy side and rides on it) − 0.10 = 0.30 mm; on the built parts it is 0.24 mm (the bump clears the tray's
+edge by 0.37 mm, and the tongue's lean lets the lid reach 0.13 mm forward). Held back the other way the lip bends by
+the whole bump. `src/latch_plate.py` solves the wall as a Kirchhoff plate (Morley triangles, scikit-fem; E = 3.5 GPa,
+ν = 0.35; ceiling and end walls rigid, so the real wall is somewhat softer): 24.9 N/mm at the bump; peak strain
+0.31 % at 0.30 mm, spread over the zone (keep under ~0.5 % across the layers; 0.46 % at 0.45 mm); an outward pull of
+~17 N at the bump brings it to ~25 MPa. A plain 2.0 mm wall without the zone would be four times as stiff. Behind the
+tray's recess 1.95 mm of wall stay, behind the groove 1.50 mm. (An earlier note here, that the model overstates the
+hold several times over, was drawn from those snaps that never engaged; it is withdrawn.)
+
+**Simulation.** `tools/snap_sim.py` (`make sim`, all cases in `out/snap_sim.md`) closes the built lid on the built
+tray: sections of the two STLs through the lip and through a tongue, the lid rigid on the hinge's arc, the lip and the
+tongues' backing as springs (the plate model with two load cases: 24.9 and 108 N/mm, coupled), friction 0.3 on the
+ramps, then the hinges' spring-back (0.5–1.3 N) lifting the front edge. The lid may sit off its drawn position front
+to back, shift freely about it, or give. Forces at the front edge:
+
+| case | to close | holds | |
+| --- | --- | --- | --- |
+| lid free to shift ±0.3 mm, no stops (as printed so far) | 1 N | 2.6 N | the lid slides 0.30 mm forward, the lip bends 0.07 mm: opens when handled |
+| the same, with stops | 9 N | 12 N | the lid ends 0.13 mm forward, the lip bends 0.22 mm |
+| lid exactly as drawn, not giving | 13 N | 17 N | the same with or without stops |
+| lid 0.3 mm forward, not giving: no stops / stops | 1 / 29 N | 2.6 / 13 N | with stops the tongues are squeezed against the tray's wall |
+| lid 0.4 mm forward, not giving: no stops / stops | – / 44 N | 0 / – | no stops: the bump does not reach; stops: does not close by hand |
+| lid 0.4 mm forward, giving 30 N/mm, stops | 11 N | 13 N | the tongues push the lid back and the lip catches |
+| stops, both printed gaps 0.10 mm wider, lid free | 1 N | 1.3 N | opens when handled |
+| stops, both printed gaps 0.10 mm tighter, lid free | 20 N | 23 N | strain 0.44 % |
+
+![The snap, simulated: three cases at the moment that decides them, and hold and closing force against where the lid sits](../docs/images/snap_sim.png)
+
+So the stop version holds when the lid shifts or gives, and for a lid that does not give within about −0.3…+0.1 mm of
+its drawn position, provided the two printed gaps (lip to recess, tongues to wall) come out within about ±0.1 mm in
+total. What it cannot tell is which of these the real device is: where the lid sits on the hinges and how freely it
+moves are inputs, not results. Check on the assembled device: is the closed lid's front face proud of the tray's, and
+does it move back under a finger? A step of more than 0.3 mm that does not move means the snap has to be moved by that
+step (do not force the lid shut: the tongues are 0.9 mm thick).
+
+**The faces' angles.** `LATCH["close_deg"]` / `["open_deg"]` (30°, 35°) set how far each flank runs along the lip, but
+the bump's profile is rooted 0.3 mm inside the lip, so the faces themselves stand at 44° and 49° to the closing
+direction (`build.py`, `latch_flanks`). Earlier revisions of this page quoted ~7.9 N to close and ~9.5 N of hold,
+worked out for 30° / 35° faces; the forces above are those of the faces as built. The geometry is unchanged (every
+printed version had these faces).
 
 The snap coupons of plate 0 take in the flex zone and both stops (65 mm wide): put the lid piece over the tray piece's
 wall, click it down and pull it off before printing the lid and the tray. Too hard to open: file the bump's upper
 flank a little, or lower `LATCH["bump"]`; tongues too tight: raise `LATCH["stop"]["clr"]`.
 
-There is no finger grip: the lid is opened at the seam of the front edge (about 10.4 N by the model: snap + hinge
-friction − the lid's weight) while the other hand holds the base, which is lighter than that pull.
+There is no finger grip: the lid is opened at the seam of the front edge (about 13–18 N by the simulation: snap +
+hinge friction − the lid's weight) while the other hand holds the base, which is lighter than that pull.
 
 ### Checks run by `src/build.py` (kit)
 Kit envelope vs lid and vs panel, a straight USB-C plug in the port vs lid and vs panel, panel vs lid and vs tray, lid vs
@@ -468,7 +505,7 @@ published drawing and structure files.
 | `KIT_RIBS_X` / `USB_GUIDE_X` / `SPLIT_BLOCK` | `(-50, 0, 40)` / `(-99.6, None)` / `None` (bare `7 × 7 × 3.4`) | design choice | ribs onto the kit's back; USB-C guide ribs from the end wall to the kit; ceiling blocks around the lid keys (bare design only) |
 | `SPLICE` | `clr 0.3`; tray 1, lid 2 plates (t `WALL / 2`), panel 3 (t `PANEL_T / 2`), x −10…+10 / +6 / +8.4 from the split | design choice | splice plates glued on the hidden side across each seam of the split pieces, flush in pockets in both halves |
 | `USB_PM_Y_KIT` | `20.0` | design choice | panel-mount female opening in the lid-A variants (clear of the lid keys and the power slot) |
-| `LATCH` | `x 0, w 30, t 1.0, below 2.6, bump 0.45 @ 1.4, clr 0.05, 30° / 35°; flex x −20…20, t 1.1, top 2; stop x ±26, w 8, below 3.5, up 5, clr 0.10, lead 0.6` | design choice | snap: lip on a thinned zone of the front wall, no slits, 0.30 mm engagement (see "Snap") |
+| `LATCH` | `x 0, w 30, t 1.0, below 2.6, bump 0.45 @ 1.4, clr 0.05, 30° / 35° (flank runs; the faces stand at 44° / 49°); flex x −20…20, t 1.1, top 2; stop x ±26, w 8, below 3.5, up 5, clr 0.10, lead 0.6` | design choice | snap: lip on a thinned zone of the front wall, no slits, 0.24 mm engagement against the stops (see "Snap") |
 | `PANEL_Z_FRONT` | `15.0` | measured | [M:Display Panel.stl] screen-side face |
 | `PANEL_Z_BACK` | `18.0` | measured | [M:Display Panel.stl] back face, seats against lid corner bosses |
 | `LID_CEILING_Z` | `27.0` | measured | [M:Display.stl] ceiling underside (ceiling 27..30, 3.0 thick) |

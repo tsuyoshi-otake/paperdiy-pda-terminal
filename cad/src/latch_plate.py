@@ -53,3 +53,47 @@ def wall_plate(z_bot, z_top, x_end, t_wall, zone, lip, below, hx=1.0, hz=0.5):
     eps = d / 2 * np.maximum(np.abs(mean + dev), np.abs(mean - dev))
     i = np.unravel_index(np.argmax(eps), eps.shape)
     return 1.0 / float(f @ u), float(eps[i]), (float(X[0][i]), float(X[1][i]), float(d[i]))
+
+
+def wall_compliance(z_bot, z_top, x_end, t_wall, zone, cases, hx=1.0, hz=0.5):
+    """The same plate under several load cases. cases = [[(x0, x1, below), ...], ...]: in each case a unit outward force
+    is shared by its spans in proportion to their widths, acting `below` under the free edge. Returns the matrix C,
+    C[i][j] = outward displacement at case i's points (mm) per newton of case j."""
+    x0, x1, tf, top = zone
+    xs = np.unique(np.concatenate([np.arange(-x_end, x_end + 1e-9, hx), np.arange(x0 - 3.0, x1 + 3.0 + 1e-9, hx / 2)]))
+    xs = xs[np.abs(xs) <= x_end]
+    zs = np.append(np.arange(z_bot, z_top - hz / 2, hz), z_top)
+    m = MeshTri.init_tensor(xs, zs)
+    zr = z_top - top
+
+    def thick(x, z):
+        d = np.maximum(np.maximum(np.maximum(x0 - x, x - x1), 0.0), np.maximum(z - zr, 0.0))
+        return tf + (t_wall - tf) * np.minimum(d / (t_wall - tf), 1.0)
+
+    def C(T):
+        return E_PLA / (1 + NU_PLA) * (T + NU_PLA / (1 - NU_PLA) * eye(trace(T), 2))
+
+    @BilinearForm
+    def a(u, v, w):
+        return thick(w.x[0], w.x[1]) ** 3 / 12.0 * ddot(C(dd(u)), dd(v))
+
+    e = ElementTriMorley()
+    ib = Basis(m, e)
+    K = asm(a, ib)
+    clamped = m.facets_satisfying(lambda x: (np.abs(x[1] - z_top) < 1e-6) | (np.abs(np.abs(x[0]) - x_end) < 1e-6))
+    D = ib.get_dofs(clamped).all()
+    fs = []
+    for spans in cases:
+        total = sum(b - a_ for a_, b, _ in spans)
+        f = 0.0
+        for sx0, sx1, below in spans:
+            @LinearForm
+            def load(v, w, below=below):
+                return (v + below * dot(grad(v), w.n)) / total
+
+            edge = m.facets_satisfying(lambda x, sx0=sx0, sx1=sx1: (np.abs(x[1] - z_bot) < 1e-6) & (x[0] > sx0 - 1e-6)
+                                       & (x[0] < sx1 + 1e-6))
+            f = f + asm(load, FacetBasis(m, e, facets=edge))
+        fs.append(f)
+    us = [solve(*condense(K, f, D=D)) for f in fs]
+    return np.array([[float(fi @ uj) for uj in us] for fi in fs])
