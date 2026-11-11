@@ -10,12 +10,15 @@
 #   make firmware    ESP-IDF v5.5.6 build (run `. $IDF_PATH/export.sh` first); checks it against prebuilt/
 #   make firmware-docker   the same inside espressif/idf:v5.5.6
 #   make manifest    after a deliberate design change: record the new CAD outputs
+#   make dist        release bundles (zips of the print files, the STLs and the prebuilt firmware) -> dist/
 PYTHON      ?= python3
 ORIGINAL    ?= $(HOME)/phone-enclosure
 IDF_VERSION := v5.5.6
 export PHONE_ENCLOSURE_STL ?= $(ORIGINAL)/STL
 
-.PHONY: all setup original cad 3mf verify report manifest render test firmware firmware-check firmware-docker
+TAG         ?= $(shell git describe --tags --always 2>/dev/null || echo dev)
+
+.PHONY: all setup original cad 3mf verify report manifest render test firmware firmware-check firmware-docker dist
 
 all: 3mf
 
@@ -68,3 +71,7 @@ firmware-docker:
 	docker run --rm -v "$(CURDIR)/firmware:/project" -w /project espressif/idf:$(IDF_VERSION) bash -c \
 	  "git config --global --add safe.directory '*' && ./fetch_deps.sh && idf.py build && idf.py merge-bin -o paperdiy-term-merged.bin"
 	$(MAKE) firmware-check
+
+# what a release carries: uses the committed outputs as they are (run `make verify` first)
+dist:
+	$(PYTHON) cad/tools/dist.py $(TAG)

@@ -1,37 +1,37 @@
 {
  "3mf/bambu_a1mini/bambu_plate0_test_coupons.3mf": {
   "objects": 6,
-  "sha256": "c1e413a02063b907985138820e023d4ab6d1402e2e3f977b849683ddcc547385",
+  "sha256": "de17f887deb1548bfc36bc4558844587d52a37dc52a5d9fe7fd35cecc21fffd3",
   "volumes": [
    207.22,
    223.61,
-   1012.46,
-   1082.96,
+   1780.33,
    1969.68,
+   1981.42,
    3219.36
   ]
  },
  "3mf/bambu_a1mini/bambu_plate1_lid.3mf": {
   "objects": 6,
-  "sha256": "8d73c876502562c487bf730bb768f6c63ea50d0a1334b52e4ca84f0f44e9bf0e",
+  "sha256": "e744188268396f8b174dd4c47866a4fddf873e9f35082623293413fb92e53fec",
   "volumes": [
    175.99,
    223.61,
    223.61,
    1047.95,
    9140.24,
-   46346.11
+   46387.61
   ]
  },
  "3mf/bambu_a1mini/bambu_plate2_tray.3mf": {
   "objects": 5,
-  "sha256": "eb89b6b8332da985dab2dbd2c6b5e2d5c5efd3f6164d2bf61c804f2ca33a9941",
+  "sha256": "fe7ad22b61ffe0bf3548ac2699627439f30e398028f9f19e353c054d3164d908",
   "volumes": [
    207.22,
    207.22,
    1696.0,
    9856.18,
-   51966.86
+   51988.04
   ]
  },
  "3mf/bambu_a1mini/bambu_plate3_panel.3mf": {
@@ -50,20 +50,20 @@
  },
  "3mf/large/plate1_lid.3mf": {
   "objects": 3,
-  "sha256": "7f71d4076b869fd2fcf4f922aa26e951a59069dde55e9251fb7cb39acafd4ba6",
+  "sha256": "b956e9718bafc1bfaa9902633bcda14c68af09833630fe6e861e5647b2ebce3c",
   "volumes": [
    223.61,
    223.61,
-   56777.09
+   56818.59
   ]
  },
  "3mf/large/plate2_tray.3mf": {
   "objects": 3,
-  "sha256": "ad6cdda661c992c2254c6e8f3198335798ce71b7e9afd1bcffae09fbbe634e56",
+  "sha256": "36c49f6ebf552d461ff6068902cd7e04c7416dc446724977d10f388ca1c519c7",
   "volumes": [
    207.22,
    207.22,
-   63582.29
+   63603.47
   ]
  },
  "3mf/large/plate3_panel.3mf": {
@@ -75,93 +75,93 @@
  },
  "3mf/large/usb_variants/lid_usb16mm.3mf": {
   "objects": 1,
-  "sha256": "130f1b12512ee3e1fa2e5705e45a010646bb4c2606cea354657721e39d05acaf",
+  "sha256": "1f5c7826cf0db18fe727ba8dea1ef82539a9d58bf1d9303a52724d98ac83e22e",
   "volumes": [
-   56359.62
+   56401.12
   ]
  },
  "3mf/large/usb_variants/lid_usb18mm.3mf": {
   "objects": 1,
-  "sha256": "cb07559d34565214d36570cbb90152c2ae38883cd720d0e9ad19fe4e7e1ebc66",
+  "sha256": "f700ecd2de2b0ebf6f5799d9777a55e27f82b7e271f7df8e88bd9c0319e06465",
   "volumes": [
-   56331.62
+   56373.12
   ]
  },
  "3mf/large/usb_variants/lid_usb20mm.3mf": {
   "objects": 1,
-  "sha256": "31a5df915015cdf5b5950067af5f7a34baff2147c9ac2a49fb84a06ae0ed3b0d",
+  "sha256": "0332fac7d499490aed4d6cc2d1f18f7d90595d2f9a09b2ab0dbb086e7cd50d80",
   "volumes": [
-   56320.42
+   56361.92
   ]
  },
  "3mf/large/usb_variants/lid_usb22mm.3mf": {
   "objects": 1,
-  "sha256": "8a8ef15d21cf55ceb13e9da6afc1eaf74f900e193d253f8e5feddaf1c8e401ca",
+  "sha256": "b5e09cacb4160bf2d428345b49de6a0a3839f91fc3b8755a22901b4f440888a7",
   "volumes": [
-   56320.42
+   56361.92
   ]
  },
  "3mf/large/usb_variants/lid_usb25mm.3mf": {
   "objects": 1,
-  "sha256": "a134357f394532ccee51fd05762ae6d1bc40421b08856b9b6680f86850302190",
+  "sha256": "bce7ebd8460e9c07d65308787fcef01264373d07412035ab59f9b15286d0fc7d",
   "volumes": [
-   56320.42
+   56361.92
   ]
  },
  "3mf/large/usb_variants/lid_usb28mm.3mf": {
   "objects": 1,
-  "sha256": "ba76278e0f999d4df395d285c64103e5af617eb8e5a89be56ecb159d800c1c80",
+  "sha256": "d44a8fb630a2a83c2b765e11e903eeb16a3680b6c79dfb32301be76037361c20",
   "volumes": [
-   56320.42
+   56361.92
   ]
  },
  "3mf/large/usb_variants/lid_usb30mm.3mf": {
   "objects": 1,
-  "sha256": "71f195b3ca8f7eea447e7ab35dccd92df285a4c5d0b68c9a3d3c59d4ae592ae1",
+  "sha256": "1326d56d0c616c89d1277c719279a3981cd696f13fc2834bbbfe72c5f803899f",
   "volumes": [
-   56320.42
+   56361.92
   ]
  },
  "3mf/large/usb_variants/lid_usb_noscrew.3mf": {
   "objects": 1,
-  "sha256": "61fcc1378f551b3652e89ab1839f485acb9dc8938f7fcad44d33b26a421f03e1",
+  "sha256": "446ae51e463c4924dae5d0f6f1617710da9710c87a97bc9f41142fc885db75a7",
   "volumes": [
-   56356.63
+   56398.13
   ]
  },
  "3mf/plate0_test_coupons.3mf": {
   "objects": 6,
-  "sha256": "7bfc7e987c7f04d331eaa68c2ef5e85614fe90ebac77fc9dbd446368a80e0dd7",
+  "sha256": "6682cd10ece4f6a97ea1ec590776f9b37bc9cff5308eccb804eedb0ed3ecf0a1",
   "volumes": [
    207.22,
    223.61,
-   1012.46,
-   1082.96,
+   1780.33,
    1969.68,
+   1981.42,
    3219.36
   ]
  },
  "3mf/plate1_lid.3mf": {
   "objects": 6,
-  "sha256": "e3744006207b227deee4d60ceb8bd4ade27795346e804369e6567549f987cb92",
+  "sha256": "c682a15b22e83fdaab3b0781c874b57c4e67cc663cb20b43557e1ad8068bbc99",
   "volumes": [
    175.99,
    223.61,
    223.61,
    1047.95,
    9140.24,
-   46346.11
+   46387.61
   ]
  },
  "3mf/plate2_tray.3mf": {
   "objects": 5,
-  "sha256": "d9a2a92dea71af966d77b83156cb235fe4686dc013501cacf247e6d495e24cc9",
+  "sha256": "b05fe5d5248dace7aaa648354e34764c0ffa24c57fc141352ea21769f85f8868",
   "volumes": [
    207.22,
    207.22,
    1696.0,
    9856.18,
-   51966.86
+   51988.04
   ]
  },
  "3mf/plate3_panel.3mf": {
@@ -271,36 +271,36 @@
  "out/coupons/coupon_latch_lid.stl": {
   "bbox": [
    [
-    -13.0,
+    -22.9,
     -46.5,
     5.742
    ],
    [
-    13.0,
+    22.9,
     -34.5,
     24.079
    ]
   ],
-  "faces": 64,
-  "sha256": "a02953b226d4c40caa7b1a4520bd03b337246bb914b27ece75fd3145d67fcf56",
-  "volume": 1082.96
+  "faces": 86,
+  "sha256": "dc81e9e055165e79ee9ddaff6dd94587e1cdaa089d58066368850e5bbd0ea6d2",
+  "volume": 1981.42
  },
  "out/coupons/coupon_latch_tray.stl": {
   "bbox": [
    [
-    -13.0,
+    -22.9,
     -46.5,
     0.0
    ],
    [
-    13.0,
+    22.9,
     -34.5,
     8.103
    ]
   ],
   "faces": 92,
-  "sha256": "64eb00fea9b035ccd2f8e04b85a380385f3849353d8580d364b5735e95e0227c",
-  "volume": 1012.46
+  "sha256": "9b7e78e28154fd16c29bc13a3d12dbf5ecbffb6cb5794a371c991831340eda28",
+  "volume": 1780.33
  },
  "out/coupons/orientation.json": {
   "sha256": "5a0a9c21df27fa71357d8a635138cb7796948338b9bda3a2ed98be915d6d8e5a"
@@ -319,8 +319,8 @@
    ]
   ],
   "faces": 5710,
-  "sha256": "497ea0dd59fc11da69135031c0e9f7b44151fa2dc4b3254f22bfd89fa356c9ba",
-  "volume": 56776.98
+  "sha256": "acbaa30c36d7f12f2d64838574006a882ce0a9d063a0f3028853054202ca6696",
+  "volume": 56818.48
  },
  "out/display_panel_kit.stl": {
   "bbox": [
@@ -387,8 +387,8 @@
    ]
   ],
   "faces": 2480,
-  "sha256": "43d051cd23691461f4ad7b8226ed4ecaccb3e7783311761dd7e24dfa6b8b48ff",
-  "volume": 63582.28
+  "sha256": "7ee80b80658a6cebdcbe9aa1ad068e138e3d7fbaa6aa8088cf4e8d5b9f8ce40c",
+  "volume": 63603.46
  },
  "out/paperdiy_kit_envelope.stl": {
   "bbox": [
@@ -438,8 +438,8 @@
    ]
   ],
   "faces": 4608,
-  "sha256": "ad560e74dc5aefed7b05e0067b27d017249699ef217859f7d801b5f9ba063628",
-  "volume": 46346.03
+  "sha256": "8d0addb2e629bce30c1297fb2c7fa939d65132ef2b1f5778e10c4e99798517d6",
+  "volume": 46387.53
  },
  "out/split/panel_A_left.stl": {
   "bbox": [
@@ -608,8 +608,8 @@
    ]
   ],
   "faces": 2232,
-  "sha256": "73b4c630e02fe698fe4a6229123c01002804406fa12c5218a1fd09e74c728289",
-  "volume": 51966.86
+  "sha256": "a6d48af10296f97926608f3e67bd1e4a9a97e487cda00576f6e3b832d4ce233b",
+  "volume": 51988.04
  },
  "out/split/usb_variants/lid_A_left_usb16mm.stl": {
   "bbox": [
@@ -761,8 +761,8 @@
    ]
   ],
   "faces": 5710,
-  "sha256": "497ea0dd59fc11da69135031c0e9f7b44151fa2dc4b3254f22bfd89fa356c9ba",
-  "volume": 56776.98
+  "sha256": "acbaa30c36d7f12f2d64838574006a882ce0a9d063a0f3028853054202ca6696",
+  "volume": 56818.48
  },
  "out/whole/panel.stl": {
   "bbox": [
@@ -795,8 +795,8 @@
    ]
   ],
   "faces": 2480,
-  "sha256": "43d051cd23691461f4ad7b8226ed4ecaccb3e7783311761dd7e24dfa6b8b48ff",
-  "volume": 63582.28
+  "sha256": "7ee80b80658a6cebdcbe9aa1ad068e138e3d7fbaa6aa8088cf4e8d5b9f8ce40c",
+  "volume": 63603.46
  },
  "out/whole/usb_variants/lid_usb16mm.stl": {
   "bbox": [
@@ -812,8 +812,8 @@
    ]
   ],
   "faces": 6288,
-  "sha256": "e2daa32caf46ec23568431635a6be5fe950d10ae663fcfa52e32f26e9aaa4724",
-  "volume": 56359.49
+  "sha256": "33905d0e82b7ccd8f99cc2d4709442f15accc868908da013266a6ce3f60f95c2",
+  "volume": 56400.99
  },
  "out/whole/usb_variants/lid_usb18mm.stl": {
   "bbox": [
@@ -829,8 +829,8 @@
    ]
   ],
   "faces": 6290,
-  "sha256": "ae0274d294a3996afccb84f2a36ee9d28a4aca4da3be37c43e0bf59a18999e5a",
-  "volume": 56331.49
+  "sha256": "dbd57ea55bf5318b6da1f6ee695a4b465842ec49f09bea4ba12c55ef200c1383",
+  "volume": 56372.99
  },
  "out/whole/usb_variants/lid_usb20mm.stl": {
   "bbox": [
@@ -846,8 +846,8 @@
    ]
   ],
   "faces": 6288,
-  "sha256": "1d6457a0d476871dd864bf3e99581e25a182b3b42a849469bbfab5683a462ff3",
-  "volume": 56320.29
+  "sha256": "8abb07c68fbf9d70cb27f40286770f41ffdb9a51eee3c7bea77f3987a42f2a35",
+  "volume": 56361.79
  },
  "out/whole/usb_variants/lid_usb22mm.stl": {
   "bbox": [
@@ -863,8 +863,8 @@
    ]
   ],
   "faces": 6288,
-  "sha256": "b1b4e66c268772ce8d0c5e0c6ed634d9ffc1307b847c52618b84e3b274d25450",
-  "volume": 56320.29
+  "sha256": "a6ad9eb5122213e6a4debd821dda71e3b95868a6e5a625759a6c6ee0425b7dbe",
+  "volume": 56361.79
  },
  "out/whole/usb_variants/lid_usb25mm.stl": {
   "bbox": [
@@ -880,8 +880,8 @@
    ]
   ],
   "faces": 6288,
-  "sha256": "6fbe8d0b972c87dba5b253651139cb4e65f6ce41923a44897d7dde1bc4ac7533",
-  "volume": 56320.29
+  "sha256": "c087d7d17fc1fce6d095fea722c59311b06401da5740d3daee50153ac1bfcd0e",
+  "volume": 56361.79
  },
  "out/whole/usb_variants/lid_usb28mm.stl": {
   "bbox": [
@@ -897,8 +897,8 @@
    ]
   ],
   "faces": 6288,
-  "sha256": "47de8612e5ae56508a20915ee30f41f7c4284dda01fec4315dafe288b41e4162",
-  "volume": 56320.29
+  "sha256": "bee8e3459505eca8ef005f5d557e9fde3eeecf2616881555860700b759fc0963",
+  "volume": 56361.79
  },
  "out/whole/usb_variants/lid_usb30mm.stl": {
   "bbox": [
@@ -914,8 +914,8 @@
    ]
   ],
   "faces": 6288,
-  "sha256": "36b8d63c7ce49867038198ec6c7e9d8e9f12f306e10ac2c1c80d3c617217ac3b",
-  "volume": 56320.29
+  "sha256": "f9e5e258d4de26fabed416a78a2459d7cfc9f4a6792a863d7664c7fd6d8f0dd5",
+  "volume": 56361.79
  },
  "out/whole/usb_variants/lid_usb_noscrew.stl": {
   "bbox": [
@@ -931,7 +931,7 @@
    ]
   ],
   "faces": 5896,
-  "sha256": "25806d85341c2abbdbf60cd0e3eafed8e798e1d401c8a882fb087137853e78c7",
-  "volume": 56356.5
+  "sha256": "50d280c6d11246479886f7ebf9c54ba7bcb730dccc9554d8ee8d8c5cebc9041f",
+  "volume": 56398.0
  }
 }

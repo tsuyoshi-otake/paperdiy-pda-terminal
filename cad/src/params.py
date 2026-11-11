@@ -196,14 +196,18 @@ USB_PM_Y_KIT = 20.0            # clear of the lid's split blocks (y 5, 36) and t
 # x0..x1, to t, stopping `top` below the ceiling, 45 deg chamfers back to the full wall), and that zone bends outward
 # as a plate (free air, so the keyboard's position does not matter). build.py solves it as a Kirchhoff plate
 # (src/latch_plate.py): keep the strain across the layers under ~0.5 %.
-# Engagement = bump - clr = 0.30 mm: a printer's +-0.15 mm leaves 0.15..0.45, i.e. still ~2.5 N of hold at the low end
-# (the 0.20 mm of the earlier versions could shrink to nothing) and under 0.4 % strain at the high end.
-# Lip 12 wide in the middle (nothing of the panel reaches the wall there), 2.2 below the parting, 1.0 thick; bump 0.45
-# high, 1.4 below the parting (0.6 mm of tray above its groove). The zone stops short of the panel's snap groove at
-# x 22..30.
-LATCH = dict(x=0.0, w=12.0, t=1.0, below=2.2, bump=0.45, bump_at=1.4, clr=0.15,
+# Engagement = bump - clr = 0.30 mm: a printer's +-0.15 mm leaves 0.15..0.45 (the 0.20 mm of the earlier versions could
+# shrink to nothing), under 0.5 % strain at the high end.
+# Lip 30 wide in the middle, 2.2 below the parting, 1.0 thick; bump 0.45 high, 1.4 below the parting (0.8 mm of tray
+# above its groove). The 12 mm lip with a 35 deg catch face let go by itself (reported from a print; the model
+# promised 5.7 N):
+# the wide lip takes 1.7x the plate with it, and the catch face at 45 deg turns the same push into 1.5x the hold, 2.4x
+# together. The strain is set by the engagement, not by the width. Too hard to open: file the bump's upper flank.
+# The zone stops short of the panel's snap groove at x 22..30, which is what limits the width (5 mm of thinned wall
+# left each side of the lip).
+LATCH = dict(x=0.0, w=30.0, t=1.0, below=2.2, bump=0.45, bump_at=1.4, clr=0.15,
              flex=dict(x0=-20.0, x1=20.0, t=1.1, top=2.0),
-             close_deg=45.0, open_deg=35.0, tray_wall_min=1.2)
+             close_deg=45.0, open_deg=45.0, tray_wall_min=1.2)
 
 # ---------------------------------------------------------------- layout choices (lid frame)
 # PaperDIY: screen faces -z, USB end at -x, key edge toward the front wall (-y), antenna edge toward hinge (+y).

@@ -24,6 +24,8 @@ M5Stack PaperDIY（ESP32-S3、4.7 型 e-paper）を、BLE キーボードで操�
 
 ### ビルド済みのファームを書く
 
+リポジトリを取ってこなくても、同じファイルが [Releases](https://github.com/tsuyoshi-otake/paperdiy-pda-terminal/releases) の `paperdiy-term-firmware-（版）.zip` に入っています（2 つの bin、`SHA256SUMS`、ビルド条件、ライセンス表示）。その場合は、下のコマンドの `prebuilt/` を、zip を展開したフォルダに読み替えてください。
+
 中身とビルド条件は [`prebuilt/BUILDINFO.md`](prebuilt/BUILDINFO.md)、ファイルが壊れていないかは `sha256sum -c prebuilt/SHA256SUMS` で確かめられます。PaperDIY を USB-C で PC につなぎ、この `firmware/` フォルダで書き込みます。
 
 **初めて書くとき**は、`prebuilt/paperdiy-term-merged.bin`（ブートローダー・パーティション表・本体をまとめたもの）を 0x0 番地に書きます。設定の領域（NVS）も空にするので、前に入っていたファームの設定は消えます。

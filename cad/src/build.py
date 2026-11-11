@@ -1378,8 +1378,8 @@ def build_kit_coupons(lid, tray, ta, tb):
     dt_box = box(X - 12.0, X + 14.0, -9.0, 9.0, -1.0, 3.5)
     l = LATCH
     zf = under_z(-BACK_OLD_Y)
-    hw = max(l["w"] / 2 + 4.0, 13.0)                      # at least 26 mm wide: stands on the bed without a brim
-    lx0, lx1 = l["x"] - hw, l["x"] + hw
+    g = l["flex"]                             # the whole flex zone with its chamfers + 2 mm of full wall each side:
+    lx0, lx1 = g["x0"] - (SHELL_WALL - g["t"]) - 2.0, g["x1"] + (SHELL_WALL - g["t"]) + 2.0   # the click as in the lid
     out = {
         "coupon_hinge_tray": (tray ^ hinge_box, "tray"),
         "coupon_hinge_lid": (lid ^ hinge_box, "lid"),
@@ -1573,16 +1573,18 @@ def main_kit():
     f_open = k * d_static * (to + mu) / (1 - mu * to)
     f_close = k * d_path * (tc + mu) / (1 - mu * tc)
     eps = 100 * eps_n * k * max(d_static, d_path)
+    eps_hi = 100 * eps_n * k * (max(d_static, d_path) + 0.15)            # the print adds 0.15 mm to the engagement
     log(f"  lip {l['w']:g} wide, {l['t']:g} thick, {l['below']:g} below the parting, not slit: the front wall is thinned "
         f"from inside to {g['t']:g} over x {g['x0']:g}..{g['x1']:g} (to {g['top']:g} below the ceiling, 45 deg chamfers) and "
         f"bends as a plate")
     log(f"  plate model (Kirchhoff, ceiling and end walls rigid, so the real wall is somewhat softer): {k:.1f} N/mm at the "
         f"bump; bump {l['bump']} - clearance {l['clr']} = {d_static:.2f} mm; on the real opening arc the lip moves out at "
         f"most {d_path:.2f} mm (at {at:.1f} deg)")
-    log(f"  peak strain {eps:.2f} % (x {ex:.1f}, z {ez:.1f}, {et:.2f} thick; across the print layers: keep < 0.5 %), "
+    log(f"  peak strain {eps:.2f} % ({eps_hi:.2f} % if the print adds 0.15 mm of engagement; x {ex:.1f}, z {ez:.1f}, "
+        f"{et:.2f} thick; across the print layers: keep < 0.5 %), "
         f"spread over the zone, no slit ends; an outward pull of ~{0.714 / (100 * eps_n):.0f} N at the bump reaches ~25 MPa; "
         f"to open ~{f_open:.1f} N at the lip (+ the hinges' friction), to close ~{f_close:.1f} N")
-    assert eps < 0.5, "latch strain"
+    assert eps_hi < 0.5, "latch strain"
     recess_back = -BACK_OLD_Y + l["t"] + l["clr"]
     log(f"  tray front wall left behind the recess {-LID_INNER_Y - recess_back:.2f} mm, behind the groove "
         f"{-LID_INNER_Y - recess_back - (l['bump'] - l['clr'] + 0.05):.2f} mm")
