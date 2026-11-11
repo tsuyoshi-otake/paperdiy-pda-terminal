@@ -37,9 +37,10 @@ ORDER = [
 ]
 CHECKS = [   # (the two pieces, what to check; {a} / {b} stand for their numbers)
     (("coupon_hinge_tray", "coupon_hinge_lid"), "本物のヒンジで {a} と {b} をつなぐ。板が溝に面一で入る、筒がこすらず回る、M2×8 が割れずに効く、"
-                                                "150° 以上開いても壁同士が当たらない"),
+                                                "160° 以上開いても壁同士が当たらない"),
     (("coupon_dovetail_A", "coupon_dovetail_B"), "{a} と {b} を手で押し合わせる。入って、がたつかない"),
-    (("coupon_latch_lid", "coupon_latch_tray"), "{b} の手前の面に沿って {a} を押し下げる。パチンと留まり、引き上げると外れる"),
+    (("coupon_latch_lid", "coupon_latch_tray"), "{b} の手前の面に沿って {a} を押し下げる。パチンと留まり、指 1 本で押し上げても外れず、"
+                                                "強く引くと外れる"),
     (("hinge_cover_lid", "hinge_cover_tray"), "{a}・{b} をヒンジの座の小片のくぼみに押し込む。入って、逆さにしても落ちない"),
 ]
 
