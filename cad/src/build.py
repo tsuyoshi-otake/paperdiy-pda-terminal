@@ -1086,6 +1086,19 @@ def hinge_pad_extent():
     return cover_half_w() + COVER_POCKET_CLR + WALL, Y_BACK - (HINGE_SINK + HINGE_LEAF_T + 0.05 + WALL)
 
 
+def parting_relief():
+    """What to take off the lid's underside so that it leans up toward the hinges (PART_RELIEF): everything under the
+    parting raised by `back` * (y - y0) / (Y_BACK - y0), behind y0. The lip and the stop tongues are in front of y0."""
+    p = PART_RELIEF
+    if not p:
+        return M()
+    y_flat = (Z_PART - LID_UNDER[0]) / LID_UNDER[1]
+    g = lambda y: p["back"] * (y - p["y0"]) / (Y_BACK - p["y0"])       # noqa: E731
+    ye = Y_BACK + 2.0
+    return prism_x(poly_cs([(p["y0"], under_z(p["y0"])), (y_flat, Z_PART + g(y_flat)), (ye, Z_PART + g(ye)),
+                            (ye, -5.0), (p["y0"], -5.0)]), -BIG, BIG)
+
+
 def back_edge_relief(lid):
     """Material to remove so the back edge along the parting (lid: lower, tray: upper) is rounded with HINGE_EDGE_R."""
     r = HINGE_EDGE_R
@@ -1213,6 +1226,7 @@ def build_kit_lid_shell(usb="direct", blocks=True):
                     -10.0, 60.0) ^ half_space(top[0] - USB_CEIL, top[1], False))   # thinner ceiling over the plug path
     cuts += [cyl_z(SCREW_PILOT_D / 2, PANEL_Z1 - 0.1, PANEL_Z1 + TAP_SCREW_LEN - PANEL_T + 0.5, x, y) for x, y in PANEL_SCREWS]
     cuts.append(panel_snaps(groove=True))                                    # grooves for the panel's snap bumps
+    cuts.append(parting_relief())                                            # the rims do not meet near the hinges
     return L - union(cuts)
 
 
@@ -1309,7 +1323,7 @@ def build_kit_lid():
     seat = min(KIT_Z1 + KIT_SCREW_SEAT, top_z(0.0))
     cuts += [cyl_z(M2_CLEAR / 2, KIT_Z1 - 0.5, seat, sx, 0.0), cyl_z(M2_CLEAR / 2 - 0.2, seat - 1.2, seat, sx, 0.0, CSK_D / 2),
              cyl_z(CSK_D / 2 + 0.2, seat, 60.0, sx, 0.0)]
-    cuts += hinge_pocket_cuts() + hinge_pilots(True) + kb_port_bay()
+    cuts += hinge_pocket_cuts() + hinge_pilots(True) + kb_port_bay() + [parting_relief()]
     return L - union(cuts)
 
 
@@ -1553,6 +1567,20 @@ def main_kit():
     interference(kit, lid, "kit (case + caps) vs lid")
     interference(plug, lid, "USB-C plug in the kit's port vs lid")
     interference(lid, tray, "lid vs tray")
+    if PART_RELIEF:
+        p = PART_RELIEF
+        r_rim = HINGE_AXIS_Y - (Y_BACK - HINGE_EDGE_R)                # the rims' nearest point to the hinge axis
+        lever = HINGE_AXIS_Y + BACK_OLD_Y
+        gaps = []
+        for y in (p["y0"], 0.0, Y_BACK - HINGE_EDGE_R - 0.5):
+            xa, xb = (-60.0, 60.0) if y > BACK_OLD_Y else (101.0 - SHELL_WALL + 0.3, 101.0 - 0.3)    # back wall / end wall
+            col = box(xa, xb, y - 0.25, y + 0.25, min(under_z(y), Z_PART) - 0.02, min(under_z(y), Z_PART) + 2.0)
+            gaps.append((y, (col ^ lid).bounding_box()[2] - min(under_z(y), Z_PART)))
+        log(f"  relief at the hinge side: the lid's underside leans up from y {p['y0']:g} to {p['back']:g} mm at the back face ("
+            + ", ".join(f"{g:.2f} at y {y:.0f}" for y, g in gaps) + f"). The rims would meet {r_rim:.2f} mm from the hinge "
+            f"axis, the front edge is {lever / r_rim:.0f} times further out: rims 0.05 mm proud there would hold it "
+            f"{0.05 * lever / r_rim:.1f} mm open with the hinge screws tight; now up to {gaps[-1][1]:.2f} mm does nothing")
+        assert gaps[-1][1] > 0.3 and abs(gaps[0][1]) < 0.02
     kbx = KB_SIZE[0] / 2 + TRAY_KB_RIBS["fit"] if SHELL and TRAY_KB_RIBS else KB_FACE_X    # to the end ribs' faces
     kb = prism_z(rrect(0.0, 0.0, 2 * kbx - 0.3, 2 * KB_FACE_Y - 0.3, 2.7), TRAY_FLOOR, KB_TOP_Z)
     interference(kb, lid, f"keyboard space (tray floor {TRAY_FLOOR} to z {KB_TOP_Z}) vs lid")

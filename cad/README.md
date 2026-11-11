@@ -90,13 +90,13 @@ r 6 halved), and the other small radii were halved too.
 | `out/whole/lid.stl`, `tray.stl`, `panel.stl`, `out/whole/usb_variants/lid_usb*.stl` | one-piece parts for a bed of 220 mm or more: no split, no keys, no pockets (each asserted to be the checked part minus material; the panel-mount lids are also checked against the connector) |
 | `out/coupons/*.stl` | hinge seat (lid, tray), snap lip with its flex zone and both stops (lid) + recess and notches (tray) |
 | `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~28 min, 12 g |
-| `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers + 2 lid splice plates, ~1 h 47 min, 66 g |
+| `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers + 2 lid splice plates, ~1 h 46 min, 65 g |
 | `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers + 1 tray splice plate, ~1 h 33 min, 62 g |
 | `3mf/plate3_panel.3mf` | panel A + B + 3 panel splice plates, ~38 min, 24 g |
 | `3mf/bambu_a1mini/bambu_plate0…3*.3mf` | the same four plates as **Bambu Studio projects** for the A1 mini with a 0.4 mm nozzle: printer, process, filament and plate type are selected on opening (see "Bambu Studio projects") |
 | `3mf/bambu_a1mini/paperdiy_process_a1mini_04.json` | the same process changes as a preset to import (File → Import → Import Configs), the fallback |
 | `3mf/usb_variants/lid_A_left_usb*.3mf` | the lid-A variants, one per file |
-| `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 42 min 65 g, ~1 h 28 min 61 g, ~35 min 24 g (150 g, 3 h 44 min, nothing to glue) |
+| `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 41 min 65 g, ~1 h 28 min 61 g, ~35 min 24 g (150 g, 3 h 43 min, nothing to glue) |
 | `3mf/large/usb_variants/lid_usb*.3mf` | the panel-mount lids in one piece |
 
 Plates 1–3: about 151 g and 3 h 55 min with the 2.0 mm walls (3 h 58 min with the keyboard ribs, now gone; 118 g and 3 h 07 min with 1.2 mm walls; the version with the
@@ -319,7 +319,15 @@ tray and panel): `docs/images/render_{open,closed}_{black,khaki,mix}.png`.
   (0.157 N·m) holds it at any angle and still opens easily; it never falls shut by itself. **Spring-back:** let go,
   a friction hinge turns back a little (the twist stored in the POM hinge and its seats). At any other angle that is
   made up for by pushing a little further; at the closed position the lid lands on the tray and cannot go further, so
-  an unlatched lid stays a little open at the front (1° = 1.7 mm). The snap holds it down (see "Snap"). The catalogue's
+  an unlatched lid stays a little open at the front (1° = 1.7 mm). The snap holds it down (see "Snap").
+  **Relief at the hinge side (`PART_RELIEF`):** reported from the built device: with the hinge screws tight the lid
+  opens, with the screws loose it stays shut. The axis lies in the parting plane, 0.15 mm behind the back face, so the
+  two rims met 1.65 mm from it while the front edge is 60 times further out: rims that come out 0.05 mm proud there
+  (the top surfaces of both prints) hold the front edge 3 mm open as soon as the countersunk screws pull the leaves
+  home; loose leaves let the lid's back rise instead. So the lid's underside now leans up from y −40 to 0.4 mm at the
+  back face (0.16 mm half way): the lid lands on its front edge and the rims near the hinges never meet. Only the lid
+  changes. How much of the lid's coming up was this rather than the hinges' spring-back is not known; it may be most
+  of it, in which case the snap has had far more than 1.3 N to hold. Not printed yet. The catalogue's
   maximum opening is 260°, so the flat (closed) position is not at a stop. HG-MF15 (0.147 N·m) is 30 mm long with M3 holes:
   `HINGE_LEN = 30`, `HINGE_HOLE_PITCH_X = 20`.
 * **Axis** at the outer back edge, on the parting (z = 12.85). Sugatsune's 3D model shows a flat back and a barrel (≈ Ø5.5)
@@ -358,11 +366,11 @@ that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits
 
 ### Printing
 * **Plates** (`3mf/`, A1 mini, 180 × 180 mm): `plate0_test_coupons` (28 min, 12 g, print first), `plate1_lid` (lid A + B,
-  2 lid covers, 2 splice plates, 1 h 47 min, 66 g), `plate2_tray` (tray A + B, 2 tray covers, 1 splice plate, 1 h 33 min,
+  2 lid covers, 2 splice plates, 1 h 46 min, 65 g), `plate2_tray` (tray A + B, 2 tray covers, 1 splice plate, 1 h 33 min,
   62 g), `plate3_panel` (panel A + B, 3 splice plates, 38 min, 24 g): 151 g and 3 h 55 min for plates 1–3.
   `3mf/usb_variants/` holds lid A for a panel-mount female.
-* **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 42 min, 65 g), tray (1 h 28 min, 61 g), panel (35 min,
-  24 g): 150 g and 3 h 44 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
+* **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 41 min, 65 g), tray (1 h 28 min, 61 g), panel (35 min,
+  24 g): 150 g and 3 h 43 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
 * **Orientation:** lid top face down (the export tilts the sloped top plane level first, `LAY_TOP` from `assembly.json`),
   panel visible face down, tray floor down, covers visible face down (the cones face up), splice plates flat. No supports.
 * **Settings, 0.4 mm nozzle** (Bambu Studio): 0.20 mm Standard, PLA, textured PEI, **3 wall loops** (material around

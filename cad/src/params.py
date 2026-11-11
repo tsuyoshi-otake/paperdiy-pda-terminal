@@ -129,6 +129,12 @@ KB_FACE_X, KB_FACE_Y = LID_INNER_X, LID_INNER_Y            # the faces toward th
 KB_PAD = dict(clr=0.15, w=6.0, z0=3.0, top_below_rim=1.0, lead=1.5, front_x=(-60.0, -22.0, 22.0, 60.0),
               back_x=(-60.0, -22.0, 22.0, 60.0), end_y=(-20.0, 8.0))
 LID_UNDER = (10.4417, 0.05376)  # [M] lid underside (parting) plane z = a + b * y, fitted to the original (resid < 0.001)
+# Relief at the hinge side: the hinge axis lies in the parting plane, 0.15 mm behind the back face, so the rims meet
+# 1.65 mm from it and the front edge is 60 times further out. Rims that touch there and come out 0.05 mm proud (top
+# surfaces of both prints do) hold the front edge 3 mm open once the hinge screws pull the leaves home. Reported from the
+# built device: with the screws tight the lid opens, with the screws loose it stays shut. So the lid's underside leans
+# up from y0 to `back` at the back face: the lid lands on its front edge, and the rims near the hinges never meet.
+PART_RELIEF = dict(y0=-40.0, back=0.4) if PD_MOUNT == "kit" else None
 LID_SKIN = 1.2                # least skin over a pocket or channel
 LID_CHAMFER = 0.0 if PD_MOUNT == "kit" else 0.8   # top edge and seam chamfer (kit: none)
 COVER_TOP_RIM = 0.8           # lid hinge covers: rim above the leaf mortise (sides keep COVER_RIM)

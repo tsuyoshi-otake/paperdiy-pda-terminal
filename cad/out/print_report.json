@@ -2,16 +2,16 @@
  "plate0_test_coupons.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "27m 59s",
-  "grams": 12.36,
-  "metres": 4.14316
+  "time": "27m 56s",
+  "grams": 12.33,
+  "metres": 4.134060000000001
  },
  "plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 46m 30s",
-  "grams": 65.57,
-  "metres": 21.98402
+  "time": "1h 46m 16s",
+  "grams": 65.37,
+  "metres": 21.91789
  },
  "plate2_tray.3mf": {
   "warnings": [],
@@ -30,9 +30,9 @@
  "large/plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 42m 18s",
-  "grams": 65.14,
-  "metres": 21.838729999999998
+  "time": "1h 41m 29s",
+  "grams": 64.94,
+  "metres": 21.77231
  },
  "large/plate2_tray.3mf": {
   "warnings": [],
@@ -48,35 +48,35 @@
   "grams": 24.05,
   "metres": 8.064779999999999
  },
- "large_total_g": 150.05,
- "large_total_min": 224,
- "total_g": 151.28,
+ "large_total_g": 149.85,
+ "large_total_min": 223,
+ "total_g": 151.08,
  "total_min": 235,
  "nozzle_check": {
   "worst_spot_mm2": 0.4998146860682792,
   "wall_gaps": 0
  },
- "lid_g": 138.16,
+ "lid_g": 137.95000000000002,
  "base_g": 63.50999999999999,
  "lid_cg": [
-  0.3207987593293609,
-  4.050983663024052,
-  19.498038189241754
+  0.3234134408366938,
+  3.9948281970332093,
+  19.5094898375701
  ],
  "pivot_y": 53.0,
  "table_contact_deg": 162.2,
  "table_limit": 162,
- "keyboard_min_g": 83.82560353491581,
+ "keyboard_min_g": 83.78000441172178,
  "hinge_torque_nm": [
   0.1176,
   0.1568,
   0.196
  ],
- "lid_moment_nm": 0.06654633215271381,
+ "lid_moment_nm": 0.06652117787165103,
  "springback_push_n": [
-  0.5123298328879697,
-  0.9057066517540008,
-  1.2990834706200318
+  0.5125822591906569,
+  0.9059590780566881,
+  1.2993358969227193
  ],
  "snap_k": 24.908022457540234,
  "snap_hold_n": 12.415171797865204,
@@ -87,8 +87,8 @@
   13.201946174803828
  ],
  "open_force_n": [
-  13.320878449619205,
-  17.8638394636337
+  13.321130875921892,
+  17.864091889936386
  ],
  "snap_forward_close_n": 44.29469014681633,
  "keyboard_for_one_hand_g": 332.1270229996625

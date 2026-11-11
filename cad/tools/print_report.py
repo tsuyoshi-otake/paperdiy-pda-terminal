@@ -29,7 +29,7 @@ import trimesh
 HERE = os.path.dirname(os.path.abspath(__file__))
 CAD = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(CAD, "src"))
-from params import (HINGE_TORQUE, HINGE_TORQUE_TOL, LATCH, BACK_OLD_Y)  # noqa: E402
+from params import (HINGE_TORQUE, HINGE_TORQUE_TOL, LATCH, BACK_OLD_Y, PART_RELIEF)  # noqa: E402
 from params import (OUT_DIR, SPLIT_DIR, Y_BACK, HINGE_AXIS_Y, Z_PART, PD_L, PD_TOP_X, PANEL_Z_BACK, BATT_CX, BATT_CY,  # noqa: E402
                     BATT_T, USB_PM_Y, USB_PM_Z, PD_MOUNT, KIT_MASS_G, KIT_CX, KIT_T, USB_CEIL)
 
@@ -312,6 +312,12 @@ def lid_stays_shut(report, lid_m, lid_cg, base_m, base_cg):
             "is made up for by pushing a little further; at the closed position the lid lands on the tray and cannot go "
             f"further, so it comes up again: every degree at the axis is {1000 * lever * np.radians(1):.1f} mm at the front "
             "edge. The snap is what keeps it down.", "",
+            "**The rims near the hinges.** Reported from the built device: with the hinge screws tight the lid opens, with "
+            "the screws loose it stays shut. The hinge axis lies in the parting plane, so rims that touch 1.65 mm from it "
+            "and come out 0.05 mm proud hold the front edge 3 mm open once the screws pull the leaves home. The lid's "
+            f"underside therefore leans up toward the hinges (`PART_RELIEF`, {PART_RELIEF['back']:g} mm at the back face). How much of "
+            "the lid's coming up was this rather than spring-back is not known; if most of it, the snap had far more than "
+            "the push below to hold.", "",
             "The snap's figures are simulated: `tools/snap_sim.py` closes the built lid on the built tray along the hinge's "
             "arc, with the lip and the stop tongues as springs (plate model) and friction 0.3 on the ramps; all cases are "
             "in `out/snap_sim.md`. Two cases bracket a print that came out as drawn: the lid forward against its stops, "
