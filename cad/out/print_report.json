@@ -2,23 +2,23 @@
  "plate0_test_coupons.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "24m 17s",
-  "grams": 10.23,
-  "metres": 3.43007
+  "time": "27m 59s",
+  "grams": 12.36,
+  "metres": 4.14316
  },
  "plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 45m 6s",
-  "grams": 65.39,
-  "metres": 21.92389
+  "time": "1h 46m 30s",
+  "grams": 65.57,
+  "metres": 21.98402
  },
  "plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 34m 13s",
-  "grams": 61.84,
-  "metres": 20.734830000000002
+  "time": "1h 34m 26s",
+  "grams": 61.79,
+  "metres": 20.71555
  },
  "plate3_panel.3mf": {
   "warnings": [],
@@ -30,16 +30,16 @@
  "large/plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 40m 41s",
-  "grams": 64.95,
-  "metres": 21.77786
+  "time": "1h 42m 18s",
+  "grams": 65.14,
+  "metres": 21.838729999999998
  },
  "large/plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 30m 3s",
-  "grams": 61.0,
-  "metres": 20.452560000000002
+  "time": "1h 30m 27s",
+  "grams": 60.94,
+  "metres": 20.43329
  },
  "large/plate3_panel.3mf": {
   "warnings": [],
@@ -48,39 +48,39 @@
   "grams": 24.05,
   "metres": 8.064779999999999
  },
- "large_total_g": 150.0,
- "large_total_min": 224,
- "total_g": 151.24,
- "total_min": 236,
+ "large_total_g": 150.13,
+ "large_total_min": 226,
+ "total_g": 151.36999999999998,
+ "total_min": 237,
  "nozzle_check": {
-  "worst_spot_mm2": 0.4999307581650446,
+  "worst_spot_mm2": 0.4998146860682792,
   "wall_gaps": 0
  },
- "lid_g": 138.01000000000002,
- "base_g": 63.63999999999999,
+ "lid_g": 138.16,
+ "base_g": 63.589999999999996,
  "lid_cg": [
-  0.32360326867915035,
-  4.109276898584987,
-  19.511528245406332
+  0.3207987593293609,
+  4.050983663024052,
+  19.498038189241754
  ],
  "pivot_y": 53.0,
  "table_contact_deg": 162.2,
  "table_limit": 162,
- "keyboard_min_g": 83.40289764374126,
+ "keyboard_min_g": 83.75634612239185,
  "hinge_torque_nm": [
   0.1176,
   0.1568,
   0.196
  ],
- "lid_moment_nm": 0.06639516101516987,
+ "lid_moment_nm": 0.06654633215271381,
  "springback_push_n": [
-  0.5138468538367298,
-  0.9072236727027608,
-  1.300600491568792
+  0.5123298328879697,
+  0.9057066517540008,
+  1.2990834706200318
  ],
  "snap_k": 24.90802245754024,
- "snap_hold_n": 13.877326797772419,
- "snap_hold_low_n": 6.93866339888621,
- "open_force_n": 14.784550470475178,
- "keyboard_for_one_hand_g": 331.9766470317336
+ "snap_hold_n": 9.461451431627797,
+ "snap_hold_low_n": 4.730725715813899,
+ "open_force_n": 10.367158083381797,
+ "keyboard_for_one_hand_g": 332.05773526939396
 }

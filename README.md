@@ -4,14 +4,14 @@ M5Stack PaperDIY（4.7 型 e-paper、ESP32-S3）を画面に、CACOE キーボ�
 
 *English:* a clamshell SSH terminal with an M5Stack PaperDIY (4.7" e-paper, ESP32-S3) as the screen and a CACOE
 keyboard over BLE, in a 3D-printed case derived from Un Kyu Lee's phone-enclosure. One device is built and in use (photo below, 2026-11-11; the revision in the
-repository has a wider snap that is not printed yet). The firmware (ESP-IDF, reproducible build) pairs the keyboard by
+repository has a reworked snap that is not printed yet). The firmware (ESP-IDF, reproducible build) pairs the keyboard by
 itself, joins Wi-Fi and runs an SSH terminal; the case prints on a Bambu Lab A1 mini (split) or in one piece on a 220 mm
 bed. CAD details in English: [cad/README.md](cad/README.md); the assembly guide and the
 firmware notes are in Japanese.
 
 ![組み上がった実機。Raspberry Pi に SSH で入ったところ（2026-11-11）](docs/images/photo_2026-11-11.jpg)
 
-実機です（2026-11-11。留めツメを幅 30 mm に広げる前の版）。Wi-Fi 経由で Raspberry Pi に SSH で入り、CACOE キーボードで打っています。下は、いまの版の完成予想図です。
+実機です（2026-11-11。留めツメを直す前の版で、蓋はまだカチッと留まりません）。Wi-Fi 経由で Raspberry Pi に SSH で入り、CACOE キーボードで打っています。下は、いまの版の完成予想図です。
 
 ![完成予想（開いたところ）](docs/images/render_open.png)
 
@@ -21,7 +21,7 @@ firmware notes are in Japanese.
 
 <p align="center"><img src="docs/images/render_open_black.png" width="32%" alt="黒だけ"> <img src="docs/images/render_open_khaki.png" width="32%" alt="カーキだけ"> <img src="docs/images/render_open_mix.png" width="32%" alt="ミックス（蓋がカーキ、トレイと化粧パネルが黒）"></p>
 
-> **実機が 1 台、組み上がって動いています**（上の写真）。キーボードの BLE 接続と自動ペアリング、Wi-Fi、Raspberry Pi への SSH ログインまで、筐体に入れた状態で使えています。ただし、まだ試作段階です。筐体は、刷って組むたびに出た問題を直してきました。前の設計（PaperDIY の基板をそのまま載せる版）では、キーボードのがたつきや開いたときのすき間。今の設計（Complete Kit のケースごと入れる中空の蓋と化粧パネル）では、壁の柔らかさ（1.2 mm → 2.0 mm）、カバーと継ぎ板のきつさ、ヒンジの戻りで蓋の手前が浮くこと、留めツメが勝手に外れること、キーボードの位置決めリブが当たること、TPU の足が作りにくいこと。写真の 1 台は留めツメを幅 30 mm に広げる前のもので、**いまのリポジトリの版そのものは、まだ刷って確かめていません**（[まだ確かめていないこと](#まだ確かめていないこと)）。
+> **実機が 1 台、組み上がって動いています**（上の写真）。キーボードの BLE 接続と自動ペアリング、Wi-Fi、Raspberry Pi への SSH ログインまで、筐体に入れた状態で使えています。ただし、まだ試作段階です。筐体は、刷って組むたびに出た問題を直してきました。前の設計（PaperDIY の基板をそのまま載せる版）では、キーボードのがたつきや開いたときのすき間。今の設計（Complete Kit のケースごと入れる中空の蓋と化粧パネル）では、壁の柔らかさ（1.2 mm → 2.0 mm）、カバーと継ぎ板のきつさ、ヒンジの戻りで蓋の手前が浮くこと、留めツメが勝手に外れること、キーボードの位置決めリブが当たること、TPU の足が作りにくいこと。写真の 1 台は留めツメを直す前のもので（ツメが掛からず、蓋の手前が少し浮く）、**いまのリポジトリの版そのものは、まだ刷って確かめていません**（[まだ確かめていないこと](#まだ確かめていないこと)）。
 
 ## 特徴
 
@@ -38,12 +38,12 @@ firmware notes are in Japanese.
 - Bambu Lab A1 mini と PLA で刷る前提の作り：蓋とトレイは壁・天板・床とも 2.0 mm の殻にして（1.2 mm では刷ってみて柔らかすぎた）、ねじのボスとリブで補強（パネルのねじのボスにもリブ）。面取りなし、サポート不要。0.4 mm ノズル向き（0.2 mm ノズルの設定もある）
 - トレイは、キーボードのまわりのすき間と奥の帯を、縁と面一の天板（デッキ）でふさいである。ヒンジのボスは隠れる。キーボードの入る所は元のトレイと同じ 196 × 87 mm。左右の壁にだけ位置決めのリブが 2 本ずつあり、キーボードが横にずれない（手前と奥のリブはキーボードに干渉するのでやめた）
 - PaperDIY は Complete Kit のケースに入れたまま、中空の薄い蓋に入れ、画面の窓のある化粧パネルで押さえる。パネルは押し込むとパチンと留まり（ねじなしでもある程度保持）、ねじ 6 本で固定。ボタンと USB-C プラグはパネルの切り欠きから。KEY の切り欠きの裏にはごみよけのガード
-- 閉じた高さは手前 23.8 mm・奥 26.4 mm。蓋と一体の短い留めツメ（幅 30 mm、合わせ目から 2.2 mm）でパチンと閉じる（磁石なし）。ツメに切れ目はなく、まわりの壁を内側から薄くした帯が板としてたわむので折れにくい。トルクヒンジは手を離すと少し戻るので、蓋はカチッと言うまで押し込んで閉じる（ツメがその戻りを押さえる）
+- 閉じた高さは手前 23.8 mm・奥 26.4 mm。蓋と一体の短い留めツメ（幅 30 mm、合わせ目から 2.6 mm）でパチンと閉じる（磁石なし）。ツメに切れ目はなく、まわりの壁を内側から薄くした帯が板としてたわむので折れにくい。ツメの両脇では、蓋の内側の舌（ストッパー）がトレイの手前の壁の内側に入り、蓋が手前へずれないようにしている（これがないと、ツメがたわまずに蓋ごと前へ逃げて、掛からなかった）。トルクヒンジは手を離すと少し戻るので、蓋はカチッと言うまで押し込んで閉じる（ツメがその戻りを押さえる）
 - 部品はすべて PLA。トレイの底は平らで、足はない（TPU の足とそのくぼみは、作るときの失敗を招くだけだったのでやめた）
 - ヒンジは市販のトルクヒンジ（スガツネ HG-MF08 × 2）を背面に埋め込み、背面と面一のカバーで隠す。カバーは押し込むだけで側面の小さなリブで留まり、ヒンジのねじで共締めするので接着剤は要らない。好きな角度で止まり、開いたときの継ぎ目は 1〜1.5 mm
 - USB-C は左端の穴から直接挿す。パネルマウントのメス端子用の蓋も用意（ねじ間隔 16〜30 mm）
-- Bambu Lab A1 mini 用の分割版（3 枚で PLA 約 150 g。0.4 mm ノズルで約 4 時間、0.2 mm ノズルで約 22 時間 40 分。A1 mini（0.4 mm ノズル）向けには、印刷設定を入れた Bambu Studio のプロジェクトもある（`cad/3mf/bambu_a1mini/`。開いてスライスするだけ）。継ぎ目はまっすぐ突き合わせ、裏から貼る継ぎ板でつなぐ）と、220 mm 角以上のプリンター用の一体版（0.4 mm ノズルで約 3 時間 44 分・150 g、貼り合わせ不要）
-- ねじは M2×8 皿タッピング 14 本だけ。本番の前に試し刷り（0.4 mm ノズルで約 24 分）で、はめあいと留めツメの留まり具合を確かめられる
+- Bambu Lab A1 mini 用の分割版（3 枚で PLA 約 150 g。0.4 mm ノズルで約 4 時間、0.2 mm ノズルで約 22 時間 40 分。A1 mini（0.4 mm ノズル）向けには、印刷設定を入れた Bambu Studio のプロジェクトもある（`cad/3mf/bambu_a1mini/`。開いてスライスするだけ）。継ぎ目はまっすぐ突き合わせ、裏から貼る継ぎ板でつなぐ）と、220 mm 角以上のプリンター用の一体版（0.4 mm ノズルで約 3 時間 46 分・150 g、貼り合わせ不要）
+- ねじは M2×8 皿タッピング 14 本だけ。本番の前に試し刷り（0.4 mm ノズルで約 28 分）で、はめあいと留めツメの留まり具合を確かめられる
 
 ## 作り方
 
@@ -52,7 +52,7 @@ firmware notes are in Japanese.
 印刷用のファイル（Bambu Studio のプロジェクト、3MF、STL）とビルド済みのファームは、[Releases](https://github.com/tsuyoshi-otake/paperdiy-pda-terminal/releases) からまとめてダウンロードできます（リポジトリの `cad/3mf/`、`cad/out/`、`firmware/prebuilt/` と同じものです）。
 
 1. **測る**：キーボードの厚さ（キートップまで）・幅・奥行き・重さ。厚さで蓋の高さが決まります。トレイは元の作品と同じ 196 × 87 mm の空間なので、CACOE ならそのまま入ります（[組み立てガイドの 3-1](cad/ASSEMBLY_ja.md)）。83 g 以上なら蓋をどこまで開いても後ろに倒れません
-2. **試し刷り**：`cad/3mf/plate0_test_coupons.3mf`（0.4 mm ノズルで約 24 分）で、ヒンジ・カバーのはめあいと、留めツメの留まり具合を確かめる（A1 mini の 0.4 mm ノズルなら、設定入りの `cad/3mf/bambu_a1mini/bambu_plate0_test_coupons.3mf`）
+2. **試し刷り**：`cad/3mf/plate0_test_coupons.3mf`（0.4 mm ノズルで約 28 分）で、ヒンジ・カバーのはめあいと、留めツメの留まり具合を確かめる（A1 mini の 0.4 mm ノズルなら、設定入りの `cad/3mf/bambu_a1mini/bambu_plate0_test_coupons.3mf`）
 3. **本番**：A1 mini なら `cad/3mf/plate1_lid.3mf`〜`plate3_panel.3mf`（設定入りは `bambu_a1mini/bambu_plate1_lid.3mf`〜。分割した部品を突き合わせて継ぎ板で貼り合わせる）、大きいプリンターなら `cad/3mf/large/` の 3 枚
 4. **ファームを書く**：[`firmware/README.md`](firmware/README.md) の手順で `firmware/prebuilt/` のファームを書き込み、キーボードと Wi-Fi をつないでおく
 5. **組み立てる**：ヒンジとカバー、PaperDIY と化粧パネル、キーボードの順に（[組み立てガイド](cad/ASSEMBLY_ja.md)）
@@ -84,7 +84,7 @@ firmware notes are in Japanese.
 
 ## まだ確かめていないこと
 
-1. いまの版の筐体の印刷と仮組み（はめあい、幅 30 mm にした留めツメがヒンジの戻りに負けずに留まるか・開けにくくないか、リブをなくしたトレイにキーボードが入るか、ヒンジの筒の太さと軸の高さ。公表値がないので、メーカーの 3D データから太さ 5.5 mm・軸は裏から 3.2 mm と読み取った。合わせ目の縁を丸めたので、軸が 0.3 mm 低くても蓋とトレイが当たるのは 170° から）
+1. いまの版の筐体の印刷と仮組み（はめあい、ストッパーを足した留めツメがカチッと掛かってヒンジの戻りに負けずに留まるか・開けにくくないか、リブをなくしたトレイにキーボードが入るか、ヒンジの筒の太さと軸の高さ。公表値がないので、メーカーの 3D データから太さ 5.5 mm・軸は裏から 3.2 mm と読み取った。合わせ目の縁を丸めたので、軸が 0.3 mm 低くても蓋とトレイが当たるのは 170° から）
 2. CACOE の厚さ・幅・奥行き・重さ（いまは厚さ 11.5 mm を想定。測った値を `cad/src/params.py` の `KB_THICK` に入れて作り直す。幅と奥行きは、元のトレイ（196 × 87 mm）で 2 mm ほどガタつくという報告から 194 × 85 mm と推定しているが、トレイは元と同じ 196 × 87 mm のままなので、入るかどうかには関係しない）
 3. トレイの開口から CACOE の充電ケーブルを挿せるか、スイッチに届くか（デッキは開口の上を開けてある。充電ケーブルを挿したままだと蓋は 95° まで）
 4. PaperDIY 内蔵の 140 mAh でどれくらい使えるか（足りなければモバイルバッテリー）

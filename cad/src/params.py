@@ -198,18 +198,21 @@ USB_PM_Y_KIT = 20.0            # clear of the lid's split blocks (y 5, 36) and t
 # x0..x1, to t, stopping `top` below the ceiling, 45 deg chamfers back to the full wall), and that zone bends outward
 # as a plate (free air, so the keyboard's position does not matter). build.py solves it as a Kirchhoff plate
 # (src/latch_plate.py): keep the strain across the layers under ~0.5 %.
-# Engagement = bump - clr = 0.30 mm: a printer's +-0.15 mm leaves 0.15..0.45 (the 0.20 mm of the earlier versions could
-# shrink to nothing), under 0.5 % strain at the high end.
-# Lip 30 wide in the middle, 2.2 below the parting, 1.0 thick; bump 0.45 high, 1.4 below the parting (0.8 mm of tray
-# above its groove). The 12 mm lip with a 35 deg catch face let go by itself (reported from a print; the model
-# promised 5.7 N):
-# the wide lip takes 1.7x the plate with it, and the catch face at 45 deg turns the same push into 1.5x the hold, 2.4x
-# together. The strain is set by the engagement, not by the width. Too hard to open: file the bump's upper flank.
-# The zone stops short of the panel's snap groove at x 22..30, which is what limits the width (5 mm of thinned wall
-# left each side of the lip).
-LATCH = dict(x=0.0, w=30.0, t=1.0, below=2.2, bump=0.45, bump_at=1.4, clr=0.15,
+# Stops: the lid hangs on the hinges 100 mm behind the snap, and screws in leaf holes leave it free to shift a few tenths
+# front to back. Without a stop the bump's ramps simply pushed the whole lid forward instead of bending the lip: no
+# click, the lid's front face standing proud of the tray's (reported from prints of the 12 mm and the 30 mm lip). So two
+# tongues on the lid, either side of the flex zone, reach down inside the tray's front wall (through notches in the
+# deck) and bear on its inner face: the lid's front edge straddles the tray's wall, and the lip has to bend.
+# Engagement with the lid against the stops = bump - clr - stop clr = 0.30 mm; held back the other way the lip bends by
+# the whole bump, 0.45 mm (still under 0.5 % strain). The lip rides on the recess face with almost no gap (clr 0.05): it
+# is the springy side; the tongues are stiff and keep 0.10.
+# Lip 30 wide in the middle, 2.6 below the parting, 1.0 thick; bump 0.45 high, 1.4 below the parting (0.6 mm of tray
+# above its groove), 30 deg closing ramp, 35 deg catch face. The zone stops short of the panel's snap groove at
+# x 22..30; the tongues sit below that groove.
+LATCH = dict(x=0.0, w=30.0, t=1.0, below=2.6, bump=0.45, bump_at=1.4, clr=0.05,
              flex=dict(x0=-20.0, x1=20.0, t=1.1, top=2.0),
-             close_deg=45.0, open_deg=45.0, tray_wall_min=1.2)
+             stop=dict(x=(-26.0, 26.0), w=8.0, below=3.5, up=5.0, clr=0.10, lead=0.6),
+             close_deg=30.0, open_deg=35.0, tray_wall_min=1.2)
 
 # ---------------------------------------------------------------- layout choices (lid frame)
 # PaperDIY: screen faces -z, USB end at -x, key edge toward the front wall (-y), antenna edge toward hinge (+y).

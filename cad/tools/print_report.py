@@ -289,10 +289,9 @@ def lid_stays_shut(report, lid_m, lid_cg, base_m, base_cg):
     push = [(t - M) / lever for t in (lo, T, hi)]
     k, _, _ = build.latch_plate()
     hold = lambda e: k * e * (np.tan(np.radians(LATCH["open_deg"])) + 0.3) / (1 - 0.3 * np.tan(np.radians(LATCH["open_deg"])))  # noqa: E731
-    eng = LATCH["bump"] - LATCH["clr"]
+    eng = LATCH["bump"] - LATCH["clr"] - LATCH["stop"]["clr"]       # with the lid forward against its stops
     lift = lid_m * g * arm / lever                        # the lid's weight, as a force at the front edge
     f_open = hold(eng) + T / lever - lift
-    prev = 5.7                                            # the 12 mm lip, 35 deg: this model's figure for the snap that let go
     base_arm, kb_arm = (HINGE_AXIS_Y - base_cg[1]) / 1000, (HINGE_AXIS_Y - KB_CG[1]) / 1000
     kb_one_hand = (hi / g - base_m * base_arm) / kb_arm   # keyboard heavy enough for the base to stay down by itself
     report.update(hinge_torque_nm=[lo, T, hi], lid_moment_nm=M, springback_push_n=push, snap_k=k, snap_hold_n=hold(eng),
@@ -312,13 +311,15 @@ def lid_stays_shut(report, lid_m, lid_cg, base_m, base_cg):
             f"| the snap holds (plate model, {eng:.2f} mm engagement) | {hold(eng):.1f} N |",
             f"| the snap holds if the print leaves {eng - 0.15:.2f} mm | {hold(eng - 0.15):.1f} N |",
             f"| to open: snap + hinge friction - the lid's weight | about {f_open:.1f} N |", "",
-            f"**The plate model overstates the hold.** The earlier snap (a 12 mm lip with a 35 deg catch face, {prev:.1f} N by "
-            "the same model) let go by itself in a print: the real wall is softer than the model's (the ceiling it hangs "
-            "from gives, too) and a 0.45 mm bump prints rounder than drawn. Read the figures above as an upper bound, by a "
-            f"rough estimate two to five times the real hold. This snap ({LATCH['w']:g} mm lip, {LATCH['open_deg']:g} deg) "
-            f"holds {hold(eng) / prev:.1f} times what the earlier one did by the model. The snap coupons of plate 0 take in "
-            "the whole flex zone: click them together and pull them apart before printing the lid and the tray. Too hard "
-            "to open: file the bump's upper flank a little.", "",
+            f"**Why the stops.** The lid hangs on the hinges {1000 * lever:.0f} mm behind the snap and can shift a few tenths "
+            "front to back on them. Without a stop the bump's ramps pushed the whole lid forward instead of bending the "
+            "lip: the earlier snaps (12 mm and 30 mm lips) never clicked, and the lid's front face stood proud of the "
+            f"tray's. Two tongues on the lid now reach down inside the tray's front wall ({LATCH['stop']['clr']:g} mm off its "
+            "inner face), so the lip has to bend. The engagement above is the one with the lid forward against them. "
+            "The figures are the plate model's (ceiling and end walls rigid), so the real hold is somewhat lower; an earlier "
+            "note here that the model overstates it several times over was drawn from those snaps that never engaged, and "
+            "does not stand. The snap coupons of plate 0 take in the flex zone and both stops: click them together and pull "
+            "them apart before printing the lid and the tray. Too hard to open: file the bump's upper flank a little.", "",
             "Press the front of the lid until the snap clicks; a lid that is only laid down stays open by the spring-back. "
             f"To open, hold the base: it weighs {base_m:.0f} g plus the keyboard, less than the pull on the lid, and the hinges "
             f"would carry it up with the lid unless the keyboard weighed about {kb_one_hand:.0f} g.", ""]

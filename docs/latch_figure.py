@@ -1,5 +1,5 @@
-"""Draw docs/images/latch.png: the snap tab that keeps the closed lid shut (front view and a section through it,
-closed). Cut from the built STLs; numbers from cad/src/params.py.
+"""Draw docs/images/latch.png: the snap tab that keeps the closed lid shut (front view, a section through it and one
+through a stop tongue, closed). Cut from the built STLs; numbers from cad/src/params.py.
 
 Usage: python3 docs/latch_figure.py [out.png]   (needs matplotlib and a Japanese font such as Noto Sans CJK JP)
 """
@@ -87,11 +87,17 @@ def front_view(ax, lid, tray):
     ax.add_patch(Rectangle((g["x0"], zf), g["x1"] - g["x0"], zr - zf, fill=False, ec="white", lw=1.2, ls=(0, (4, 3)),
                            zorder=6))
     note(ax, (l["x"] + l["w"] / 2 - 2.0, zf - l["below"] + 1.0), f"ツメ（幅 {l['w']:g} mm、壁と一体、切れ目なし）", (16.0, 1.0))
-    note(ax, (g["x1"] - 0.5, zr - 2.0), f"点線の帯：壁を内側から {g['t']:g} mm に薄くしてあり、\nここが板としてたわむ（外からは見えない）",
-         (22.0, 17.5))
-    ax.text(-27.0, zf + 5.0, "蓋", color="white", fontsize=11, va="center")
-    ax.text(-27.0, zf - 4.0, "トレイ", color=INK, fontsize=10.5, va="center")
-    finish(ax, (-28, 40), (-1, 23), "① 閉じた状態を手前から見たところ")
+    note(ax, (g["x1"] - 0.5, zr - 2.0), f"点線の帯：壁を内側から\n{g['t']:g} mm に薄くしてあり、\nここが板としてたわむ",
+         (22.5, 18.6), color="white")
+    st = l["stop"]
+    for x in st["x"]:
+        ax.add_patch(Rectangle((x - st["w"] / 2, zf - st["below"]), st["w"], st["below"] + st["up"], fill=False, ec=RED,
+                               lw=1.2, ls=(0, (2, 2)), zorder=7))
+    note(ax, (st["x"][1] + st["w"] / 2 - 0.5, zf - st["below"] + 0.8), "赤い点線：ストッパー（蓋の内側の舌。\nトレイの壁の内側に入る。③）",
+         (32.5, 4.6), color=RED)
+    ax.text(-34.0, zf + 5.0, "蓋", color="white", fontsize=11, va="center")
+    ax.text(-34.0, zf - 4.0, "トレイ", color=INK, fontsize=10.5, va="center")
+    finish(ax, (-35, 46), (-1, 23), "① 閉じた状態を手前から見たところ")
 
 
 def section_view(ax, lid, tray):
@@ -115,13 +121,33 @@ def section_view(ax, lid, tray):
     finish(ax, (-66, -36), (-1, 23), "② 断面（ツメの真ん中）")
 
 
+def stop_view(ax, lid, tray):
+    """Section through a stop tongue: the lid's front edge straddles the tray's wall."""
+    l, st = B.LATCH, B.LATCH["stop"]
+    x = st["x"][1]
+    for p in cut(tray, [x, 0, 0], [1, 0, 0], YZ):
+        add_polygon(ax, p, TRAY_C, TRAY_E)
+    for p in cut(lid, [x, 0, 0], [1, 0, 0], YZ):
+        add_polygon(ax, p, LID_C, LID_E)
+    zf = B.under_z(-B.BACK_OLD_Y)
+    yi = -B.BACK_OLD_Y + B.WALL
+    note(ax, (yi + 0.5, zf - 2.0), "蓋の舌が、トレイの壁の\n内側の面に当たって止まる", (-48.0, zf - 4.5), ha="right")
+    ax.add_patch(FancyArrowPatch((-49.3, zf + 2.5), (-47.0, zf + 2.5), arrowstyle="-|>", mutation_scale=11, color=RED,
+                                 lw=1.4, zorder=8))
+    ax.text(-49.5, zf + 2.5, "蓋は手前へ\nずれられない", color=RED, fontsize=9.5, ha="right", va="center")
+    ax.text(-43.6, 1.2, "トレイ", color="#6f6852", fontsize=10.5)
+    ax.text(-41.5, zf + 13.0, "蓋", color="white", fontsize=11)
+    finish(ax, (-60, -37), (-1, 23), "③ 断面（ストッパー）")
+
+
 def main(out):
     use_japanese_font()
     lid = trimesh.load(os.path.join(CAD, "out", "display_lid_usbc.stl"))
     tray = trimesh.load(os.path.join(CAD, "out", "keyboard_tray.stl"))
-    fig = plt.figure(figsize=(13.0, 4.6))
-    front_view(fig.add_axes([0.0, 0.03, 0.55, 0.88]), lid, tray)
-    section_view(fig.add_axes([0.57, 0.03, 0.43, 0.88]), lid, tray)
+    fig = plt.figure(figsize=(17.0, 4.6))
+    front_view(fig.add_axes([0.0, 0.03, 0.46, 0.88]), lid, tray)
+    section_view(fig.add_axes([0.47, 0.03, 0.29, 0.88]), lid, tray)
+    stop_view(fig.add_axes([0.77, 0.03, 0.23, 0.88]), lid, tray)
     fig.savefig(out, dpi=170, facecolor="white", metadata={"Software": None})
     print("wrote", out)
 

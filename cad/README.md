@@ -15,11 +15,11 @@ lid and tray are 2.0 mm shells stiffened by screw bosses and ribs (1.2 mm printe
 are split for the A1 mini with a straight seam, butt-glued and bridged by splice plates glued on the hidden side; with a bed of 220 mm
 or more they are one piece each (`3mf/large/`, `out/whole/`). Nothing needs supports. Fasteners: 14 × M2×8
 countersunk tapping screws (8 hinges, 6 panel). A **test-coupon plate** checks the hinge and cover fits and the snap's hold in
-~24 min. Bill of materials, print settings and assembly order (Japanese): [ASSEMBLY_ja.md](ASSEMBLY_ja.md); parts list
+~28 min. Bill of materials, print settings and assembly order (Japanese): [ASSEMBLY_ja.md](ASSEMBLY_ja.md); parts list
 as CSV: [bom.csv](bom.csv).
 
 `KIT_LID = "solid"` (or `KIT_LID=solid` in the environment) builds the previous kit lid (a solid deck with the kit in a pocket, one M2×4 screw from the top, no
-panel). `PD_MOUNT = "bare"` in `src/params.py` (or `PD_MOUNT=bare` in the environment) still builds the earlier design:
+panel; not kept up: its tray has 3 mm walls and no room for the snap's stops, so its snap may not catch, and the build log says so). `PD_MOUNT = "bare"` in `src/params.py` (or `PD_MOUNT=bare` in the environment) still builds the earlier design:
 the bare Assembly Kit on a printed bezel panel with a strap, snap-in push-rods, a 2000 mAh cell and a panel-mount USB-C.
 It is described in [README_bare.md](README_bare.md).
 
@@ -86,18 +86,18 @@ r 6 halved), and the other small radii were halved too.
 | `out/split/splice/{lid,tray,panel}_splice_N.stl` | splice plates for the split pieces (2 lid and 1 tray, 1.0 mm; 3 panel, 0.8 mm) |
 | `out/split/usb_variants/lid_A_left_usb*.stl` | lid A for a panel-mount female USB-C: M3 ears 16 / 18 / 20 / 22 / 25 / 28 / 30 mm apart, or none (glue) |
 | `out/whole/lid.stl`, `tray.stl`, `panel.stl`, `out/whole/usb_variants/lid_usb*.stl` | one-piece parts for a bed of 220 mm or more: no split, no keys, no pockets (each asserted to be the checked part minus material; the panel-mount lids are also checked against the connector) |
-| `out/coupons/*.stl` | hinge seat (lid, tray), snap lip with its whole flex zone (lid) + recess (tray) |
-| `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~24 min, 10 g |
-| `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers + 2 lid splice plates, ~1 h 45 min, 65 g |
+| `out/coupons/*.stl` | hinge seat (lid, tray), snap lip with its flex zone and both stops (lid) + recess and notches (tray) |
+| `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~28 min, 12 g |
+| `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers + 2 lid splice plates, ~1 h 47 min, 66 g |
 | `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers + 1 tray splice plate, ~1 h 34 min, 62 g |
 | `3mf/plate3_panel.3mf` | panel A + B + 3 panel splice plates, ~38 min, 24 g |
 | `3mf/bambu_a1mini/bambu_plate0…3*.3mf` | the same four plates as **Bambu Studio projects** for the A1 mini with a 0.4 mm nozzle: printer, process, filament and plate type are selected on opening (see "Bambu Studio projects") |
 | `3mf/bambu_a1mini/paperdiy_process_a1mini_04.json` | the same process changes as a preset to import (File → Import → Import Configs), the fallback |
 | `3mf/usb_variants/lid_A_left_usb*.3mf` | the lid-A variants, one per file |
-| `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 41 min 65 g, ~1 h 30 min 61 g, ~35 min 24 g (150 g, 3 h 44 min, nothing to glue) |
+| `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 42 min 65 g, ~1 h 30 min 61 g, ~35 min 24 g (150 g, 3 h 46 min, nothing to glue) |
 | `3mf/large/usb_variants/lid_usb*.3mf` | the panel-mount lids in one piece |
 
-Plates 1–3: about 151 g and 3 h 56 min with the 2.0 mm walls (3 h 58 min with the keyboard ribs, now gone; 118 g and 3 h 07 min with 1.2 mm walls; the version with the
+Plates 1–3: about 151 g and 3 h 57 min with the 2.0 mm walls (3 h 58 min with the keyboard ribs, now gone; 118 g and 3 h 07 min with 1.2 mm walls; the version with the
 original tray took 139 g and 3 h 29 min).
 
 ### The kit
@@ -222,37 +222,39 @@ onto the tray comes up again (1° at the axis is 1.7 mm at the front edge), and 
 up for that. The snap holds the lid down against it: 0.5…1.3 N at the front edge (both hinges' torque, ±25 %, less the
 lid's weight; `out/print_report.md`, "Does the lid stay shut?").
 
-A 30 mm wide, 1.0 mm thick lip in the middle of the lid's front wall runs 2.2 mm below the parting into a recess in the
+A 30 mm wide, 1.0 mm thick lip in the middle of the lid's front wall runs 2.6 mm below the parting into a recess in the
 tray's front face. Nothing is slit: a tab freed by two slits breaks from the slit ends, where the strain gathers on a
 layer line (the lid prints ceiling down). Instead the front wall is thinned from inside to 1.1 mm over x −20…20
 (`LATCH["flex"]`), up to 2 mm below the ceiling, with 45° chamfers back to the 2.0 wall (they face up in print), clear
 of the panel's snap groove at x 22…30; that zone bends outward as a plate and nothing shows from outside. A 0.45 mm
-bump on the lip's inside (45° closing ramp, 45° catch face, 0.15 mm clearance) presses on the recess face, pushing the
-lip 0.30 mm outward into free air, and drops into a groove 1.4 mm below the parting (0.8 mm of tray above it).
+bump on the lip's inside (30° closing ramp, 35° catch face) presses on the recess face, pushing the lip outward into
+free air, and drops into a groove 1.4 mm below the parting (0.6 mm of tray above it).
 
-**Why 30 mm and 45°.** The earlier snap, a 12 mm lip with a 35° catch face, let go by itself in a print, though the
-model below gave it 5.7 N. The wide lip takes 1.7 times as much of the plate with it, and the steeper catch face turns
-the same push into 1.5 times the hold: 2.4 times together. The width is what fits the zone with 5 mm of thinned wall
-left each side; the zone ends short of the panel's snap groove. The strain is set by the engagement, not by the width.
+**Stops.** The lid hangs on the hinges 100 mm behind the snap, and the screws in the leaves' holes leave it free to
+shift a few tenths front to back. Without a stop the bump's ramps pushed the whole lid forward instead of bending the
+lip: the snaps printed so far (12 mm and 30 mm lips) never clicked, and the lid's front face stood proud of the tray's.
+So two tongues on the lid (`LATCH["stop"]`: x ±26, 8 wide, 3.5 below the parting), either side of the flex zone, reach
+down inside the tray's front wall through notches in the deck and bear on the wall's inner face, 0.10 mm off it: the
+lid's front edge straddles the tray's wall, and the lip has to bend. Their outer face leans back with the closing arc
+(the build sweeps the last 6° and asserts they never touch), and the wall's edge has a 0.6 mm lead-in, so a lid that
+sits up to about 1 mm forward is picked up. They stay out of the keyboard's 196 × 87 mm room.
 
-The engagement is 0.30 mm so that a printer's ±0.15 mm still leaves 0.15 mm; the 0.20 mm of the earlier versions could
-shrink to nothing. `src/latch_plate.py` solves the wall as a Kirchhoff plate (Morley triangles, scikit-fem;
-E = 3.5 GPa, ν = 0.35; ceiling and end walls rigid): 24.9 N/mm at the bump → ~13.9 N of hold at the lip (μ = 0.3;
-~6.9 N if the print leaves 0.15 mm) plus the hinges' friction to open, ~13.4 N to close; peak strain 0.31 %, spread
-over the zone (keep under ~0.5 % across the layers; 0.46 % if the print leaves 0.45 mm); an outward pull of ~17 N at
-the bump brings it to ~25 MPa. A plain 2.0 mm wall without the zone would be four times as stiff. The build also
-rotates the rigid lip along the real opening arc: it moves out at most 0.29 mm. Behind the tray's recess 1.85 mm of
-wall stay, behind the groove 1.50 mm.
+With the lid forward against the stops the engagement is 0.45 − 0.05 (lip to recess face; the lip is the springy side
+and rides on it) − 0.10 = 0.30 mm; held back the other way the lip bends by the whole bump, 0.45 mm.
+`src/latch_plate.py` solves the wall as a Kirchhoff plate (Morley triangles, scikit-fem; E = 3.5 GPa, ν = 0.35; ceiling
+and end walls rigid, so the real wall is somewhat softer): 24.9 N/mm at the bump → ~9.5 N of hold at the lip (μ = 0.3;
+~4.7 N if the print leaves 0.15 mm) against 0.5–1.3 N of push from the hinges, ~7.9 N to close; peak strain 0.31 %,
+spread over the zone (keep under ~0.5 % across the layers; 0.46 % at 0.45 mm); an outward pull of ~17 N at the bump
+brings it to ~25 MPa. A plain 2.0 mm wall without the zone would be four times as stiff. Behind the tray's recess
+1.95 mm of wall stay, behind the groove 1.50 mm. (An earlier note here, that the model overstates the hold several
+times over, was drawn from those snaps that never engaged; it is withdrawn.)
 
-**The model overstates the hold**: the ceiling it clamps the wall to gives, too, and a 0.45 mm bump prints rounder than
-drawn. Going by the earlier snap, the real hold is, by a rough estimate, a half to a fifth of the figure: still at least
-twice the hinges' push, but that is for the coupons to show. The snap coupons of plate 0 take in the whole flex zone
-(46 mm wide; about 0.9 of the lid's stiffness by the model): click them together and pull them apart before printing
-the lid and the tray. Too hard to open: file the bump's upper flank a little, or lower `LATCH["bump"]`.
+The snap coupons of plate 0 take in the flex zone and both stops (65 mm wide): put the lid piece over the tray piece's
+wall, click it down and pull it off before printing the lid and the tray. Too hard to open: file the bump's upper
+flank a little, or lower `LATCH["bump"]`; tongues too tight: raise `LATCH["stop"]["clr"]`.
 
-There is no finger grip: the lid is opened at the seam of the front edge (about 14.8 N by the model: snap + hinge
-friction − the lid's weight; in reality a fraction of that) while the other hand holds the base, which is lighter than
-that pull.
+There is no finger grip: the lid is opened at the seam of the front edge (about 10.4 N by the model: snap + hinge
+friction − the lid's weight) while the other hand holds the base, which is lighter than that pull.
 
 ### Checks run by `src/build.py` (kit)
 Kit envelope vs lid and vs panel, a straight USB-C plug in the port vs lid and vs panel, panel vs lid and vs tray, lid vs
@@ -318,12 +320,12 @@ against tray and closed lid; **with the plug in, the lid opens to 95°** (the fu
 that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits.
 
 ### Printing
-* **Plates** (`3mf/`, A1 mini, 180 × 180 mm): `plate0_test_coupons` (24 min, 10 g, print first), `plate1_lid` (lid A + B,
-  2 lid covers, 2 splice plates, 1 h 45 min, 65 g), `plate2_tray` (tray A + B, 2 tray covers, 1 splice plate, 1 h 34 min,
-  62 g), `plate3_panel` (panel A + B, 3 splice plates, 38 min, 24 g): 151 g and 3 h 56 min for plates 1–3.
+* **Plates** (`3mf/`, A1 mini, 180 × 180 mm): `plate0_test_coupons` (28 min, 12 g, print first), `plate1_lid` (lid A + B,
+  2 lid covers, 2 splice plates, 1 h 47 min, 66 g), `plate2_tray` (tray A + B, 2 tray covers, 1 splice plate, 1 h 34 min,
+  62 g), `plate3_panel` (panel A + B, 3 splice plates, 38 min, 24 g): 151 g and 3 h 57 min for plates 1–3.
   `3mf/usb_variants/` holds lid A for a panel-mount female.
-* **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 41 min, 65 g), tray (1 h 30 min, 61 g), panel (35 min,
-  24 g): 150 g and 3 h 44 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
+* **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 42 min, 65 g), tray (1 h 30 min, 61 g), panel (35 min,
+  24 g): 150 g and 3 h 46 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
 * **Orientation:** lid top face down (the export tilts the sloped top plane level first, `LAY_TOP` from `assembly.json`),
   panel visible face down, tray floor down, covers visible face down (the cones face up), splice plates flat. No supports.
 * **Settings, 0.4 mm nozzle** (Bambu Studio): 0.20 mm Standard, PLA, textured PEI, **3 wall loops** (material around
@@ -340,7 +342,7 @@ that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits
 * **Slicer warnings:** none on any plate. Thin-wall notes: the USB-C ceiling (0.8 mm), the panel's snap ridges, the
   covers' countersink edges, and the splice pockets (half the wall until the plate is glued in).
 * **Test coupons** (`plate0_test_coupons.3mf`, cut from the real parts in print orientation): hinge seats from tray and lid
-  (put a real HG-MF08 and a cover in: cover flush, barrel free, M2×8 bites, opens past 160°), the snap lip with its whole flex zone and its recess (clicks shut, stays shut against a finger pushing up with ~3 N, lifts off; tune `LATCH["bump"]` in 0.05 mm steps), and one cover of each kind. Other fits: `HINGE_CLR`,
+  (put a real HG-MF08 and a cover in: cover flush, barrel free, M2×8 bites, opens past 160°), the snap lip with its flex zone and both stops, and its recess (clicks shut, stays shut against a finger pushing up with ~3 N, lifts off; tune `LATCH["bump"]` in 0.05 mm steps), and one cover of each kind. Other fits: `HINGE_CLR`,
   `HINGE_BARREL_D`, `HINGE_PILOT_D`, `HINGE_AXIS_ABOVE_BACK`, `COVER_POCKET_CLR`, `COVER_RIBS`, `COVER_CSK`,
   `SPLICE["clr"]`.
 
@@ -372,9 +374,9 @@ panel + covers rotated 0–180° about the hinge axis, also with the axis 0.15 a
 plug while opening; the snap lip along its real opening arc. PrusaSlicer slice of every plate, wall thickness by ray
 casting, a comparison of the sliced toolpaths with the model (0.4 mm nozzle), tipping estimate, the snap as a plate
 model, two builds byte-identical, renders inspected. **Printed so far:** the earlier bare-kit design, and this design,
-first with 1.2 mm and then with 2.0 mm walls, up to one complete device that is in use (2026-11-11, with the 12 mm snap:
+first with 1.2 mm and then with 2.0 mm walls, up to one complete device that is in use (2026-11-11, with a snap that does not catch yet:
 [photo](../docs/images/photo_2026-11-11.jpg)); what those prints showed (soft walls, tight covers and splice plates, the lid lifting
-by the hinges' spring-back, the snap letting go, the keyboard ribs in the way, the TPU feet a nuisance to make) is
+by the hinges' spring-back, the snap not catching because the lid shifts forward on the hinges, the keyboard ribs in the way, the TPU feet a nuisance to make) is
 corrected here. **Not done:** no print of the present revision; no FEA beyond the snap's plate model; the Bambu Studio
 projects have not been opened in Bambu Studio.
 
@@ -466,7 +468,7 @@ published drawing and structure files.
 | `KIT_RIBS_X` / `USB_GUIDE_X` / `SPLIT_BLOCK` | `(-50, 0, 40)` / `(-99.6, None)` / `None` (bare `7 × 7 × 3.4`) | design choice | ribs onto the kit's back; USB-C guide ribs from the end wall to the kit; ceiling blocks around the lid keys (bare design only) |
 | `SPLICE` | `clr 0.3`; tray 1, lid 2 plates (t `WALL / 2`), panel 3 (t `PANEL_T / 2`), x −10…+10 / +6 / +8.4 from the split | design choice | splice plates glued on the hidden side across each seam of the split pieces, flush in pockets in both halves |
 | `USB_PM_Y_KIT` | `20.0` | design choice | panel-mount female opening in the lid-A variants (clear of the lid keys and the power slot) |
-| `LATCH` | `x 0, w 30, t 1.0, below 2.2, bump 0.45 @ 1.4, clr 0.15, 45° / 45°; flex x −20…20, t 1.1, top 2` | design choice | snap: lip on a thinned zone of the front wall, no slits, 0.30 mm engagement (see "Snap") |
+| `LATCH` | `x 0, w 30, t 1.0, below 2.6, bump 0.45 @ 1.4, clr 0.05, 30° / 35°; flex x −20…20, t 1.1, top 2; stop x ±26, w 8, below 3.5, up 5, clr 0.10, lead 0.6` | design choice | snap: lip on a thinned zone of the front wall, no slits, 0.30 mm engagement (see "Snap") |
 | `PANEL_Z_FRONT` | `15.0` | measured | [M:Display Panel.stl] screen-side face |
 | `PANEL_Z_BACK` | `18.0` | measured | [M:Display Panel.stl] back face, seats against lid corner bosses |
 | `LID_CEILING_Z` | `27.0` | measured | [M:Display.stl] ceiling underside (ceiling 27..30, 3.0 thick) |
