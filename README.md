@@ -3,10 +3,15 @@
 M5Stack PaperDIY（4.7 型 e-paper、ESP32-S3）を画面に、CACOE キーボードを BLE でつないだ、PDA 風クラムシェルの SSH 端末です。Un Kyu Lee さんの [phone-enclosure](https://github.com/unkyulee/phone-enclosure)（Boox Palma 2 + CACOE キーボード）を元にしています。
 
 *English:* a clamshell SSH terminal with an M5Stack PaperDIY (4.7" e-paper, ESP32-S3) as the screen and a CACOE
-keyboard over BLE, in a 3D-printed case derived from Un Kyu Lee's phone-enclosure. The firmware (ESP-IDF, reproducible
-build) pairs the keyboard by itself, joins Wi-Fi and runs an SSH terminal; the case prints on a Bambu Lab A1 mini (split)
-or in one piece on a 220 mm bed. CAD details in English: [cad/README.md](cad/README.md); the assembly guide and the
+keyboard over BLE, in a 3D-printed case derived from Un Kyu Lee's phone-enclosure. One device is built and in use (photo below, 2026-11-11; the revision in the
+repository has a wider snap that is not printed yet). The firmware (ESP-IDF, reproducible build) pairs the keyboard by
+itself, joins Wi-Fi and runs an SSH terminal; the case prints on a Bambu Lab A1 mini (split) or in one piece on a 220 mm
+bed. CAD details in English: [cad/README.md](cad/README.md); the assembly guide and the
 firmware notes are in Japanese.
+
+![組み上がった実機。Raspberry Pi に SSH で入ったところ（2026-11-11）](docs/images/photo_2026-11-11.jpg)
+
+実機です（2026-11-11。留めツメを幅 30 mm に広げる前の版）。Wi-Fi 経由で Raspberry Pi に SSH で入り、CACOE キーボードで打っています。下は、いまの版の完成予想図です。
 
 ![完成予想（開いたところ）](docs/images/render_open.png)
 
@@ -16,7 +21,7 @@ firmware notes are in Japanese.
 
 <p align="center"><img src="docs/images/render_open_black.png" width="32%" alt="黒だけ"> <img src="docs/images/render_open_khaki.png" width="32%" alt="カーキだけ"> <img src="docs/images/render_open_mix.png" width="32%" alt="ミックス（蓋がカーキ、トレイと化粧パネルが黒）"></p>
 
-> **試作段階です。** ファームは実機の PaperDIY で動いています（画面の表示、CACOE キーボードの BLE 接続と自動ペアリング、Wi-Fi、Raspberry Pi への SSH ログインまで確認）。筐体は、刷って組むたびに出た問題を直してきました。前の版（PaperDIY の基板をそのまま載せる版）では、キーボードのがたつきや開いたときのすき間。今の版（Complete Kit のケースごと入れる中空の蓋と化粧パネル）では、壁の柔らかさ（1.2 mm → 2.0 mm）、カバーと継ぎ板のきつさ、ヒンジの戻りで蓋の手前が浮くこと、留めツメが勝手に外れること、キーボードの位置決めリブが当たること、TPU の足が作りにくいこと。**これらを直したいまの版は、まだ刷って確かめていません**（[まだ確かめていないこと](#まだ確かめていないこと)）。
+> **実機が 1 台、組み上がって動いています**（上の写真）。キーボードの BLE 接続と自動ペアリング、Wi-Fi、Raspberry Pi への SSH ログインまで、筐体に入れた状態で使えています。ただし、まだ試作段階です。筐体は、刷って組むたびに出た問題を直してきました。前の設計（PaperDIY の基板をそのまま載せる版）では、キーボードのがたつきや開いたときのすき間。今の設計（Complete Kit のケースごと入れる中空の蓋と化粧パネル）では、壁の柔らかさ（1.2 mm → 2.0 mm）、カバーと継ぎ板のきつさ、ヒンジの戻りで蓋の手前が浮くこと、留めツメが勝手に外れること、キーボードの位置決めリブが当たること、TPU の足が作りにくいこと。写真の 1 台は留めツメを幅 30 mm に広げる前のもので、**いまのリポジトリの版そのものは、まだ刷って確かめていません**（[まだ確かめていないこと](#まだ確かめていないこと)）。
 
 ## 特徴
 

@@ -371,8 +371,9 @@ room and every panel-mount connector envelope; split halves; splice plates; hing
 panel + covers rotated 0–180° about the hinge axis, also with the axis 0.15 and 0.3 mm further in; the keyboard's charge
 plug while opening; the snap lip along its real opening arc. PrusaSlicer slice of every plate, wall thickness by ray
 casting, a comparison of the sliced toolpaths with the model (0.4 mm nozzle), tipping estimate, the snap as a plate
-model, two builds byte-identical, renders inspected. **Printed so far:** the earlier bare-kit design, and this design
-in parts, first with 1.2 mm and then with 2.0 mm walls; what those prints showed (soft walls, tight covers and splice plates, the lid lifting
+model, two builds byte-identical, renders inspected. **Printed so far:** the earlier bare-kit design, and this design,
+first with 1.2 mm and then with 2.0 mm walls, up to one complete device that is in use (2026-11-11, with the 12 mm snap:
+[photo](../docs/images/photo_2026-11-11.jpg)); what those prints showed (soft walls, tight covers and splice plates, the lid lifting
 by the hinges' spring-back, the snap letting go, the keyboard ribs in the way, the TPU feet a nuisance to make) is
 corrected here. **Not done:** no print of the present revision; no FEA beyond the snap's plate model; the Bambu Studio
 projects have not been opened in Bambu Studio.
