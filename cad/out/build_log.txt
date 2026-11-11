@@ -6,7 +6,7 @@
 == building
 == exports (bounding boxes are axis-aligned in the assembly frame)
   out/display_lid_usbc.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56818 mm3
-  out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=63603 mm3
+  out/keyboard_tray.stl: bbox 202.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=63666 mm3
   out/paperdiy_kit_envelope.stl: bbox 121.3 x 68.2 x 6.3 mm, watertight=True, winding_ok=True, bodies=1, vol=50716 mm3
   out/display_panel_kit.stl: bbox 197.6 x 96.0 x 7.9 mm, watertight=True, winding_ok=True, bodies=1, vol=19332 mm3
   out/hinge_cover_lid_x2.stl: bbox 24.2 x 1.7 x 9.9 mm, watertight=True, winding_ok=True, bodies=1, vol=224 mm3
@@ -14,8 +14,8 @@
 == split pieces for A1 mini (limit 175 mm)
   out/split/lid_A_left.stl: bbox 29.0 x 99.5 x 18.5 mm, watertight=True, winding_ok=True, bodies=1, vol=9140 mm3
   out/split/lid_B_main.stl: bbox 173.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=46388 mm3
-  out/split/tray_A_left.stl: bbox 29.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=9856 mm3
-  out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=51988 mm3
+  out/split/tray_A_left.stl: bbox 29.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=9887 mm3
+  out/split/tray_B_main.stl: bbox 173.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=52019 mm3
   out/split/panel_A_left.stl: bbox 24.6 x 95.1 x 1.6 mm, watertight=True, winding_ok=True, bodies=1, vol=2783 mm3
   out/split/panel_B_main.stl: bbox 173.0 x 96.0 x 7.9 mm, watertight=True, winding_ok=True, bodies=1, vol=15693 mm3
   panel_A_left: eroded by 1 mm (visible half) -> 1 piece(s)
@@ -58,7 +58,7 @@
     lid_A_left_usb30mm: opening 13.0 x 7.0 mm at y = 20, z = 19.3, M3 holes 30 mm apart
 == whole parts for printers with a 220 mm bed or bigger (no split, no dovetails, nothing to glue)
   out/whole/lid.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56818 mm3
-  out/whole/tray.stl: bbox 202.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=63603 mm3
+  out/whole/tray.stl: bbox 202.0 x 99.5 x 12.9 mm, watertight=True, winding_ok=True, bodies=1, vol=63666 mm3
   out/whole/panel.stl: bbox 197.6 x 96.0 x 7.9 mm, watertight=True, winding_ok=True, bodies=1, vol=19332 mm3
   out/whole/usb_variants/lid_usb_noscrew.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56398 mm3
   out/whole/usb_variants/lid_usb16mm.stl: bbox 202.0 x 99.5 x 20.7 mm, watertight=True, winding_ok=True, bodies=1, vol=56401 mm3
@@ -79,8 +79,8 @@
   interference USB-C plug in the kit's port vs lid: 0.000 mm3 OK
   interference lid vs tray: -0.000 mm3 OK
   interference keyboard space (tray floor 2.0 to z 13.5) vs lid: 0.000 mm3 OK
-  interference keyboard space vs tray (deck, pads, hinge bosses): 0.000 mm3 OK
-  keyboard room 196 x 87 mm from the floor up (the original tray's; nothing stands into it: no ribs), 1 / 1 mm a side round the estimated 194 x 85 mm keyboard (MEASURE); deck 1.2 mm flush with the rim, 1.00 mm wide at the front and the ends (45 deg under), solid 7.50 mm behind it, open over the charge port (x 72.9..89.1)
+  interference keyboard space vs tray (deck, end ribs, pads, hinge bosses): -0.000 mm3 OK
+  keyboard room 196 x 87 mm from the floor up (the original tray's); 2 ribs on each end wall (y -25, 25) stand out to x = +-97.15, 0.15 mm off the keyboard's ends; nothing on the front and back, 1 mm a side there round the estimated 194 x 85 mm keyboard (MEASURE); deck 1.2 mm flush with the rim, 1.00 mm wide at the front and the ends (45 deg under), solid 7.50 mm behind it, open over the charge port (x 72.9..89.1)
   interference kit vs bezel panel: 0.000 mm3 OK
   interference bezel panel vs lid: -0.000 mm3 OK
   interference bezel panel vs tray: 0.000 mm3 OK

@@ -814,6 +814,10 @@ def build_kit_tray():
     T = outer - prism_z(plan.offset(-WALL, m3.JoinType.Round, 2.0, SEG), TRAY_FLOOR, 60.0)
     yi0, yi1 = -BACK_OLD_Y + WALL, Y_BACK - WALL                                          # inner faces
     adds = hinge_mounts(False)
+    rk = TRAY_KB_RIBS                        # end ribs out to the keyboard's ends, floor to 1 mm below the rim
+    fx = KB_SIZE[0] / 2 + rk["fit"]
+    adds += [box(*sorted((sx * fx, sx * (101.0 - WALL + 0.1))), y - RIB_T / 2, y + RIB_T / 2, 0.0,
+                 min(under_z(y), Z_PART) - 1.0) for sx in (-1.0, 1.0) for y in rk["end_y"]]
     p = TRAY_PORT
     d = TRAY_DECK
     if d:                                    # the deck: flush with the rim around the keyboard
@@ -1498,13 +1502,16 @@ def main_kit():
     interference(kit, lid, "kit (case + caps) vs lid")
     interference(plug, lid, "USB-C plug in the kit's port vs lid")
     interference(lid, tray, "lid vs tray")
-    kb = prism_z(rrect(0.0, 0.0, 2 * KB_FACE_X - 0.3, 2 * KB_FACE_Y - 0.3, 2.7), TRAY_FLOOR, KB_TOP_Z)
+    kbx = KB_SIZE[0] / 2 + TRAY_KB_RIBS["fit"] if SHELL and TRAY_KB_RIBS else KB_FACE_X    # to the end ribs' faces
+    kb = prism_z(rrect(0.0, 0.0, 2 * kbx - 0.3, 2 * KB_FACE_Y - 0.3, 2.7), TRAY_FLOOR, KB_TOP_Z)
     interference(kb, lid, f"keyboard space (tray floor {TRAY_FLOOR} to z {KB_TOP_Z}) vs lid")
-    interference(kb, tray, "keyboard space vs tray (deck, pads, hinge bosses)")
+    interference(kb, tray, "keyboard space vs tray (deck, end ribs, pads, hinge bosses)")
     if SHELL and TRAY_DECK:
         d = TRAY_DECK
-        log(f"  keyboard room {2 * KB_FACE_X:g} x {2 * KB_FACE_Y:g} mm from the floor up (the original tray's; nothing "
-            f"stands into it: no ribs), {KB_FACE_X - KB_SIZE[0] / 2:g} / {KB_FACE_Y - KB_SIZE[1] / 2:g} mm a side round the "
+        log(f"  keyboard room {2 * KB_FACE_X:g} x {2 * KB_FACE_Y:g} mm from the floor up (the original tray's); 2 ribs on "
+            f"each end wall (y {TRAY_KB_RIBS['end_y'][0]:g}, {TRAY_KB_RIBS['end_y'][1]:g}) stand out to x = +-{kbx:.2f}, "
+            f"{TRAY_KB_RIBS['fit']:g} mm off the keyboard's ends; nothing on the front and back, "
+            f"{KB_FACE_Y - KB_SIZE[1] / 2:g} mm a side there round the "
             f"estimated {KB_SIZE[0]:g} x {KB_SIZE[1]:g} mm keyboard (MEASURE); deck {d['t']:g} mm flush with the rim, "
             f"{BACK_OLD_Y - WALL - KB_FACE_Y:.2f} mm wide at the front and the ends (45 deg under), "
             f"solid {Y_BACK - WALL - KB_FACE_Y:.2f} mm behind it, open over the charge port "
