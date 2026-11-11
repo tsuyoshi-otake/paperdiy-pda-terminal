@@ -10,6 +10,7 @@
 #   make firmware    ESP-IDF v5.5.6 build (run `. $IDF_PATH/export.sh` first); checks it against prebuilt/
 #   make firmware-docker   the same inside espressif/idf:v5.5.6
 #   make manifest    after a deliberate design change: record the new CAD outputs
+#   make variants    the other designs the docs say still build (PD_MOUNT=bare, KIT_LID=solid), in scratch copies
 #   make dist        release bundles (zips of the print files, the STLs and the prebuilt firmware) -> dist/
 PYTHON      ?= python3
 ORIGINAL    ?= $(HOME)/phone-enclosure
@@ -18,7 +19,7 @@ export PHONE_ENCLOSURE_STL ?= $(ORIGINAL)/STL
 
 TAG         ?= $(shell git describe --tags --always 2>/dev/null || echo dev)
 
-.PHONY: all setup original cad 3mf verify report manifest render test firmware firmware-check firmware-docker dist
+.PHONY: all setup original cad 3mf verify report manifest render test firmware firmware-check firmware-docker dist variants
 
 all: 3mf
 
@@ -75,3 +76,12 @@ firmware-docker:
 # what a release carries: uses the committed outputs as they are (run `make verify` first)
 dist:
 	$(PYTHON) cad/tools/dist.py $(TAG)
+
+# The designs the docs say can still be built. Each is built in a scratch copy, so cad/out stays as committed.
+variants: original
+	@for v in PD_MOUNT=bare KIT_LID=solid; do \
+	  d=$$(mktemp -d) && cp -r cad $$d/cad && \
+	  if (cd $$d/cad && env $$v $(PYTHON) src/build.py > build.log 2>&1 && env $$v $(PYTHON) src/export_3mf.py >> build.log 2>&1); \
+	  then echo "$$v: builds"; grep -h "CHECK:" $$d/cad/build.log || true; rm -rf $$d; \
+	  else tail -n 25 $$d/cad/build.log; echo "$$v: FAILED"; rm -rf $$d; exit 1; fi; \
+	done

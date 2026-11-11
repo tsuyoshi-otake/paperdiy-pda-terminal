@@ -16,6 +16,8 @@ jobs:
       - run: pip install -r cad/requirements.txt
       - name: rebuild STLs and 3MF plates, compare with cad/out/MANIFEST.json
         run: make verify
+      - name: the other designs the docs describe still build (PD_MOUNT=bare, KIT_LID=solid)
+        run: make variants
       - name: printability report (PrusaSlicer)
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends prusa-slicer

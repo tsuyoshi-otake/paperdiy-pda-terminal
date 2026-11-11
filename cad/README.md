@@ -18,7 +18,7 @@ countersunk tapping screws (8 hinges, 6 panel). A **test-coupon plate** checks t
 ~24 min. Bill of materials, print settings and assembly order (Japanese): [ASSEMBLY_ja.md](ASSEMBLY_ja.md); parts list
 as CSV: [bom.csv](bom.csv).
 
-`KIT_LID = "solid"` builds the previous kit lid (a solid deck with the kit in a pocket, one M2×4 screw from the top, no
+`KIT_LID = "solid"` (or `KIT_LID=solid` in the environment) builds the previous kit lid (a solid deck with the kit in a pocket, one M2×4 screw from the top, no
 panel). `PD_MOUNT = "bare"` in `src/params.py` (or `PD_MOUNT=bare` in the environment) still builds the earlier design:
 the bare Assembly Kit on a printed bezel panel with a strap, snap-in push-rods, a 2000 mAh cell and a panel-mount USB-C.
 It is described in [README_bare.md](README_bare.md).
@@ -35,6 +35,7 @@ From the repository root (or the same commands by hand from this folder):
 make setup     # pip install -r cad/requirements.txt (pinned versions) + the host-test packages
 make verify    # fetch the pinned original, build every STL + 3MF, compare with out/MANIFEST.json
 make report    # optional, needs prusa-slicer: print time / filament / stability warnings -> out/print_report.md
+make variants  # the other designs (PD_MOUNT=bare, KIT_LID=solid) still build? (in scratch copies; CI runs it)
 ```
 By hand:
 ```
@@ -450,7 +451,7 @@ published drawing and structure files.
 | `KIT_NOTCH` | `out 7, depth 5.6, end 1.5, r 2` | design choice | finger notches at the caps (`KIT_LID = "solid"`) |
 | `USB_CH` | `w 13, h 7.6` | design choice | channel for a straight USB-C plug (overmold ≤ 12 × 6.5) |
 | `KIT_SCREW_SEAT` | `1.6` | design choice | lid under the M2×4 head -> 2.2 mm into the kit (`KIT_LID = "solid"`) |
-| `KIT_LID` | `"shell"` | design choice | hollow lid + bezel panel; `"solid"`: the solid deck with the kit in a pocket |
+| `KIT_LID` | `"shell"` | design choice | hollow lid + bezel panel; `"solid"`: the solid deck with the kit in a pocket (env `KIT_LID` overrides) |
 | `SHELL_WALL` / `SHELL_CEIL` / `USB_CEIL` | `WALL` / `WALL` / `0.8` | design choice | lid walls, ceiling, ceiling left over the USB-C plug path |
 | `PANEL_T` / `PANEL_CLR` / `PANEL_WIN_CLR` | `1.6` / `0.2` / `0.3` | design choice | bezel panel; clearance to the lid's walls and hinge pads; window = kit window + 0.3 per side, square edges |
 | `PANEL_RIM` / `PANEL_SLOT` / `PANEL_GUARD` | `h 2.0, w 1.2` / `out 8.0, end 3.0, r 0.75` / `t RIB_T, clr 0.5` | design choice | locating rim around the kit; finger slots at the caps; guard ring behind the KEY slot, up to the kit's back |

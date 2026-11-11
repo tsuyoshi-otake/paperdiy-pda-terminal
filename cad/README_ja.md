@@ -120,7 +120,7 @@ make render    # 完成予想図（docs/images/render_*.png、色違いも）
 - **同じものが出る**：同じ PC なら、STL も 3MF も 1 バイトも違わないファイルができます。別の PC では計算の最後の桁の丸めでバイトが変わるファイルがありますが、形は一致します。`out/MANIFEST.json` に全ファイルの SHA-256 と体積・寸法を記録してあり、`make verify` はバイトが同じか、形が 0.01 mm / 0.01 % 以内で同じかを確かめます
 - **CI**：GitHub Actions（`.github/workflows/build.yml`）で、push のたびに同じ確認をします
 
-寸法と作り方の切り替えはすべて `src/params.py` にあります。キーボードの厚さは `KB_THICK`、幅と奥行きの推定は `KB_SIZE`（レンダリングと報告用。トレイの空間は `KB_FACE_X`・`KB_FACE_Y`）、トレイのデッキは `TRAY_DECK`、壁の厚さは `WALL`、角の丸みは `CORNER_R`、留めツメは `LATCH`、蓋の殻は `SHELL_*`、継ぎ板は `SPLICE`、化粧パネルは `PANEL_*`、キットの寸法は `KIT_*`、メス端子の位置は `USB_PM_Y_KIT` です。`KIT_LID = "solid"` にすると、中まで詰まった蓋のくぼみに PaperDIY をはめて天面から M2×4 のねじ 1 本で留める版（化粧パネルなし）、`PD_MOUNT = "bare"`（または環境変数 `PD_MOUNT=bare`）にすると前の設計（Assembly Kit の基板を画面パネルに載せ、2000 mAh の電池を入れる版。説明は英語の [README_bare.md](README_bare.md)）を作れます。形を変えたら `make manifest` で記録を更新します。
+寸法と作り方の切り替えはすべて `src/params.py` にあります。キーボードの厚さは `KB_THICK`、幅と奥行きの推定は `KB_SIZE`（レンダリングと報告用。トレイの空間は `KB_FACE_X`・`KB_FACE_Y`）、トレイのデッキは `TRAY_DECK`、壁の厚さは `WALL`、角の丸みは `CORNER_R`、留めツメは `LATCH`、蓋の殻は `SHELL_*`、継ぎ板は `SPLICE`、化粧パネルは `PANEL_*`、キットの寸法は `KIT_*`、メス端子の位置は `USB_PM_Y_KIT` です。`KIT_LID = "solid"`（または環境変数 `KIT_LID=solid`）にすると、中まで詰まった蓋のくぼみに PaperDIY をはめて天面から M2×4 のねじ 1 本で留める版（化粧パネルなし）、`PD_MOUNT = "bare"`（または環境変数 `PD_MOUNT=bare`）にすると前の設計（Assembly Kit の基板を画面パネルに載せ、2000 mAh の電池を入れる版。説明は英語の [README_bare.md](README_bare.md)）を作れます。この 2 つの別の作り方が今も作れることは、`make variants` と CI で確かめています。形を変えたら `make manifest` で記録を更新します。
 
 ## ライセンス
 

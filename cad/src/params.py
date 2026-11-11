@@ -133,9 +133,9 @@ KIT_NOTCH = dict(out=7.0, depth=5.6, end=1.5, r=2.0)   # finger notches at the c
 USB_CH = dict(w=13.0, h=7.6)  # channel for a straight USB-C plug (overmold ~12 x 6.5) from the left end to the port
 KIT_SCREW_SEAT = 1.6          # lid skin under the countersunk M2x4 head -> 2.2 mm into the kit (M5Stack: < 3 mm)
 DOVETAIL_Y_KIT = (-37.0, 5.0, 36.0)   # lid keys clear of the USB channel (y -30.5..-17.5) and the power notch
-# KIT_LID = "shell": hollow lid (thin walls and ceiling) and a printed bezel panel that holds the kit from the screen side,
+# KIT_LID = os.environ.get("KIT_LID", "shell"): hollow lid (thin walls and ceiling) and a printed bezel panel that holds the kit from the screen side,
 #                   screwed to bosses in the lid (default). "solid": the solid deck lid with the kit in a pocket.
-KIT_LID = "shell"
+KIT_LID = os.environ.get("KIT_LID", "shell")
 SHELL_WALL = WALL
 SHELL_CEIL = WALL
 USB_CEIL = 0.8                # ceiling left over the USB-C plug path (a relief from inside, 4 layers)

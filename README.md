@@ -91,6 +91,7 @@ firmware notes are in Japanese.
 ```bash
 make setup      # Python のパッケージ（バージョン固定）
 make verify     # 元データを固定のコミットで取得 → STL と 3MF を作り直し → コミット済みのものと比べる
+make variants   # 文書にある別の作り方（前の設計 PD_MOUNT=bare、詰まった蓋 KIT_LID=solid）が今も作れるか確かめる
 make report     # 印刷時間・重さ・スライサーの警告・壁の厚さ・倒れやすさ（PrusaSlicer が要る）
 make test       # ファームの端末エミュレータのテスト（g++ と pyte）
 make firmware   # ESP-IDF v5.5.6 でビルドして prebuilt/ と 1 バイトずつ比べる（Docker なら make firmware-docker）
