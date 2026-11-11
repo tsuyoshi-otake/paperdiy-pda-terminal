@@ -970,7 +970,9 @@ def latch_stops():
     """(tongues, cuts): two tongues on the lid that reach down inside the tray's front wall and bear on its inner face,
     and the notches for them through the tray's deck (with a lead-in on the wall's edge). They keep the snap's ramps
     from pushing the lid forward on the hinges' play instead of bending the lip."""
-    s = LATCH["stop"]
+    s = LATCH.get("stop")
+    if not s:
+        return [], []
     zf, yo = under_z(-BACK_OLD_Y), -BACK_OLD_Y
     yi, yr = yo + WALL, -LID_INNER_Y                 # the walls' inner face; the keyboard room's front face
     zi = under_z(yi)                                 # the rim at the inner face
@@ -1220,7 +1222,9 @@ def build_kit_lid_shell(usb="direct", blocks=True):
             PANEL_RIB_INFO[:] = [i for _, i in ribs]
         L = L + (union(r for r, _ in ribs) ^ outer)
     cut, tab = latch_lid_parts()
-    L = (L - cut) + tab + union(latch_stops()[0])
+    L = (L - cut) + tab
+    if latch_stops()[0]:
+        L = L + union(latch_stops()[0])
     cuts = usb_end_cuts(usb) + hinge_pocket_cuts() + hinge_pilots(True) + [back_edge_relief(True)]
     cuts.append(box(-101.0 + SHELL_WALL, KIT_X0 + KIT_FIT + 1.0, KIT_USB_Y - USB_CH["w"] / 2, KIT_USB_Y + USB_CH["w"] / 2,
                     -10.0, 60.0) ^ half_space(top[0] - USB_CEIL, top[1], False))   # thinner ceiling over the plug path
@@ -1447,8 +1451,9 @@ def build_kit_coupons(lid, tray, ta, tb):
     dt_box = box(X - 12.0, X + 14.0, -9.0, 9.0, -1.0, 3.5)
     l = LATCH
     zf = under_z(-BACK_OLD_Y)
-    s = l["stop"]                             # the whole flex zone and both stops + 2 mm: the click as in the lid
-    lx0, lx1 = min(s["x"]) - s["w"] / 2 - 2.4, max(s["x"]) + s["w"] / 2 + 2.4
+    s = l.get("stop")                         # the whole flex zone (and the stops, if any) + 2 mm: the click as in the lid
+    lx0, lx1 = ((min(s["x"]) - s["w"] / 2 - 2.4, max(s["x"]) + s["w"] / 2 + 2.4) if s else
+                (l["flex"]["x0"] - 2.4, l["flex"]["x1"] + 2.4))
     out = {
         "coupon_hinge_tray": (tray ^ hinge_box, "tray"),
         "coupon_hinge_lid": (lid ^ hinge_box, "lid"),
@@ -1654,8 +1659,8 @@ def main_kit():
     log("== snap (latch): a lip on a thinned zone of the front wall, no slits")
     l, g = LATCH, LATCH["flex"]
     k, eps_n, (ex, ez, et) = latch_plate()
-    st = l["stop"]
-    d_static = l["bump"] - l["clr"] - (st["clr"] if SHELL else 0.0)   # engagement with the lid forward against its stops
+    st = l.get("stop") if SHELL else None
+    d_static = l["bump"] - l["clr"] - (st["clr"] if st else 0.0)      # engagement: lid as drawn / against its stops
     d_max = l["bump"]                                      # the lip's bend if the lid is held back instead
     d_path, at = latch_path(lid, tray)
     mu = 0.3
@@ -1666,7 +1671,7 @@ def main_kit():
     log(f"  lip {l['w']:g} wide, {l['t']:g} thick, {l['below']:g} below the parting, not slit: the front wall is thinned "
         f"from inside to {g['t']:g} over x {g['x0']:g}..{g['x1']:g} (to {g['top']:g} below the ceiling, 45 deg chamfers) and "
         f"bends as a plate")
-    if SHELL:
+    if st:
         log(f"  stops: 2 tongues on the lid at x = {st['x'][0]:g}, {st['x'][1]:g} ({st['w']:g} wide, {st['below']:g} below the "
             f"parting, {-LID_INNER_Y - (-BACK_OLD_Y + WALL) - st['clr']:.2f} thick) inside the tray's front wall, {st['clr']:g} off its "
             f"inner face, through notches in the deck: the ramps cannot push the lid forward, the lip has to bend")
@@ -1676,10 +1681,10 @@ def main_kit():
             f"; their outer face leans back with the arc, the wall's edge has a {st['lead']:g} mm lead-in")
         assert s_ov < 0.02, "stop tongue scrapes the tray wall"
     else:
-        log(f"  CHECK: no stops with KIT_LID = {KIT_LID!r} (its tray has 3 mm walls): the lid can shift forward on the "
-            f"hinges and the snap may not catch")
+        log("  no stops: every 0.1 mm the lid sits forward of its drawn position takes 0.1 mm off the engagement "
+            "(tools/snap_sim.py)")
     log(f"  plate model (Kirchhoff, ceiling and end walls rigid, so the real wall is somewhat softer): {k:.1f} N/mm at the "
-        f"bump; engagement {'with the lid against the stops' if SHELL else '(no stops)'}: {d_static:.2f} mm; "
+        f"bump; engagement {'with the lid against the stops' if st else 'with the lid where it was drawn'}: {d_static:.2f} mm; "
         f"a rigid lip on the real opening arc overlaps the tray by at most {d_path:.2f} mm (at {at:.1f} deg)")
     log(f"  peak strain {eps:.2f} % ({eps_hi:.2f} % if the lid is held back and the lip bends by the whole bump; x {ex:.1f}, "
         f"z {ez:.1f}, {et:.2f} thick; across the print layers: keep < 0.5 %), "

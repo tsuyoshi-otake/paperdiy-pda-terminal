@@ -73,16 +73,21 @@ class Geometry:
     between B and C (front to back) for the tongue to clear the tray."""
 
     def __init__(self, lid, tray):
-        l, st = B.LATCH, B.LATCH["stop"]
+        l, st = B.LATCH, B.LATCH.get("stop")
+        self.stops = bool(st)
         self.lip, self.tray_lip = section(lid, l["x"], SKIN), section(tray, l["x"])
-        self.ton, self.tray_ton = section(lid, st["x"][1], SKIN), section(tray, st["x"][1])
-        ya, yb = Y_FRONT - 3.0, Y_FRONT + 9.0            # the tongue proper: what hangs below the parting (the lid's
-        self.ton = self.ton.intersection(Polygon([(ya, Z_EDGE - 9.0), (yb, Z_EDGE - 9.0), (yb, B.under_z(yb) - 0.02),
-                                                  (ya, B.under_z(ya) - 0.02)]))    # wall resting on the tray is no stop)
-        self.lip_draw, self.ton_draw = section(lid, l["x"]), section(lid, st["x"][1])
+        self.lip_draw = section(lid, l["x"])
         self.deg = np.round(np.arange(0.0, DEG0 + STEP / 2, STEP), 4)
         self.A = np.array([self._lip_need(d) for d in self.deg])
-        bc = np.array([self._lid_range(d) for d in self.deg])
+        if st:
+            self.ton, self.tray_ton = section(lid, st["x"][1], SKIN), section(tray, st["x"][1])
+            ya, yb = Y_FRONT - 3.0, Y_FRONT + 9.0        # the tongue proper: what hangs below the parting (the lid's
+            self.ton = self.ton.intersection(Polygon([(ya, Z_EDGE - 9.0), (yb, Z_EDGE - 9.0), (yb, B.under_z(yb) - 0.02),
+                                                      (ya, B.under_z(ya) - 0.02)]))    # wall resting on the tray is no stop)
+            self.ton_draw = section(lid, st["x"][1])
+            bc = np.array([self._lid_range(d) for d in self.deg])
+        else:
+            bc = np.tile([-9.0, 9.0], (len(self.deg), 1))
         self.B, self.C = np.maximum(bc[:, 0], -FREE), np.minimum(bc[:, 1], FREE)
         arc = np.radians(self.deg) * float(np.hypot(AXIS[0] - Y_FRONT, AXIS[1] - (Z_EDGE - l["bump_at"])))
         self.dA = np.gradient(self.A, arc)               # per mm of lift at the bump
@@ -133,13 +138,16 @@ def springback():
 
 def plate():
     """Stiffness of the lip and of the two tongues' backing, their coupling, and the strain per newton at the lip."""
-    l, g, st = B.LATCH, B.LATCH["flex"], B.LATCH["stop"]
+    l, g, st = B.LATCH, B.LATCH["flex"], B.LATCH.get("stop")
     args = (Z_EDGE, B.top_z(Y_FRONT + B.SHELL_WALL) - B.SHELL_CEIL, 202.0 / 2 - B.SHELL_WALL, B.SHELL_WALL,
             (g["x0"], g["x1"], g["t"], g["top"]))
     lip = (l["x"] - l["w"] / 2, l["x"] + l["w"] / 2)
+    k, eps_n, _ = wall_plate(*args, lip, l["bump_at"])
+    if not st:
+        return np.array([[1.0 / k, 0.0], [0.0, 1.0]]), eps_n
     C = wall_compliance(*args, [[lip + (l["bump_at"],)],
                                 [(x - st["w"] / 2, x + st["w"] / 2, st["lead"] + 0.2) for x in st["x"]]])
-    return C, wall_plate(*args, lip, l["bump_at"])[1]
+    return C, eps_n
 
 
 def contact(a, b, C):
@@ -160,10 +168,11 @@ def wedge(n, slope, mu):
     return n * (slope + mu) / max(1.0 - mu * slope, 0.05)
 
 
-def run(geo, C, eps_n, stops=True, at=0.0, play=0.0, slip=0.5, k_seat=K_SEAT_STIFF, gap_lip=0.0, gap_stop=0.0, mu=MU,
+def run(geo, C, eps_n, stops=None, at=0.0, play=0.0, slip=0.5, k_seat=K_SEAT_STIFF, gap_lip=0.0, gap_stop=0.0, mu=MU,
         push=None, frames=None):
     """Close from DEG0 to 0, then let the spring-back lift the front edge. Returns a dict of results."""
     push = springback()[2] if push is None else push
+    stops = geo.stops if stops is None else (stops and geo.stops)
     kc = 1.0 / C[1, 1]
 
     def forces(i, u):
@@ -245,7 +254,7 @@ HEAD = ["| | lip bends, mm | to close, N | lid ends at, mm | holds, N | seam, mm
 
 
 def report(geo, C, eps_n):
-    l, st = B.LATCH, B.LATCH["stop"]
+    l, st = B.LATCH, B.LATCH.get("stop")
     lo, _, hi = springback()
     res = {}
     L = ["# Snap simulation", "",
@@ -253,10 +262,15 @@ def report(geo, C, eps_n):
          f"front edge. The hinges' spring-back pushes the closed lid's front edge up with {lo:.1f}..{hi:.1f} N: under {hi:.1f} N the "
          f"snap \"does not hold\", under {HOLD_OK:g} N it is \"weak\" (the lid comes open when the device is handled). "
          f"Friction {MU:g}. Seam = how far the front edge comes up before the snap carries the push.", "",
-         f"Springs (plate model): lip {1 / C[0, 0]:.1f} N/mm, the two stop tongues' backing {1 / C[1, 1]:.0f} N/mm; pushing "
-         f"the tongues in by 1 mm draws the lip in by {C[0, 1] / C[1, 1]:.2f} mm. Drawn: bump {l['bump']:g} mm, lip "
-         f"{l['clr']:g} mm off the tray, tongues {st['clr']:g} mm off the wall's inner face (the lowest point the lid can "
-         f"reach forward is {-geo.B[0]:.2f} mm, because the tongue's face leans back with the closing arc).", ""]
+         "That push is the hinges' spring-back only. Rims that meet near the hinges lever the lid open with far more "
+         "(reported from the built device; the lid's underside is relieved there now, PART_RELIEF): nothing here covers "
+         "a lid that is levered open.", "",
+         f"Springs (plate model): lip {1 / C[0, 0]:.1f} N/mm" + (f", the two stop tongues' backing {1 / C[1, 1]:.0f} N/mm; "
+         f"pushing the tongues in by 1 mm draws the lip in by {C[0, 1] / C[1, 1]:.2f} mm" if st else "") +
+         f". Drawn: bump {l['bump']:g} mm, lip {l['clr']:g} mm off the tray" +
+         (f", tongues {st['clr']:g} mm off the wall's inner face (the lowest point the lid can reach forward is "
+          f"{-geo.B[0]:.2f} mm, because the tongue's face leans back with the closing arc)" if st else
+          "; no stops (LATCH['stop'] is None)") + f". On the built parts the lip has to bend {geo.A.max():.2f} mm to pass.", ""]
 
     def table(title, note, rows):
         L.extend([f"## {title}", "", note, ""] + HEAD)
@@ -266,25 +280,41 @@ def report(geo, C, eps_n):
         L.append("")
 
     free = dict(play=0.3, k_seat=K_SEAT_STIFF)
-    table("1. The lid is free to shift front to back (+-0.3 mm, 0.5 N to move it)",
-          "What the stops were added for. Without them the ramp pushes the lid forward and the lip hardly bends.",
-          [("free_nostop", "without stops", dict(stops=False, **free)), ("free_stop", "with stops", free)])
     offs = (-0.5, -0.4, -0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3)
-    table("2. The lid sits off its drawn position and does not give (- = forward)",
-          "Seat depths of the hinge leaves and the print's scale decide this; it cannot be computed. Without stops the "
-          "engagement is simply the bump less the gap. With stops a lid that sits forward squeezes the tongues against "
-          "the tray's wall.",
-          [(f"fixed_{'stop' if st_ else 'nostop'}_{o:+.1f}", f"{'with' if st_ else 'without'} stops, lid at {o:+.1f}",
-            dict(stops=st_, at=o)) for st_ in (False, True) for o in offs])
-    table("2b. The same, but the lid gives a little when pushed (with stops, lid 0.4 mm forward)",
-          "How stiffly the hinges and their seats hold the lid front to back is not known either. If it gives, the "
-          "tongues push it back into place and the lip catches.",
-          [(f"give_{k:g}", f"gives {k:g} N/mm", dict(at=-0.4, k_seat=k)) for k in (300.0, 100.0, 30.0)])
     gaps = (-0.10, -0.05, 0.0, 0.05, 0.10, 0.15)
-    table("3. The printed gaps differ from the drawing (with stops; + = wider, both the lip's and the tongues')",
-          "Two cases each: the lid exactly in place and rigid, and free to shift as in 1.",
-          [(f"gap_{g:+.2f}_{name}", f"gaps {g:+.2f}, lid {name}", dict(gap_lip=g, gap_stop=g, **kw))
-           for g in gaps for name, kw in (("in place", {}), ("free", free))])
+    if st:
+        table("1. The lid is free to shift front to back (+-0.3 mm, 0.5 N to move it)",
+              "What the stops are for. Without them the ramp pushes the lid forward and the lip hardly bends.",
+              [("free_nostop", "without stops", dict(stops=False, **free)), ("free_stop", "with stops", free)])
+        table("2. The lid sits off its drawn position and does not give (- = forward)",
+              "Seat depths of the hinge leaves and the print's scale decide this; it cannot be computed. Without stops the "
+              "engagement is simply the bump less the gap. With stops a lid that sits forward squeezes the tongues against "
+              "the tray's wall.",
+              [(f"fixed_{'stop' if st_ else 'nostop'}_{o:+.1f}", f"{'with' if st_ else 'without'} stops, lid at {o:+.1f}",
+                dict(stops=st_, at=o)) for st_ in (False, True) for o in offs])
+        table("2b. The same, but the lid gives a little when pushed (with stops, lid 0.4 mm forward)",
+              "How stiffly the hinges and their seats hold the lid front to back is not known either. If it gives, the "
+              "tongues push it back into place and the lip catches.",
+              [(f"give_{k:g}", f"gives {k:g} N/mm", dict(at=-0.4, k_seat=k)) for k in (300.0, 100.0, 30.0)])
+        table("3. The printed gaps differ from the drawing (with stops; + = wider, both the lip's and the tongues')",
+              "Two cases each: the lid exactly in place and rigid, and free to shift as in 1.",
+              [(f"gap_{g:+.2f}_{name}", f"gaps {g:+.2f}, lid {name}", dict(gap_lip=g, gap_stop=g, **kw))
+               for g in gaps for name, kw in (("in place", {}), ("free", free))])
+    else:
+        table("1. The lid sits where it was drawn, or off it (- = forward), and does not give",
+              "Where the lid sits front to back is set by the hinge leaves' seats and the print's scale; it cannot be "
+              "computed. Every 0.1 mm forward takes 0.1 mm off the engagement.",
+              [(f"fixed_{o:+.1f}", f"lid at {o:+.1f}", dict(at=o)) for o in offs])
+        table("2. The lid is free to shift front to back (0.5 N to move it)",
+              "If the hinges or their seats let the lid shift, the bump's ramp pushes it forward as far as it goes "
+              "before the lip bends.",
+              [(f"free_{p_:g}", f"free by +-{p_:g} mm", dict(play=p_)) for p_ in (0.1, 0.2, 0.3)])
+        table("2b. The lid gives when pushed (springy, not free)",
+              "The same with a spring instead of free play.",
+              [(f"give_{k:g}", f"gives {k:g} N/mm", dict(k_seat=k)) for k in (300.0, 100.0, 30.0)])
+        table("3. The lip's printed gap differs from the drawing (+ = wider), lid where it was drawn",
+              "The lip is drawn 0.05 mm off the recess face.",
+              [(f"gap_{g:+.2f}", f"gap {g:+.2f}", dict(gap_lip=g)) for g in gaps])
     return L, res
 
 

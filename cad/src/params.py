@@ -205,26 +205,23 @@ USB_PM_Y_KIT = 20.0            # clear of the lid's split blocks (y 5, 36) and t
 # x0..x1, to t, stopping `top` below the ceiling, 45 deg chamfers back to the full wall), and that zone bends outward
 # as a plate (free air, so the keyboard's position does not matter). build.py solves it as a Kirchhoff plate
 # (src/latch_plate.py): keep the strain across the layers under ~0.5 %.
-# Stops: the lid hangs on the hinges 100 mm behind the snap. Prints of the 12 mm and the 30 mm lip did not click, and the
-# lid's front face stood proud of the tray's: with the lid 0.3 mm forward the bump no longer reaches its groove
-# (tools/snap_sim.py). Whether the lid is pushed there by the bump's ramp (play or give in the hinges and their seats)
-# or sits there (seat depths, the print's scale) is not known. Two tongues on the lid, either side of the flex zone,
-# reach down inside the tray's front wall (through notches in the deck) and bear on its inner face: the lid's front
-# edge straddles the tray's wall, and the lip has to bend. They cure a lid that shifts or gives. A lid that sits more
-# than ~0.3 mm forward and does not give rides up on the tray's wall with them (simulated): then the snap has to be
-# moved by the measured step instead.
-# Engagement with the lid against the stops = bump - clr - stop clr = 0.30 mm by these numbers (0.24 on the built parts:
-# the bump's corner and the tongue's lean take the rest); held back the other way the lip bends by the whole bump,
-# 0.45 mm (still under 0.5 % strain). The lip rides on the recess face with almost no gap (clr 0.05): it is the springy
-# side; the tongues are stiff and keep 0.10.
+# No stops. For one revision (never printed) two tongues on the lid reached down inside the tray's front wall, to keep
+# the lid from being pushed forward by the bump's ramp: the snaps printed before (12 mm and 30 mm lips) had not clicked
+# and the lid's front face stood proud. They are gone: the built device then showed that tight hinge screws lever the
+# lid open (PART_RELIEF above), which is the likelier reason the snap never held; a lid that sits forward without
+# giving would have ridden up on the tray's wall with them (tools/snap_sim.py); and they could not sit where the lip
+# is (the tray's wall is full there, and the lid's wall there is the part that bends). stop=dict(x=(-26.0, 26.0),
+# w=8.0, below=3.5, up=5.0, clr=0.10, lead=0.6) brings them back.
+# Engagement with the lid where it was drawn = bump - clr = 0.40 mm by these numbers (0.37 on the built parts: the
+# bump's corner takes the rest); every 0.1 mm the lid sits forward takes 0.1 mm off. The lip rides on the recess face
+# with almost no gap (clr 0.05).
 # Lip 30 wide in the middle, 2.6 below the parting, 1.0 thick; bump 0.45 high, 1.4 below the parting (0.6 mm of tray
 # above its groove). close_deg / open_deg (30, 35) set the flanks' runs along the lip; the profile is rooted 0.3 mm
 # inside the lip, so the faces themselves stand at 44 deg (closing ramp) and 49 deg (catch face) to the closing
 # direction (build.py latch_flanks). Kept as built: every printed version had these faces, and the forces quoted are
-# now the ones of these faces. The zone stops short of the panel's snap groove at x 22..30; the tongues sit below it.
+# now the ones of these faces. The zone stops short of the panel's snap groove at x 22..30.
 LATCH = dict(x=0.0, w=30.0, t=1.0, below=2.6, bump=0.45, bump_at=1.4, clr=0.05,
-             flex=dict(x0=-20.0, x1=20.0, t=1.1, top=2.0),
-             stop=dict(x=(-26.0, 26.0), w=8.0, below=3.5, up=5.0, clr=0.10, lead=0.6),
+             flex=dict(x0=-20.0, x1=20.0, t=1.1, top=2.0), stop=None,
              close_deg=30.0, open_deg=35.0, tray_wall_min=1.2)
 
 # ---------------------------------------------------------------- layout choices (lid frame)

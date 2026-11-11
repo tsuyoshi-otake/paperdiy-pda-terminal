@@ -2,23 +2,23 @@
  "plate0_test_coupons.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "27m 56s",
-  "grams": 12.33,
-  "metres": 4.134060000000001
+  "time": "24m 9s",
+  "grams": 10.1,
+  "metres": 3.38492
  },
  "plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 46m 16s",
-  "grams": 65.37,
-  "metres": 21.91789
+  "time": "1h 45m 7s",
+  "grams": 65.2,
+  "metres": 21.86007
  },
  "plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 32m 37s",
-  "grams": 61.7,
-  "metres": 20.68689
+  "time": "1h 32m 25s",
+  "grams": 61.74,
+  "metres": 20.70163
  },
  "plate3_panel.3mf": {
   "warnings": [],
@@ -30,16 +30,16 @@
  "large/plate1_lid.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 41m 29s",
-  "grams": 64.94,
-  "metres": 21.77231
+  "time": "1h 40m 10s",
+  "grams": 64.77,
+  "metres": 21.71636
  },
  "large/plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 28m 19s",
-  "grams": 60.86,
-  "metres": 20.404220000000002
+  "time": "1h 28m 6s",
+  "grams": 60.9,
+  "metres": 20.41884
  },
  "large/plate3_panel.3mf": {
   "warnings": [],
@@ -48,48 +48,47 @@
   "grams": 24.05,
   "metres": 8.064779999999999
  },
- "large_total_g": 149.85,
- "large_total_min": 223,
- "total_g": 151.08,
- "total_min": 235,
+ "large_total_g": 149.72,
+ "large_total_min": 222,
+ "total_g": 150.95,
+ "total_min": 234,
  "nozzle_check": {
-  "worst_spot_mm2": 0.4998146860682792,
+  "worst_spot_mm2": 0.49981468606827506,
   "wall_gaps": 0
  },
- "lid_g": 137.95000000000002,
- "base_g": 63.50999999999999,
+ "lid_g": 137.77,
+ "base_g": 63.55,
  "lid_cg": [
-  0.3234134408366938,
-  3.9948281970332093,
-  19.5094898375701
+  0.31959257234696503,
+  4.047351605015624,
+  19.520417066160164
  ],
  "pivot_y": 53.0,
  "table_contact_deg": 162.2,
  "table_limit": 162,
- "keyboard_min_g": 83.78000441172178,
+ "keyboard_min_g": 83.428188837739,
  "hinge_torque_nm": [
   0.1176,
   0.1568,
   0.196
  ],
- "lid_moment_nm": 0.06652117787165103,
+ "lid_moment_nm": 0.06636339303858836,
  "springback_push_n": [
-  0.5125822591906569,
-  0.9059590780566881,
-  1.2993358969227193
+  0.5141656493869707,
+  0.9075424682530018,
+  1.3009192871190332
  ],
- "snap_k": 24.908022457540234,
- "snap_hold_n": 12.415171797865204,
- "snap_hold_in_place_n": 16.9581328118797,
- "snap_hold_low_n": 1.3087363841300368,
+ "snap_k": 24.90802245754024,
+ "snap_hold_n": 16.958132811879704,
+ "snap_hold_forward_n": 7.371078139074075,
+ "snap_hold_low_n": 12.16460547549923,
  "snap_close_n": [
-  8.876058087888921,
-  13.201946174803828
+  3.896673714506786,
+  13.20194617480383
  ],
  "open_force_n": [
-  13.321130875921892,
-  17.864091889936386
+  8.278620607327078,
+  17.865675280132706
  ],
- "snap_forward_close_n": 44.29469014681633,
- "keyboard_for_one_hand_g": 332.1270229996625
+ "keyboard_for_one_hand_g": 332.06296153051386
 }

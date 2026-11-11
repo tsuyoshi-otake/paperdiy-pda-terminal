@@ -89,12 +89,13 @@ def front_view(ax, lid, tray):
     note(ax, (l["x"] + l["w"] / 2 - 2.0, zf - l["below"] + 1.0), f"ツメ（幅 {l['w']:g} mm、壁と一体、切れ目なし）", (16.0, 1.0))
     note(ax, (g["x1"] - 0.5, zr - 2.0), f"点線の帯：壁を内側から\n{g['t']:g} mm に薄くしてあり、\nここが板としてたわむ",
          (22.5, 18.6), color="white")
-    st = l["stop"]
-    for x in st["x"]:
-        ax.add_patch(Rectangle((x - st["w"] / 2, zf - st["below"]), st["w"], st["below"] + st["up"], fill=False, ec=RED,
-                               lw=1.2, ls=(0, (2, 2)), zorder=7))
-    note(ax, (st["x"][1] + st["w"] / 2 - 0.5, zf - st["below"] + 0.8), "赤い点線：ストッパー（蓋の内側の舌。\nトレイの壁の内側に入る。③）",
-         (32.5, 4.6), color=RED)
+    st = l.get("stop")
+    if st:
+        for x in st["x"]:
+            ax.add_patch(Rectangle((x - st["w"] / 2, zf - st["below"]), st["w"], st["below"] + st["up"], fill=False, ec=RED,
+                                   lw=1.2, ls=(0, (2, 2)), zorder=7))
+        note(ax, (st["x"][1] + st["w"] / 2 - 0.5, zf - st["below"] + 0.8),
+             "赤い点線：ストッパー（蓋の内側の舌。\nトレイの壁の内側に入る。③）", (32.5, 4.6), color=RED)
     ax.text(-34.0, zf + 5.0, "蓋", color="white", fontsize=11, va="center")
     ax.text(-34.0, zf - 4.0, "トレイ", color=INK, fontsize=10.5, va="center")
     finish(ax, (-35, 46), (-1, 23), "① 閉じた状態を手前から見たところ")
@@ -144,10 +145,15 @@ def main(out):
     use_japanese_font()
     lid = trimesh.load(os.path.join(CAD, "out", "display_lid_usbc.stl"))
     tray = trimesh.load(os.path.join(CAD, "out", "keyboard_tray.stl"))
-    fig = plt.figure(figsize=(17.0, 4.6))
-    front_view(fig.add_axes([0.0, 0.03, 0.46, 0.88]), lid, tray)
-    section_view(fig.add_axes([0.47, 0.03, 0.29, 0.88]), lid, tray)
-    stop_view(fig.add_axes([0.77, 0.03, 0.23, 0.88]), lid, tray)
+    if B.LATCH.get("stop"):
+        fig = plt.figure(figsize=(17.0, 4.6))
+        front_view(fig.add_axes([0.0, 0.03, 0.46, 0.88]), lid, tray)
+        section_view(fig.add_axes([0.47, 0.03, 0.29, 0.88]), lid, tray)
+        stop_view(fig.add_axes([0.77, 0.03, 0.23, 0.88]), lid, tray)
+    else:
+        fig = plt.figure(figsize=(13.0, 4.6))
+        front_view(fig.add_axes([0.0, 0.03, 0.55, 0.88]), lid, tray)
+        section_view(fig.add_axes([0.57, 0.03, 0.43, 0.88]), lid, tray)
     fig.savefig(out, dpi=170, facecolor="white", metadata={"Software": None})
     print("wrote", out)
 
