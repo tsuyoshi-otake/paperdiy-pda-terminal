@@ -1,0 +1,50 @@
+# Publishes a release. Run it by hand: Actions > release > Run workflow, on the commit to release (its build must be
+# green), with the tag to create. The title and the notes come from docs/releases/<tag>.md (first line: "# title"), the
+# files from `make dist`. With "dry run" ticked nothing is published: the bundles are kept as a workflow artifact.
+name: release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to create on this commit, e.g. v2026.11.11 (needs docs/releases/<tag>.md)"
+        required: true
+        type: string
+      dry_run:
+        description: "Dry run: build the bundles and check the notes, publish nothing"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    env:
+      TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: check the tag and its notes
+        run: |
+          [[ "$TAG" =~ ^v[0-9A-Za-z._-]+$ ]] || { echo "tag '$TAG': expected something like v2026.11.11"; exit 1; }
+          test -f "docs/releases/$TAG.md" || { echo "docs/releases/$TAG.md is missing: write the notes first"; exit 1; }
+          head -n 1 "docs/releases/$TAG.md" | grep -q '^# ' || { echo "first line of the notes must be '# title'"; exit 1; }
+      - name: bundles (zips of the committed print files, STLs and firmware)
+        run: |
+          make dist TAG="$TAG"
+          (cd dist && sha256sum -c SHA256SUMS)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-bundles
+          path: dist
+      - name: publish (creates the tag on this commit)
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="$(head -n 1 "docs/releases/$TAG.md" | sed 's/^# //')"
+          tail -n +3 "docs/releases/$TAG.md" > notes.md
+          gh release create "$TAG" --target "$GITHUB_SHA" --title "$title" --notes-file notes.md dist/*.zip dist/SHA256SUMS

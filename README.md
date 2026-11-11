@@ -75,7 +75,7 @@ firmware notes are in Japanese.
 | [`firmware/`](firmware/) | PaperDIY 用ファーム（ESP-IDF v5.5.6）。`prebuilt/` にビルド済みのバイナリ |
 | [`cad/`](cad/) | 筐体のデータ。`src/`（作るスクリプト）、`out/`（STL）、`3mf/`（印刷用プレート）、`tools/`（検査・レポート） |
 | [`docs/`](docs/) | README の画像と、それを描くスクリプト |
-| `Makefile`、[`.github/workflows/`](.github/workflows/) | 全部を作り直すコマンドと、push のたびに作り直して確かめる CI |
+| `Makefile`、[`.github/workflows/`](.github/workflows/) | 全部を作り直すコマンドと、push のたびに作り直して確かめる CI（`build.yml`）、リリースを出すワークフロー（`release.yml`、手動で実行） |
 
 ## まだ確かめていないこと
 
@@ -99,9 +99,16 @@ make dist       # リリースに付けるファイル（zip とファーム）�
 ```
 
 - 元データ（phone-enclosure）はコミットと SHA-256 で固定しています。Python のパッケージ、ESP-IDF、ファームの依存ライブラリ、画像を描く npm パッケージもバージョンを固定しています
-- リリースに付ける zip は `make dist TAG=（タグ名）` で `dist/` にできます（中身はコミット済みの `cad/3mf/`・`cad/out/`・`firmware/prebuilt/` そのまま。日時を固定してあるので、同じ入力なら同じバイトになります）
 - 筐体の出力（STL・3MF）は、同じ PC なら 1 バイトも違わないものができます。別の PC では計算の最後の桁の丸めで一部のファイルのバイトが変わることがありますが、形（体積・寸法）は一致します。全ファイルの SHA-256 と体積・寸法を `cad/out/MANIFEST.json` に記録してあり、`make verify` は 0.01 mm / 0.01 % の差まで許して比べます
 - ファームは日時やパスを含めない再現可能ビルドで、push のたびに GitHub Actions の `espressif/idf:v5.5.6` コンテナでビルドして `prebuilt/` と 1 バイトずつ比べています
+
+## リリースの出し方
+
+1. `docs/releases/（タグ名）.md` にリリースノートを書く（1 行目が `# 題名`、3 行目から本文。例：[`docs/releases/v2026.11.11.md`](docs/releases/v2026.11.11.md)）。タグ名は日付（`v2026.11.11` の形）
+2. push して、CI（build）が通るのを待つ
+3. GitHub の **Actions → release → Run workflow** で、タグ名を入れて実行する。そのコミットにタグが付き、`make dist` で作った zip（Bambu Studio のプロジェクト、3MF、STL、ファーム）と `SHA256SUMS` の付いたリリースができる。「Dry run」にチェックを入れると、公開はせずに zip だけ作って確かめられる（結果は実行ページの Artifacts）
+
+zip の中身は、コミット済みの `cad/3mf/`・`cad/out/`・`firmware/prebuilt/` そのままです。日時を固定してあるので、同じ入力なら同じバイトになります。手元で作るなら `make dist TAG=（タグ名）` で `dist/` にできます。
 
 ## ライセンス
 

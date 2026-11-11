@@ -2,7 +2,9 @@
 
 ## 2026-11-11（その 30）最初のリリースと、ドキュメントの見直し
 
-- **リリース**：印刷用のファイルとビルド済みのファームを、GitHub の Releases からまとめて取れるようにした。`make dist`（`cad/tools/dist.py`）が `dist/` に次の 4 つの zip と `SHA256SUMS` を作る。同じ入力なら同じバイトになる（日時を固定）。それぞれに、当てはまるライセンスの文書を入れてある
+- **リリース**：印刷用のファイルとビルド済みのファームを、GitHub の Releases からまとめて取れるようにした。最初のリリースは `v2026.11.11`（ファーム 0.3.2、筐体はこの日の版）。タグ名は日付にした（ファームの版番号は `firmware/version.txt` のまま別に数える）
+  - リリースを出すのは `.github/workflows/release.yml`（Actions → release → Run workflow でタグ名を入れて手動で実行）。題名と本文は `docs/releases/（タグ名）.md` から取り、そのコミットにタグを付ける。「Dry run」なら公開せずに zip だけ作る。手順は README の「リリースの出し方」
+  - 付けるファイルは `make dist`（`cad/tools/dist.py`）が `dist/` に作る次の 4 つの zip と `SHA256SUMS`。同じ入力なら同じバイトになる（日時を固定）。それぞれに、当てはまるライセンスの文書を入れてある
   - `paperdiy-pda-case-bambu-a1mini.zip`：A1 mini（0.4 mm ノズル）用の Bambu Studio プロジェクト
   - `paperdiy-pda-case-3mf.zip`：形だけの 3MF（A1 mini 用の分割版、大きいプリンター用の一体版、メス端子用の蓋）
   - `paperdiy-pda-case-stl.zip`：個別の STL
