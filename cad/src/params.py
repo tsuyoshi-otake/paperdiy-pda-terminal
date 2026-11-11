@@ -96,11 +96,12 @@ KIT_GAP = 0.2                 # behind the kit (its back plate is flat; the ESP3
 WALL = 2.0                    # lid and tray walls, lid ceiling, tray floor (5 lines of a 0.4 nozzle, 9 of a 0.2 nozzle)
 CORNER_R = 3.0 if PD_MOUNT == "kit" else 6.0   # plan corners of lid and tray (the original's r 6, halved)
 RIB_T = 1.2                   # ribs, guides and guard rings (3 lines)
-# keyboard tray (kit): a new thin shell with the original's outline and parting. Two ribs on each end wall stand out to
-# `fit` off the keyboard's ends (KB_SIZE), so it does not slide sideways. Nothing stands out of the front and back: the
-# ribs that were there got in the keyboard's way, the end ones did not (both reported from a print). The charge-port
-# opening in the back wall (x 72.9..89.1) starts 3.0 above the floor, as in the original.
-TRAY_KB_RIBS = dict(end_y=(-25.0, 25.0), fit=0.15) if PD_MOUNT == "kit" else None
+# keyboard tray (kit): a new thin shell with the original's outline and parting. Nothing stands out of its walls: the
+# keyboard's room is the original tray's. The ribs on the front and back got in the keyboard's way; the two on each end
+# wall, brought back at 0.15 mm off the estimated keyboard's ends, were too tight (both reported from prints).
+# TRAY_KB_RIBS = dict(end_y=(-25.0, 25.0), fit=...) brings the end ribs back once the keyboard's length is measured.
+# The charge-port opening in the back wall (x 72.9..89.1) starts 3.0 above the floor, as in the original.
+TRAY_KB_RIBS = None
 TRAY_PORT = dict(x=(72.9, 89.1), above_floor=3.0)
 # Deck (kit): a t thick face flush with the tray's rim that closes the gaps around the keyboard, so no boss or pad shows.
 # Its opening is the original tray's room (KB_FACE_*: 196 x 87, the one room the keyboard is known to go into), corner

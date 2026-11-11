@@ -91,15 +91,15 @@ r 6 halved), and the other small radii were halved too.
 | `out/coupons/*.stl` | hinge seat (lid, tray), snap lip with its flex zone and both stops (lid) + recess and notches (tray) |
 | `3mf/plate0_test_coupons.3mf` | coupons + one cover of each kind, ~28 min, 12 g |
 | `3mf/plate1_lid.3mf` | lid A + B + 2 lid covers + 2 lid splice plates, ~1 h 47 min, 66 g |
-| `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers + 1 tray splice plate, ~1 h 34 min, 62 g |
+| `3mf/plate2_tray.3mf` | tray A + B + 2 tray covers + 1 tray splice plate, ~1 h 33 min, 62 g |
 | `3mf/plate3_panel.3mf` | panel A + B + 3 panel splice plates, ~38 min, 24 g |
 | `3mf/bambu_a1mini/bambu_plate0…3*.3mf` | the same four plates as **Bambu Studio projects** for the A1 mini with a 0.4 mm nozzle: printer, process, filament and plate type are selected on opening (see "Bambu Studio projects") |
 | `3mf/bambu_a1mini/paperdiy_process_a1mini_04.json` | the same process changes as a preset to import (File → Import → Import Configs), the fallback |
 | `3mf/usb_variants/lid_A_left_usb*.3mf` | the lid-A variants, one per file |
-| `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 42 min 65 g, ~1 h 30 min 61 g, ~35 min 24 g (150 g, 3 h 46 min, nothing to glue) |
+| `3mf/large/plate1_lid.3mf`, `plate2_tray.3mf`, `plate3_panel.3mf` | one-piece lid / tray / panel (+ covers) on a 220 x 220 mm plate: ~1 h 42 min 65 g, ~1 h 28 min 61 g, ~35 min 24 g (150 g, 3 h 44 min, nothing to glue) |
 | `3mf/large/usb_variants/lid_usb*.3mf` | the panel-mount lids in one piece |
 
-Plates 1–3: about 151 g and 3 h 57 min with the 2.0 mm walls (3 h 58 min with the keyboard ribs, now gone; 118 g and 3 h 07 min with 1.2 mm walls; the version with the
+Plates 1–3: about 151 g and 3 h 55 min with the 2.0 mm walls (3 h 58 min with the keyboard ribs, now gone; 118 g and 3 h 07 min with 1.2 mm walls; the version with the
 original tray took 139 g and 3 h 29 min).
 
 ### The kit
@@ -134,10 +134,10 @@ the centre toward the USB end (not used by the shell lid). M5Stack: 43.1 g.
   the kit; cut at the split like everything else), and a relief that leaves 0.8 mm of ceiling over the plug.
 * **Tray shell**: a new part instead of the original `Keyboard.stl`: the same plan outline (r 3) cut by the original
   parting plane and `Z_PART`, hollowed to 2.0 walls over a 2.0 floor (`TRAY_FLOOR`; the original had 3 mm walls and floor).
-  The keyboard's room is the original tray's, 196 × 87 mm (`KB_FACE_X`, `KB_FACE_Y`), with two ribs on each end wall
-  (`TRAY_KB_RIBS`: y ±25, 1.2 thick, to 1 mm below the rim) that stand out to x ±97.15, 0.15 mm off the ends of the
-  estimated 194 mm keyboard, so it does not slide sideways. The nine ribs on the front and back got in the keyboard's way
-  and are gone (the end ones did not, in the print); front to back the keyboard has the original's play (~2 mm). Also: hinge pads and bosses, a pad behind the snap-tab recess (flush with the room's front face), and the
+  The keyboard's room is the original tray's, 196 × 87 mm (`KB_FACE_X`, `KB_FACE_Y`), and nothing stands out of its
+  walls. The nine locating ribs on the front and back got in the keyboard's way; the two on each end wall, brought back
+  0.15 mm off the ends of the estimated 194 mm keyboard, were too tight in the print (`TRAY_KB_RIBS`, now `None`: set
+  it again once the keyboard's length is measured). The keyboard has the original's play, ~2 mm each way. Also: hinge pads and bosses, a pad behind the snap-tab recess (flush with the room's front face), and the
   original's charge-port opening in the back wall (x 72.9–89.1, from 3.0 above the floor: `TRAY_PORT`).
 * **Tray deck** (`TRAY_DECK`): a 1.2 mm face flush with the rim closes the gaps around the keyboard and the strip behind
   it, so the hinge bosses and pads no longer show. Its opening is the original tray's room (196 × 87 mm, front
@@ -358,11 +358,11 @@ that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits
 
 ### Printing
 * **Plates** (`3mf/`, A1 mini, 180 × 180 mm): `plate0_test_coupons` (28 min, 12 g, print first), `plate1_lid` (lid A + B,
-  2 lid covers, 2 splice plates, 1 h 47 min, 66 g), `plate2_tray` (tray A + B, 2 tray covers, 1 splice plate, 1 h 34 min,
-  62 g), `plate3_panel` (panel A + B, 3 splice plates, 38 min, 24 g): 151 g and 3 h 57 min for plates 1–3.
+  2 lid covers, 2 splice plates, 1 h 47 min, 66 g), `plate2_tray` (tray A + B, 2 tray covers, 1 splice plate, 1 h 33 min,
+  62 g), `plate3_panel` (panel A + B, 3 splice plates, 38 min, 24 g): 151 g and 3 h 55 min for plates 1–3.
   `3mf/usb_variants/` holds lid A for a panel-mount female.
-* **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 42 min, 65 g), tray (1 h 30 min, 61 g), panel (35 min,
-  24 g): 150 g and 3 h 46 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
+* **One piece** (`3mf/large/`, 220 × 220 mm plates): lid (1 h 42 min, 65 g), tray (1 h 28 min, 61 g), panel (35 min,
+  24 g): 150 g and 3 h 44 min, nothing to glue; `3mf/large/usb_variants/` holds the panel-mount lids in one piece.
 * **Orientation:** lid top face down (the export tilts the sloped top plane level first, `LAY_TOP` from `assembly.json`),
   panel visible face down, tray floor down, covers visible face down (the cones face up), splice plates flat. No supports.
 * **Settings, 0.4 mm nozzle** (Bambu Studio): 0.20 mm Standard, PLA, textured PEI, **3 wall loops** (material around
@@ -396,7 +396,7 @@ that). Any plug whose overmold fits the original opening (≈ 16 × 6.8 mm) fits
 * **Keyboard thickness** over the keycaps: `KB_THICK` (assumed 11.5 mm, as the original lid allowed; `KB_TOP_Z` =
   `TRAY_FLOOR` + `KB_THICK`). Every millimetre less comes off the lid.
 * **Keyboard play**: the kit tray keeps the original's 196 × 87 mm room with nothing to locate the keyboard, so the
-  keyboard (estimated 194 × 85 mm, `KB_SIZE`) moves about 2 mm front to back as in the original (end ribs hold it sideways; file their tips if they are tight). If that bothers: removable
+  keyboard (estimated 194 × 85 mm, `KB_SIZE`) moves about 2 mm front to back and sideways as in the original. If that bothers: removable
   tape under the keyboard, or measure it and close the room up (`KB_FACE_X`, `KB_FACE_Y`).
 * **Keyboard weight**: 83 g or more keeps the device upright up to the table contact; see "Tipping".
 * **Hinge barrel and axis**: read off Sugatsune's 3D viewer, not a drawing; join the hinge coupons with a real hinge.
@@ -482,7 +482,7 @@ published drawing and structure files.
 | `KIT_MASS_G` | `43.1` | measured | [M: docs.m5stack.com K159-B] |
 | `KIT_CX` / `KIT_FIT` / `KIT_GAP` | `-4.0` / `0.2` / `0.2` | design choice | window centred; clearance around the kit per side / behind |
 | `WALL` / `CORNER_R` / `RIB_T` | `2.0` / `3.0` (bare `6.0`) / `1.2` | design choice | walls, ceiling and floor (5 lines of a 0.4 mm nozzle, 10 layers of 0.2 mm; 1.2 printed too flexible); plan corner radius (the original's halved); ribs, guides, guard rings |
-| `TRAY_FLOOR` / `TRAY_KB_RIBS` / `TRAY_PORT` | `WALL` (bare `3.0`) / `ends y ±25, fit 0.15` / `x 72.9…89.1, 3.0 above the floor` | design choice | the kit tray: floor top; the two ribs on each end wall that locate the keyboard sideways; charge-port opening |
+| `TRAY_FLOOR` / `TRAY_KB_RIBS` / `TRAY_PORT` | `WALL` (bare `3.0`) / `None` / `x 72.9…89.1, 3.0 above the floor` | design choice | the kit tray: floor top; ribs on the end walls that locate the keyboard sideways (off: too tight in the print; e.g. `dict(end_y=(-25, 25), fit=0.5)` once the keyboard is measured); charge-port opening |
 | `TRAY_DECK` | `t 1.2, r 3` (kit) | design choice | the kit tray's deck flush with the rim: thickness, corner radius of its opening (the opening itself is `KB_FACE_*`) |
 | `KB_THICK` / `KB_TOP_Z` / `KB_CLR` | `11.5` / `TRAY_FLOOR + KB_THICK` (13.5) / `0.5` | ASSUMED | keyboard thickness over the keycaps -> MEASURE; its highest point; clearance under the panel |
 | `KB_SIZE` / `KB_FACE_X`, `KB_FACE_Y` / `KB_PAD` | `(194, 85)` (kit; bare `None`) / `LID_INNER_X`, `LID_INNER_Y` (98, 43.5) / `clr 0.15, w 6, 4 front + 4 back + 2 per end` | ASSUMED / measured | keyboard body width × depth -> MEASURE (kit: the original room 196 × 87 less the reported ~2 mm play; used for the renders and the report only); the faces of the keyboard's room, the original tray's; bare: pads on the tray's inner walls take up the play (`None` = no pads) |

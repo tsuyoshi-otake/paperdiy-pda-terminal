@@ -16,9 +16,9 @@
  "plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 34m 26s",
-  "grams": 61.79,
-  "metres": 20.71555
+  "time": "1h 32m 37s",
+  "grams": 61.7,
+  "metres": 20.68689
  },
  "plate3_panel.3mf": {
   "warnings": [],
@@ -37,9 +37,9 @@
  "large/plate2_tray.3mf": {
   "warnings": [],
   "ok": true,
-  "time": "1h 30m 27s",
-  "grams": 60.94,
-  "metres": 20.43329
+  "time": "1h 28m 19s",
+  "grams": 60.86,
+  "metres": 20.404220000000002
  },
  "large/plate3_panel.3mf": {
   "warnings": [],
@@ -48,16 +48,16 @@
   "grams": 24.05,
   "metres": 8.064779999999999
  },
- "large_total_g": 150.13,
- "large_total_min": 226,
- "total_g": 151.36999999999998,
- "total_min": 237,
+ "large_total_g": 150.05,
+ "large_total_min": 224,
+ "total_g": 151.28,
+ "total_min": 235,
  "nozzle_check": {
   "worst_spot_mm2": 0.4998146860682792,
   "wall_gaps": 0
  },
  "lid_g": 138.16,
- "base_g": 63.589999999999996,
+ "base_g": 63.50999999999999,
  "lid_cg": [
   0.3207987593293609,
   4.050983663024052,
@@ -66,7 +66,7 @@
  "pivot_y": 53.0,
  "table_contact_deg": 162.2,
  "table_limit": 162,
- "keyboard_min_g": 83.75634612239185,
+ "keyboard_min_g": 83.82560353491581,
  "hinge_torque_nm": [
   0.1176,
   0.1568,
@@ -91,5 +91,5 @@
   17.8638394636337
  ],
  "snap_forward_close_n": 44.29469014681633,
- "keyboard_for_one_hand_g": 332.05773526939396
+ "keyboard_for_one_hand_g": 332.1270229996625
 }
