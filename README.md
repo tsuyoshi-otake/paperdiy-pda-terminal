@@ -2,12 +2,7 @@
 
 M5Stack PaperDIY（4.7 型 e-paper、ESP32-S3）を画面に、CACOE キーボードを BLE でつないだ、PDA 風クラムシェルの SSH 端末です。Un Kyu Lee さんの [phone-enclosure](https://github.com/unkyulee/phone-enclosure)（Boox Palma 2 + CACOE キーボード）を元にしています。
 
-*English:* a clamshell SSH terminal with an M5Stack PaperDIY (4.7" e-paper, ESP32-S3) as the screen and a CACOE
-keyboard over BLE, in a 3D-printed case derived from Un Kyu Lee's phone-enclosure. One device is built and in use (photo below, 2026-11-11; the revision in the
-repository has a reworked snap that is not printed yet). The firmware (ESP-IDF, reproducible build) pairs the keyboard by
-itself, joins Wi-Fi and runs an SSH terminal; the case prints on a Bambu Lab A1 mini (split) or in one piece on a 220 mm
-bed. CAD details in English: [cad/README.md](cad/README.md); the assembly guide and the
-firmware notes are in Japanese.
+**関連プロジェクト**：画面を M5Stack Tab5（5 型タッチ液晶）に替えた筐体は、[Tab5 PDA Terminal](https://github.com/tsuyoshi-otake/tab5-pda-terminal) にあります（トレイ・ヒンジ・留めツメは同じ形）。
 
 ![組み上がった実機。Raspberry Pi に SSH で入ったところ（2026-11-11）](docs/images/photo_2026-11-11.jpg)
 
