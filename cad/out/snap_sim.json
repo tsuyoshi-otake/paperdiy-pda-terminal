@@ -22,212 +22,212 @@
   "seam_gap": null
  },
  "fixed_-0.3": {
-  "close_n": 0.626,
+  "close_n": 0.624,
   "lip_bend_max": 0.07,
   "strain_pct": 0.071,
   "tongue_n": 0.0,
   "lid_at": -0.3,
   "lip_bend_closed": 0.0,
-  "hold_n": 2.578,
+  "hold_n": 2.375,
   "held": true,
-  "seam_gap": 0.383
+  "seam_gap": 0.386
  },
  "fixed_-0.2": {
-  "close_n": 3.897,
+  "close_n": 3.99,
   "lip_bend_max": 0.167,
   "strain_pct": 0.17,
   "tongue_n": 0.0,
   "lid_at": -0.2,
   "lip_bend_closed": 0.0,
-  "hold_n": 7.371,
+  "hold_n": 6.925,
   "held": true,
-  "seam_gap": 0.296
+  "seam_gap": 0.299
  },
  "fixed_-0.1": {
-  "close_n": 8.549,
+  "close_n": 8.633,
   "lip_bend_max": 0.265,
   "strain_pct": 0.27,
   "tongue_n": 0.0,
   "lid_at": -0.1,
   "lip_bend_closed": 0.0,
-  "hold_n": 12.165,
+  "hold_n": 11.897,
   "held": true,
-  "seam_gap": 0.191
+  "seam_gap": 0.193
  },
  "fixed_+0.0": {
-  "close_n": 13.202,
+  "close_n": 13.275,
   "lip_bend_max": 0.362,
   "strain_pct": 0.369,
   "tongue_n": 0.0,
   "lid_at": -0.0,
   "lip_bend_closed": 0.0,
-  "hold_n": 16.958,
+  "hold_n": 16.869,
   "held": true,
-  "seam_gap": 0.104
+  "seam_gap": 0.105
  },
  "fixed_+0.1": {
-  "close_n": 17.855,
+  "close_n": 17.918,
   "lip_bend_max": 0.46,
   "strain_pct": 0.469,
   "tongue_n": 0.0,
   "lid_at": 0.098,
   "lip_bend_closed": 0.045,
-  "hold_n": 21.752,
+  "hold_n": 21.842,
   "held": true,
   "seam_gap": 0.035
  },
  "fixed_+0.2": {
-  "close_n": 22.507,
+  "close_n": 22.56,
   "lip_bend_max": 0.558,
   "strain_pct": 0.568,
   "tongue_n": 0.0,
   "lid_at": 0.196,
   "lip_bend_closed": 0.143,
-  "hold_n": 26.67,
+  "hold_n": 26.814,
   "held": true,
-  "seam_gap": 0.017
+  "seam_gap": 0.018
  },
  "fixed_+0.3": {
-  "close_n": 27.16,
+  "close_n": 27.203,
   "lip_bend_max": 0.655,
   "strain_pct": 0.667,
   "tongue_n": 0.0,
   "lid_at": 0.294,
   "lip_bend_closed": 0.241,
-  "hold_n": 31.657,
+  "hold_n": 31.786,
   "held": true,
-  "seam_gap": 0.017
+  "seam_gap": 0.018
  },
  "free_0.1": {
-  "close_n": 8.549,
+  "close_n": 8.633,
   "lip_bend_max": 0.265,
   "strain_pct": 0.27,
   "tongue_n": 0.0,
   "lid_at": -0.1,
   "lip_bend_closed": 0.0,
-  "hold_n": 12.165,
+  "hold_n": 11.897,
   "held": true,
-  "seam_gap": 0.191
+  "seam_gap": 0.193
  },
  "free_0.2": {
-  "close_n": 3.897,
+  "close_n": 3.99,
   "lip_bend_max": 0.167,
   "strain_pct": 0.17,
   "tongue_n": 0.0,
   "lid_at": -0.2,
   "lip_bend_closed": 0.0,
-  "hold_n": 7.371,
+  "hold_n": 6.925,
   "held": true,
-  "seam_gap": 0.296
+  "seam_gap": 0.299
  },
  "free_0.3": {
-  "close_n": 0.967,
+  "close_n": 0.969,
   "lip_bend_max": 0.07,
   "strain_pct": 0.071,
   "tongue_n": 0.0,
   "lid_at": -0.3,
   "lip_bend_closed": 0.0,
-  "hold_n": 2.578,
+  "hold_n": 2.375,
   "held": true,
-  "seam_gap": 0.383
+  "seam_gap": 0.386
  },
  "give_300": {
-  "close_n": 12.545,
+  "close_n": 12.614,
   "lip_bend_max": 0.344,
   "strain_pct": 0.351,
   "tongue_n": 0.0,
   "lid_at": -0.002,
   "lip_bend_closed": 0.0,
-  "hold_n": 16.101,
+  "hold_n": 16.019,
   "held": true,
-  "seam_gap": 0.104
+  "seam_gap": 0.105
  },
  "give_100": {
-  "close_n": 11.004,
+  "close_n": 11.064,
   "lip_bend_max": 0.301,
   "strain_pct": 0.307,
   "tongue_n": 0.0,
   "lid_at": -0.005,
   "lip_bend_closed": 0.0,
-  "hold_n": 14.092,
+  "hold_n": 14.026,
   "held": true,
-  "seam_gap": 0.104
+  "seam_gap": 0.105
  },
  "give_30": {
-  "close_n": 7.814,
+  "close_n": 7.854,
   "lip_bend_max": 0.212,
   "strain_pct": 0.216,
   "tongue_n": 0.0,
   "lid_at": -0.017,
   "lip_bend_closed": 0.0,
-  "hold_n": 9.93,
+  "hold_n": 9.897,
   "held": true,
-  "seam_gap": 0.122
+  "seam_gap": 0.123
  },
  "gap_-0.10": {
-  "close_n": 17.855,
+  "close_n": 17.918,
   "lip_bend_max": 0.46,
   "strain_pct": 0.469,
   "tongue_n": 0.0,
   "lid_at": -0.002,
   "lip_bend_closed": 0.045,
-  "hold_n": 21.752,
+  "hold_n": 21.842,
   "held": true,
   "seam_gap": 0.035
  },
  "gap_-0.05": {
-  "close_n": 15.528,
+  "close_n": 15.597,
   "lip_bend_max": 0.411,
   "strain_pct": 0.419,
   "tongue_n": 0.0,
   "lid_at": -0.0,
   "lip_bend_closed": 0.0,
-  "hold_n": 19.355,
+  "hold_n": 19.356,
   "held": true,
   "seam_gap": 0.07
  },
  "gap_+0.00": {
-  "close_n": 13.202,
+  "close_n": 13.275,
   "lip_bend_max": 0.362,
   "strain_pct": 0.369,
   "tongue_n": 0.0,
   "lid_at": -0.0,
   "lip_bend_closed": 0.0,
-  "hold_n": 16.958,
+  "hold_n": 16.869,
   "held": true,
-  "seam_gap": 0.104
+  "seam_gap": 0.105
  },
  "gap_+0.05": {
-  "close_n": 10.876,
+  "close_n": 10.954,
   "lip_bend_max": 0.314,
   "strain_pct": 0.32,
   "tongue_n": 0.0,
   "lid_at": -0.0,
   "lip_bend_closed": 0.0,
-  "hold_n": 14.561,
+  "hold_n": 14.383,
   "held": true,
-  "seam_gap": 0.157
+  "seam_gap": 0.158
  },
  "gap_+0.10": {
-  "close_n": 8.549,
+  "close_n": 8.633,
   "lip_bend_max": 0.265,
   "strain_pct": 0.27,
   "tongue_n": 0.0,
   "lid_at": -0.0,
   "lip_bend_closed": 0.0,
-  "hold_n": 12.165,
+  "hold_n": 11.897,
   "held": true,
-  "seam_gap": 0.191
+  "seam_gap": 0.193
  },
  "gap_+0.15": {
-  "close_n": 6.223,
+  "close_n": 6.312,
   "lip_bend_max": 0.216,
   "strain_pct": 0.22,
   "tongue_n": 0.0,
   "lid_at": -0.0,
   "lip_bend_closed": 0.0,
-  "hold_n": 9.768,
+  "hold_n": 9.411,
   "held": true,
-  "seam_gap": 0.243
+  "seam_gap": 0.246
  }
 }

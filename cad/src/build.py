@@ -1085,7 +1085,8 @@ def usb_pm_room():
 def hinge_pad_extent():
     """(half width, front y) of the pad behind each hinge in the thin kit shells: the cover pocket + WALL wide, the
     mortise + WALL deep."""
-    return cover_half_w() + COVER_POCKET_CLR + WALL, Y_BACK - (HINGE_SINK + HINGE_LEAF_T + 0.05 + WALL)
+    hw = cover_half_w() + COVER_POCKET_CLR if COVER_FLUSH else HINGE_LEN / 2 + HINGE_CLR
+    return hw + WALL, Y_BACK - (HINGE_SINK + HINGE_LEAF_T + 0.05 + WALL)
 
 
 def parting_relief():
@@ -1494,8 +1495,9 @@ def main_kit():
     if SHELL:
         export(panel, f"{OUT_DIR}/display_panel_kit.stl")
     lid_cov, tray_cov = hinge_covers()
-    export(lid_cov[0], f"{OUT_DIR}/hinge_cover_lid_x2.stl")
-    export(tray_cov[0], f"{OUT_DIR}/hinge_cover_tray_x2.stl")
+    if lid_cov:
+        export(lid_cov[0], f"{OUT_DIR}/hinge_cover_lid_x2.stl")
+        export(tray_cov[0], f"{OUT_DIR}/hinge_cover_tray_x2.stl")
     write_assembly_json()
     log("== split pieces for A1 mini (limit %.0f mm)" % MAX_PIECE)
     if not SHELL:
@@ -1703,7 +1705,7 @@ def main_kit():
     log(f"  tray front wall left behind the recess {-LID_INNER_Y - recess_back:.2f} mm, behind the groove "
         f"{-LID_INNER_Y - recess_back - (l['bump'] - l['clr'] + 0.05):.2f} mm")
 
-    log(f"== hinge motion (lid + kit + {'panel + ' if SHELL else ''}covers rotated about the real axis y={HINGE_AXIS_Y:.2f}, z={Z_PART}; tray fixed)")
+    log(f"== hinge motion (lid + kit{' + panel' if SHELL else ''}{' + covers' if lid_cov else ''} rotated about the real axis y={HINGE_AXIS_Y:.2f}, z={Z_PART}; tray fixed)")
     lidset = lid + kit + union(lid_cov) + (panel if SHELL else M())
     traset = tray + union(tray_cov)
     hits = []
@@ -1714,13 +1716,20 @@ def main_kit():
     max_open = table_angle(to_t(lidset).vertices)
     log("  no collision with the tray from 0 to 180 deg" if not hits else f"  first contact at {hits[0][0]} deg ({hits[0][1]:.1f} mm3)")
     log(f"  on a table the lid reaches the table at {max_open:.1f} deg (opening limit)" if max_open else "  the lid never reaches the table")
-    if COVER_FLUSH:
+    if COVER_FLUSH or (PD_MOUNT == "kit" and HINGE_MOUNT == "face"):
         k = COVER_CSK
-        log(f"  covers {COVER_T:g} mm, flush in the back face; leaves {HINGE_SINK:g} mm deeper, axis "
-            f"{HINGE_AXIS_Y - Y_BACK:.2f} mm outside the back face")
-        log(f"  hinge screws M2x{HINGE_SCREW_LEN:g}: head in the cover (Ø{k['top_d']:g} x 90°), cone Ø{k['cone_d']:g} x "
-            f"{k['cone_h']:g} in the leaf countersink, {HINGE_SCREW_DEPTH:g} mm past the leaf seat, tip "
-            f"{HINGE_PAD['skin']:g} mm short of the end of its boss (Ø{HINGE_PILOT_D + 2 * HINGE_PAD['boss_wall']:g})")
+        if COVER_FLUSH:
+            log(f"  covers {COVER_T:g} mm, flush in the back face; leaves {HINGE_SINK:g} mm deeper, axis "
+                f"{HINGE_AXIS_Y - Y_BACK:.2f} mm outside the back face")
+            log(f"  hinge screws M2x{HINGE_SCREW_LEN:g}: head in the cover (Ø{k['top_d']:g} x 90°), cone Ø{k['cone_d']:g} x "
+                f"{k['cone_h']:g} in the leaf countersink, {HINGE_SCREW_DEPTH:g} mm past the leaf seat, tip "
+                f"{HINGE_PAD['skin']:g} mm short of the end of its boss (Ø{HINGE_PILOT_D + 2 * HINGE_PAD['boss_wall']:g})")
+        else:
+            log(f"  no covers: the leaves sit flush in a {HINGE_LEAF_T + 0.05:g} mm mortise in the back face, axis "
+                f"{HINGE_AXIS_Y - Y_BACK:.2f} mm outside it")
+            log(f"  hinge screws M2x{HINGE_SCREW_LEN:g}: head in the leaf's countersink, flush with the back face, "
+                f"{HINGE_SCREW_DEPTH:g} mm past the leaf seat, tip {HINGE_PAD['skin']:g} mm short of the end of its boss "
+                f"(Ø{HINGE_PILOT_D + 2 * HINGE_PAD['boss_wall']:g})")
         # tolerance: the axis height is read off the maker's 3D viewer (not in the catalogue): move it further in
         for sh in (-0.15, -0.3):
             fc = first_contact(lidset, traset, sh)

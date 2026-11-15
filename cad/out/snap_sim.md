@@ -14,13 +14,13 @@ Where the lid sits front to back is set by the hinge leaves' seats and the print
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | lid at -0.5 | 0.00 | 0.0 | -0.50 | 0.0 | - | 0.00 | does not hold |
 | lid at -0.4 | 0.00 | 0.0 | -0.40 | 0.0 | - | 0.00 | does not hold |
-| lid at -0.3 | 0.07 | 0.6 | -0.30 | 2.6 | 0.38 | 0.07 | weak: opens when handled |
-| lid at -0.2 | 0.17 | 3.9 | -0.20 | 7.4 | 0.30 | 0.17 | holds |
-| lid at -0.1 | 0.26 | 8.5 | -0.10 | 12.2 | 0.19 | 0.27 | holds |
-| lid at +0.0 | 0.36 | 13.2 | -0.00 | 17.0 | 0.10 | 0.37 | holds |
-| lid at +0.1 | 0.46 | 17.9 | +0.10 | 21.8 | 0.03 | 0.47 | holds |
-| lid at +0.2 | 0.56 | 22.5 | +0.20 | 26.7 | 0.02 | 0.57 | holds, hard to close, strain over 0.5 % |
-| lid at +0.3 | 0.66 | 27.2 | +0.29 | 31.7 | 0.02 | 0.67 | holds, hard to close, strain over 0.5 % |
+| lid at -0.3 | 0.07 | 0.6 | -0.30 | 2.4 | 0.39 | 0.07 | weak: opens when handled |
+| lid at -0.2 | 0.17 | 4.0 | -0.20 | 6.9 | 0.30 | 0.17 | holds |
+| lid at -0.1 | 0.26 | 8.6 | -0.10 | 11.9 | 0.19 | 0.27 | holds |
+| lid at +0.0 | 0.36 | 13.3 | -0.00 | 16.9 | 0.11 | 0.37 | holds |
+| lid at +0.1 | 0.46 | 17.9 | +0.10 | 21.8 | 0.04 | 0.47 | holds |
+| lid at +0.2 | 0.56 | 22.6 | +0.20 | 26.8 | 0.02 | 0.57 | holds, hard to close, strain over 0.5 % |
+| lid at +0.3 | 0.66 | 27.2 | +0.29 | 31.8 | 0.02 | 0.67 | holds, hard to close, strain over 0.5 % |
 
 ## 2. The lid is free to shift front to back (0.5 N to move it)
 
@@ -28,9 +28,9 @@ If the hinges or their seats let the lid shift, the bump's ramp pushes it forwar
 
 | | lip bends, mm | to close, N | lid ends at, mm | holds, N | seam, mm | strain, % | |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| free by +-0.1 mm | 0.26 | 8.5 | -0.10 | 12.2 | 0.19 | 0.27 | holds |
-| free by +-0.2 mm | 0.17 | 3.9 | -0.20 | 7.4 | 0.30 | 0.17 | holds |
-| free by +-0.3 mm | 0.07 | 1.0 | -0.30 | 2.6 | 0.38 | 0.07 | weak: opens when handled |
+| free by +-0.1 mm | 0.26 | 8.6 | -0.10 | 11.9 | 0.19 | 0.27 | holds |
+| free by +-0.2 mm | 0.17 | 4.0 | -0.20 | 6.9 | 0.30 | 0.17 | holds |
+| free by +-0.3 mm | 0.07 | 1.0 | -0.30 | 2.4 | 0.39 | 0.07 | weak: opens when handled |
 
 ## 2b. The lid gives when pushed (springy, not free)
 
@@ -38,9 +38,9 @@ The same with a spring instead of free play.
 
 | | lip bends, mm | to close, N | lid ends at, mm | holds, N | seam, mm | strain, % | |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| gives 300 N/mm | 0.34 | 12.5 | -0.00 | 16.1 | 0.10 | 0.35 | holds |
-| gives 100 N/mm | 0.30 | 11.0 | -0.00 | 14.1 | 0.10 | 0.31 | holds |
-| gives 30 N/mm | 0.21 | 7.8 | -0.02 | 9.9 | 0.12 | 0.22 | holds |
+| gives 300 N/mm | 0.34 | 12.6 | -0.00 | 16.0 | 0.11 | 0.35 | holds |
+| gives 100 N/mm | 0.30 | 11.1 | -0.00 | 14.0 | 0.11 | 0.31 | holds |
+| gives 30 N/mm | 0.21 | 7.9 | -0.02 | 9.9 | 0.12 | 0.22 | holds |
 
 ## 3. The lip's printed gap differs from the drawing (+ = wider), lid where it was drawn
 
@@ -48,10 +48,10 @@ The lip is drawn 0.05 mm off the recess face.
 
 | | lip bends, mm | to close, N | lid ends at, mm | holds, N | seam, mm | strain, % | |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| gap -0.10 | 0.46 | 17.9 | -0.00 | 21.8 | 0.03 | 0.47 | holds |
-| gap -0.05 | 0.41 | 15.5 | -0.00 | 19.4 | 0.07 | 0.42 | holds |
-| gap +0.00 | 0.36 | 13.2 | -0.00 | 17.0 | 0.10 | 0.37 | holds |
-| gap +0.05 | 0.31 | 10.9 | -0.00 | 14.6 | 0.16 | 0.32 | holds |
-| gap +0.10 | 0.26 | 8.5 | -0.00 | 12.2 | 0.19 | 0.27 | holds |
-| gap +0.15 | 0.22 | 6.2 | -0.00 | 9.8 | 0.24 | 0.22 | holds |
+| gap -0.10 | 0.46 | 17.9 | -0.00 | 21.8 | 0.04 | 0.47 | holds |
+| gap -0.05 | 0.41 | 15.6 | -0.00 | 19.4 | 0.07 | 0.42 | holds |
+| gap +0.00 | 0.36 | 13.3 | -0.00 | 16.9 | 0.11 | 0.37 | holds |
+| gap +0.05 | 0.31 | 11.0 | -0.00 | 14.4 | 0.16 | 0.32 | holds |
+| gap +0.10 | 0.26 | 8.6 | -0.00 | 11.9 | 0.19 | 0.27 | holds |
+| gap +0.15 | 0.22 | 6.3 | -0.00 | 9.4 | 0.25 | 0.22 | holds |
 

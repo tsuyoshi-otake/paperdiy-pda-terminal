@@ -81,8 +81,9 @@ def main():
     made.append(write_zip("paperdiy-pda-case-stl.zip", case_licence + [
         ("README.txt", readme(tag, "the single parts as STL", [
             "split/: the pieces for a 180 mm bed and their splice plates; whole/: lid, tray and panel in one piece;",
-            "coupons/: the test coupons; the files next to this one: hinge covers, the unsplit checked parts and the",
-            "kit's envelope. The 3MF plates hold the same parts already oriented for printing."] + guide, cc))
+            "coupons/: the test coupons; the files next to this one: the unsplit checked parts and the kit's envelope",
+            "(and the hinge covers, in a build with HINGE_COVER = True). The 3MF plates hold the same parts already",
+            "oriented for printing."] + guide, cc))
     ] + [(rel, read(p)) for p, rel in files("cad/out", (".stl",))]))
 
     pre = os.path.join(ROOT, "firmware", "prebuilt")

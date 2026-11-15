@@ -1,6 +1,6 @@
 """Draw docs/images/hinge_screws.png: how the hinges are screwed on (back view + section through one pair of screws).
 
-The section is cut from the built STLs (cad/out), the hinge, screws and covers are drawn from cad/src/params.py.
+The section is cut from the built STLs (cad/out), the hinge, screws (and covers, if any) are drawn from cad/src/params.py.
 Usage: python3 docs/hinge_figure.py [out.png]   (needs matplotlib and a Japanese font such as Noto Sans CJK JP)
 """
 import os
@@ -19,7 +19,7 @@ from matplotlib.path import Path                                    # noqa: E402
 HERE = os.path.dirname(os.path.abspath(__file__))
 CAD = os.path.join(HERE, "..", "cad")
 sys.path.insert(0, os.path.join(CAD, "src"))
-from params import (BACK_EXTRA, COVER_SCREWED, COVER_T, HINGE_AXIS_Y, HINGE_BARREL_D, HINGE_HOLE_OFF,  # noqa: E402
+from params import (BACK_EXTRA, COVER_FLUSH, COVER_SCREWED, COVER_T, HINGE_AXIS_Y, HINGE_BARREL_D, HINGE_HOLE_OFF,  # noqa: E402
                     HINGE_HOLE_PITCH_X, HINGE_LEAF_T, HINGE_LEN, HINGE_SCREW_LEN, HINGE_SINK, HINGE_WIDTH, HINGE_X,
                     HOUSING_HALF, Y_BACK, Z_PART)
 
@@ -103,7 +103,8 @@ def back_view(ax):
     ax.set_ylim(-7, 31.5)
     ax.set_aspect("equal")
     ax.axis("off")
-    ax.set_title("背面から見たところ（カバーを外した状態）", fontsize=12.5, color=INK, pad=8)
+    ax.set_title("背面から見たところ（カバーを外した状態）" if COVER_FLUSH else "背面から見たところ", fontsize=12.5, color=INK,
+                 pad=8)
 
 
 def section_view(ax, lid, tray):
@@ -115,7 +116,8 @@ def section_view(ax, lid, tray):
     ax.add_patch(Rectangle((Y_BACK - HINGE_SINK - HINGE_LEAF_T, Z_PART - HINGE_WIDTH / 2), HINGE_LEAF_T, HINGE_WIDTH,
                            fc=METAL, ec=METAL_E, lw=1.0, zorder=4))
     ax.add_patch(Circle((HINGE_AXIS_Y, Z_PART), HINGE_BARREL_D / 2, fc=BARREL, ec=METAL_E, lw=1.0, zorder=5))
-    for name, fc, ec in (("hinge_cover_lid_x2", LID_C, LID_E), ("hinge_cover_tray_x2", TRAY_C, TRAY_E)):
+    for name, fc, ec in ((("hinge_cover_lid_x2", LID_C, LID_E), ("hinge_cover_tray_x2", TRAY_C, TRAY_E))
+                         if COVER_FLUSH else ()):
         cov = trimesh.load(os.path.join(CAD, "out", f"{name}.stl"))          # the built cover, cut through a screw hole
         for poly in section(cov, cov.bounds[:, 0].mean() - HINGE_HOLE_PITCH_X / 2):
             add_polygon(ax, poly, fc, ec)
@@ -132,9 +134,12 @@ def section_view(ax, lid, tray):
     note((Y_BACK - HINGE_SINK - 1.0, Z_PART - 11.6),
          "ヒンジの板（カバーの厚さ分沈める）" if HINGE_SINK else "ヒンジの板（溝に面一）", (55.2, -1.2))
     note((HINGE_AXIS_Y + 2.3, Z_PART + 1.5), "筒", (58.5, 16.5))
-    note((Y_BACK - 0.5, Z_PART + HINGE_HOLE_OFF + 3.5),
-         f"カバー（{COVER_T:.0f} mm・面一、ヒンジのねじで共締め）" if COVER_SCREWED else f"カバー（{COVER_T:.0f} mm・接着）",
-         (50.5, 29.5))
+    if COVER_FLUSH:
+        note((Y_BACK - 0.5, Z_PART + HINGE_HOLE_OFF + 3.5),
+             f"カバー（{COVER_T:.0f} mm・面一、ヒンジのねじで共締め）" if COVER_SCREWED else f"カバー（{COVER_T:.0f} mm・接着）",
+             (50.5, 29.5))
+    else:
+        note((Y_BACK - 0.4, Z_PART + HINGE_HOLE_OFF + 1.3), "ねじの頭は\nヒンジの板の皿穴に沈む\n（背面と面一）", (56.0, 26.0))
     ax.annotate("", xy=(Y_BACK - 9.5, 31.6), xytext=(Y_BACK, 31.6), arrowprops=dict(arrowstyle="<->", color=INK, lw=0.9))
     ax.text(Y_BACK - 4.75, 32.4, "ヒンジの受け（パッドとねじのボス）9.5 mm", ha="center", va="bottom", fontsize=10.5, color=INK)
     ax.text(36.0, 19.0, "蓋", color=LID_E, fontsize=12, va="center")

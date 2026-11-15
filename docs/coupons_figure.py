@@ -32,6 +32,7 @@ ORDER = [
     ("coupon_dovetail_B", "蟻ほぞ（B 側）"),
     ("coupon_latch_lid", "留めツメ（蓋側）"),
     ("coupon_latch_tray", "ツメの受け（トレイ側）"),
+    ("coupon_port_end", "蓋の左端の穴"),
     ("hinge_cover_lid", "ヒンジカバー（蓋側）"),
     ("hinge_cover_tray", "ヒンジカバー（トレイ側）"),
 ]
@@ -41,6 +42,7 @@ CHECKS = [   # (the two pieces, what to check; {a} / {b} stand for their numbers
     (("coupon_dovetail_A", "coupon_dovetail_B"), "{a} と {b} を手で押し合わせる。入って、がたつかない"),
     (("coupon_latch_lid", "coupon_latch_tray"), "{b} の手前の面に沿って {a} を押し下げる。パチンと留まり、指 1 本で押し上げても外れず、"
                                                 "強く引くと外れる"),
+    (("coupon_port_end",), "{a} の穴の長い縁（印刷では宙に渡す縁）が大きく垂れていない。使うプラグが穴を通る"),
     (("hinge_cover_lid", "hinge_cover_tray"), "{a}・{b} をヒンジの座の小片のくぼみに押し込む。入って、逆さにしても落ちない"),
 ]
 
@@ -121,8 +123,8 @@ def main(out):
     tx = fig.add_axes([0.51, 0.04, 0.48, 0.90])
     tx.axis("off")
     y = 0.97
-    tx.text(0.0, y, f"{min(cut)}〜{max(cut)} は本番の部品から同じ向きのまま切り出した小片で、完成品には使いません。\n"
-            f"{'・'.join(map(str, same))} は本番と同じ部品なので、合えば予備になります。",
+    tx.text(0.0, y, f"{min(cut)}〜{max(cut)} は本番の部品から同じ向きのまま切り出した小片で、完成品には使いません。"
+            + (f"\n{'・'.join(map(str, same))} は本番と同じ部品なので、合えば予備になります。" if same else ""),
             fontsize=10.5, color=INK, va="top", transform=tx.transAxes, linespacing=1.5)
     y -= 0.11
     for pair, check in CHECKS:
@@ -131,7 +133,7 @@ def main(out):
         tx.text(0.0, y, "・".join(f"{PIECES[n][0]} {PIECES[n][1]}" for n in pair), fontsize=11, color="#c0392b",
                 fontweight="bold", va="top", transform=tx.transAxes)
         y -= 0.058
-        tx.text(0.03, y, check.format(a=PIECES[pair[0]][0], b=PIECES[pair[1]][0]), fontsize=10, color=INK, va="top",
+        tx.text(0.03, y, check.format(a=PIECES[pair[0]][0], b=PIECES[pair[-1]][0]), fontsize=10, color=INK, va="top",
                 transform=tx.transAxes, wrap=True)
         y -= 0.108
     tx.text(0.0, y + 0.02, "合わないときは cad/src/params.py を直して作り直すか、やすりやドリルで合わせる"

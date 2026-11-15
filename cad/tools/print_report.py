@@ -72,12 +72,15 @@ if PD_MOUNT == "kit":
                          "them, which the screw head and the hinge's countersink hold from both sides")
 
 LID_PARTS = [("lid_A_left", 1), ("lid_B_main", 1), ("panel_A_left", 1), ("panel_B_main", 1), ("paperdiy_strap", 1),
-             ("key_pushrod_x2", 2), ("power_pushrod", 1), ("hinge_cover_lid_x2", 2), ("top_plate_blank", 1)]
+             ("key_pushrod_x2", 2), ("power_pushrod", 1), ("top_plate_blank", 1)]
 if PD_MOUNT == "kit":
-    LID_PARTS = [("lid_A_left", 1), ("lid_B_main", 1), ("hinge_cover_lid_x2", 2)]
+    LID_PARTS = [("lid_A_left", 1), ("lid_B_main", 1)]
     if os.path.exists(os.path.join(SPLIT_DIR, "panel_B_main.stl")):
         LID_PARTS += [("panel_A_left", 1), ("panel_B_main", 1)]
-BASE_PARTS = [("tray_A_left", 1), ("tray_B_main", 1), ("hinge_cover_tray_x2", 2)]
+BASE_PARTS = [("tray_A_left", 1), ("tray_B_main", 1)]
+if os.path.exists(os.path.join(OUT_DIR, "hinge_cover_lid_x2.stl")):     # hinge covers, if the hinges have them
+    LID_PARTS += [("hinge_cover_lid_x2", 2)]
+    BASE_PARTS += [("hinge_cover_tray_x2", 2)]
 
 
 def stl(name):
@@ -271,9 +274,11 @@ def nozzle_section(report, checked):
             "(the snap's 1.1 mm flex zone, its 1.0 mm lip, the 1.2 mm ribs).", "",
             "| Plate | Part | Surface left unprinted |", "| --- | --- | --- |"] + (rows or ["| all | - | nothing |"]) + ["",
             f"Largest spot: {worst:.2f} mm\u00b2 in a single 0.2 mm layer; gaps inside thin walls: {gaps}. "
-            + ("Nothing a part depends on: the hinge covers' crush ribs start 0.25 mm high, under what the nozzle adds "
-               "to a wall, so the lowest of the four layers they span is left out and the upper three print; the rest are "
-               "specks where a rounded edge or the tray's sloping rim runs out in one layer." if worst < 0.6 and gaps == 0 else
+            + ("Nothing a part depends on: "
+               + ("the hinge covers' crush ribs start 0.25 mm high, under what the nozzle adds to a wall, so the lowest of "
+                  "the four layers they span is left out and the upper three print; the rest are "
+                  if any(n.startswith("hinge_cover") for n, _ in LID_PARTS + BASE_PARTS) else "they are ")
+               + "specks where a rounded edge or the tray's sloping rim runs out in one layer." if worst < 0.6 and gaps == 0 else
                "**Check these before printing.**"), ""]
 
 
@@ -312,8 +317,9 @@ def lid_stays_shut(report, lid_m, lid_cg, base_m, base_cg):
             f"further, so it comes up again: every degree at the axis is {1000 * lever * np.radians(1):.1f} mm at the front "
             "edge. The snap is what keeps it down.", "",
             "**The rims near the hinges.** Reported from the built device: with the hinge screws tight the lid opens, with "
-            "the screws loose it stays shut. The hinge axis lies in the parting plane, so rims that touch 1.65 mm from it "
-            "and come out 0.05 mm proud hold the front edge 3 mm open once the screws pull the leaves home. The lid's "
+            "the screws loose it stays shut. The hinge axis lies in the parting plane, so rims that touched 1.65 mm from it "
+            "(the hinges then had covers and the axis sat 0.15 mm outside the back face) and came out 0.05 mm proud held "
+            "the front edge 3 mm open once the screws pulled the leaves home. The lid's "
             f"underside therefore leans up toward the hinges (`PART_RELIEF`, {PART_RELIEF['back']:g} mm at the back face). How much of "
             "the lid's coming up was this rather than spring-back is not known; if most of it, the snap had far more than "
             "the push below to hold, which would be why it never held.", "",
