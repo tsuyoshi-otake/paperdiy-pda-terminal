@@ -1,5 +1,14 @@
 # 変更履歴
 
+## 2026-11-21 黒のマット PLA のフォトリアルなレンダリングを足した
+
+依頼：黒い筐体で、マットな感じのフォトリアルなレンダリング（PaperDIY 版・Tab5 版の両方）。
+
+- `docs/render/photoreal.py`：`cad/out` の STL と `assembly.json` から、`docs/render/index.html` と同じ部品・位置で組み、Blender 5.3（Cycles、Python のモジュール `bpy`）で描く。印刷部品はすべて黒のマット PLA（0.2 mm の積層の筋、細かい肌、描くときに丸めた角）。ソフトボックス 2 灯、上からの面光源、後ろからのリムライト、明るいグレーの床
+- `docs/images/photoreal_open.jpg`（開いたところ）、`photoreal_closed.jpg`（閉じたところ）。1600 × 1100、160 サンプル、2 コアで 1 枚 8〜10 分
+- `make photoreal` で描き直せる（`pip install bpy==5.3.0` が要る。CI では描かない）
+- 形や印刷データは変わらない
+
 ## 2026-11-15 ヒンジカバーをやめた
 
 依頼：ヒンジカバーを PaperDIY 版・Tab5 版の両方で廃止する。

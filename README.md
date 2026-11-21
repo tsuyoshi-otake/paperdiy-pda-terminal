@@ -16,6 +16,10 @@ M5Stack PaperDIY（4.7 型 e-paper、ESP32-S3）を画面に、CACOE キーボ�
 
 <p align="center"><img src="docs/images/render_open_black.png" width="32%" alt="黒だけ"> <img src="docs/images/render_open_khaki.png" width="32%" alt="カーキだけ"> <img src="docs/images/render_open_mix.png" width="32%" alt="ミックス（蓋がカーキ、トレイと化粧パネルが黒）"></p>
 
+黒だけで、マットな PLA の質感まで描いたものです。Blender（Cycles）のレンダリングで、写真ではありません（`docs/render/photoreal.py`、`make photoreal`）：
+
+<p align="center"><img src="docs/images/photoreal_open.jpg" width="49%" alt="黒のマット PLA で刷った場合のレンダリング（開いたところ）"> <img src="docs/images/photoreal_closed.jpg" width="49%" alt="黒のマット PLA で刷った場合のレンダリング（閉じたところ）"></p>
+
 > **実機が 1 台、組み上がって動いています**（上の写真）。キーボードの BLE 接続と自動ペアリング、Wi-Fi、Raspberry Pi への SSH ログインまで、筐体に入れた状態で使えています。ただし、まだ試作段階です。筐体は、刷って組むたびに出た問題を直してきました。前の設計（PaperDIY の基板をそのまま載せる版）では、キーボードのがたつきや開いたときのすき間。今の設計（Complete Kit のケースごと入れる中空の蓋と化粧パネル）では、壁の柔らかさ（1.2 mm → 2.0 mm）、カバーと継ぎ板のきつさ、ヒンジの戻りで蓋の手前が浮くこと、留めツメが勝手に外れること、キーボードの位置決めリブが当たること、TPU の足が作りにくいこと。写真の 1 台は留めツメを直す前のもので（ツメが掛からず、蓋の手前が少し浮く）、**いまのリポジトリの版そのものは、まだ刷って確かめていません**（[まだ確かめていないこと](#まだ確かめていないこと)）。
 
 ## 特徴
